@@ -67,17 +67,18 @@ Crea un archivo `.env` en la raíz del proyecto y configura las siguientes varia
 PORT=3000
 
 # Configuración de la base de datos
-DB_CLIENT=sqlite  # Opciones: "sqlite" o "mongo"
+DB_CLIENT=sqlite
+#DB_CLIENT=mongo  # Opciones: "sqlite" o "mongo". Elegir cual utilizar y dejar comentada la otra
 MONGO_URI=mongodb://localhost:27017/user_management  # Solo si usas MongoDB
 DB_STORAGE=./dev.sqlite  # Ruta del archivo SQLite (solo para SQLite)
 
 # Clave secreta para JWT
-JWT_SECRET=tu_clave_secreta_aqui
+SESSION_SECRET=tu_clave_secreta
 ```
 
 ---
 
-### **4. Inicializar la base de datos**
+### **4. Inicializar y poblar la base de datos**
 
 #### **Para SQLite**:
 No requiere configuración adicional. El archivo de la base de datos se creará automáticamente al iniciar el servidor.
@@ -85,6 +86,18 @@ No requiere configuración adicional. El archivo de la base de datos se creará 
 #### **Para MongoDB**:
 Asegúrate de que el servicio de MongoDB esté en ejecución. Si usas **MongoDB Atlas**, reemplaza `MONGO_URI` con tu cadena de conexión.
 
+Ejecuta el siguiente comando para crear usuarios iniciales:
+
+```bash
+npm run seed
+```
+
+Esto creará los siguientes usuarios:
+
+| Email               | Contraseña         | Rol    |
+|---------------------|--------------------|--------|
+| `admin@example.com` | `adminPassword123` | Admin  |
+| `user@example.com`  | `userPassword123`  | User   |
 ---
 
 ## **🏃 Ejecutar la aplicación**
@@ -191,6 +204,7 @@ TDSintegral/
 ├── config/               # Configuración de bases de datos
 │   ├── mongo.config.js
 │   └── sqlite.config.js
+├── seeder/               # Scripts para poblar la base de datos
 ├── controllers/          # Lógica de los controladores
 ├── middleware/           # Middlewares (autenticación, validación, etc.)
 ├── models/               # Modelos de base de datos
