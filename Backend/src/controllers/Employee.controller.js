@@ -1,4 +1,4 @@
-import HttpResponse from "../utils/HttpResponse.mdw.js";
+import HttpResponse from "../utils/HttpResponse.utils.js";
 import { EmployeeService } from "../services/Employee.service.js";
 
 export class EmployeeController{
