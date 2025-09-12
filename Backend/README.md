@@ -9,6 +9,7 @@ Primera entrega proyecto backend para "Desarrollo web (back)"
 Desarrollar una aplicación web utilizando Node.js y Express.
 
 Integrar una base de datos (solamente en JSON), eliminamos a mongo de este parcial, pero si quieren lo pueden usar. 
+Tutorial de instalacion de mongoDB https://www.youtube.com/watch?v=eKXIxSZrJfw&ab_channel=UskoKruM2010
 
 Aplicar conceptos de asincronía y manejo de promesas. Módulos
 

@@ -1,9 +1,8 @@
-//To Do -> 2da entrega
-//Validaciones
-//Modificar json por MongoDB
-
 export class Employee{
-    constructor(id, nombre){//apellido, email, telefono, password
+  //  Rol: administrador, consultor, supervisor.
+  //  Área: SEO/SEM, Social Media, Contenidos, Administración.
+  // To do agregar campos: apellido, email, telefono, rol, area, password
+  constructor(id, nombre){
         this.id = id;
         this.nombre = nombre;
     }

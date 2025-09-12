@@ -1,6 +1,6 @@
 import express from 'express';
 import { EmployeeRoutes } from '../routes/Employee.routes.js';
-import HttpResponse from '../middlewares/HttpResponse.mdw.js';
+import HttpResponse from '../utils/HttpResponse.mdw.js';
 
 export class Server{
     constructor(){
