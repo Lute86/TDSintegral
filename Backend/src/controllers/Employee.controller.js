@@ -20,4 +20,60 @@ export class EmployeeController{
             return HttpResponse.forbidden(res);
         }
     }
+
+    static async create(req, res){
+        try {
+            const employeeData = req.body;
+            const newEmployee = await EmployeeService.create(employeeData);
+            return HttpResponse.created(res, newEmployee);
+        } catch (error) {
+            if (error.message === "Datos incompletos") {
+                return HttpResponse.badRequest(res, "Faltan datos requeridos");
+            }
+            if (error.message === "Email ya existe") {
+                return HttpResponse.conflict(res, "El email ya está registrado");
+            }
+            return HttpResponse.serverError(res);
+        }
+    }
+
+    static async updatePut(req, res){
+        try {
+            const { id } = req.params;
+            const employeeData = req.body;
+            const updatedEmployee = await EmployeeService.updatePut(id, employeeData);
+            return HttpResponse.success(res, updatedEmployee);
+        } catch (error) {
+            if (error.message === "No autorizado") {
+                return HttpResponse.forbidden(res);
+            }
+            if (error.message === "Empleado no encontrado") {
+                return HttpResponse.notFound(res, "Empleado no encontrado");
+            }
+            if (error.message === "Datos incompletos") {
+                return HttpResponse.badRequest(res, "Faltan datos requeridos");
+            }
+            if (error.message === "Email ya existe") {
+                return HttpResponse.conflict(res, "El email ya está registrado");
+            }
+            return HttpResponse.serverError(res);
+        }
+    }
+
+    static async update(req, res){
+        try {
+            const { id } = req.params;
+            const updateData = req.body;
+            const updatedEmployee = await EmployeeService.update(id, updateData);
+            return HttpResponse.success(res, updatedEmployee);
+        } catch (error) {
+            if (error.message === "No autorizado") {
+                return HttpResponse.forbidden(res);
+            }
+            if (error.message === "Empleado no encontrado") {
+                return HttpResponse.notFound(res, "Empleado no encontrado");
+            }
+            return HttpResponse.serverError(res);
+        }
+    }
 }
