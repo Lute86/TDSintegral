@@ -12,6 +12,33 @@ export class EmployeeService {
   }
 
   static async create(data) {
+    // Validar email único
+    const exists = await Employee.findOne({ email: data.email });
+    if (exists) throw new Error("Email ya existe");
     return await Employee.create(data);
+  }
+
+  static async updatePut(id, data) {
+    const employee = await Employee.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
+
+  static async update(id, data) {
+    const employee = await Employee.findByIdAndUpdate(id, { $set: data }, {
+      new: true,
+      runValidators: true,
+    });
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
+
+  static async deleteById(id) {
+    const employee = await Employee.findByIdAndDelete(id);
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
   }
 }

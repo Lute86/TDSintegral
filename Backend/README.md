@@ -81,3 +81,17 @@ http://localhost:3000/dashboard/profiles
     }
   ]
 }
+
+http://localhost:3000/dashboard/employee/2
+
+{
+  "status": 200,
+  "statusMsg": "Successful petition",
+  "data": {
+    "message": "Empleado con ID 2 eliminado",
+    "data": {
+      "id": 2,
+      "nombre": "Juan"
+    }
+  }
+}
