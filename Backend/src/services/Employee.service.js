@@ -1,30 +1,17 @@
-import { Employee } from "../models/Employee.model.js"
+import { Employee } from "../models/Employee.model.js";
 
-export class EmployeeService{
+export class EmployeeService {
+  static async getAll() {
+    return await Employee.find();
+  }
 
-    static employees = [
-        new Employee(1, 'Ana'),
-        new Employee(2, 'Juan')
-    ];
+  static async getById(id) {
+    const employee = await Employee.findById(id);
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
 
-    static async getAll (){
-        try {
-            return EmployeeService.employees.map(e => e.toJSON())
-        } catch (error) {
-            throw new Error("Error del servidor");
-        }
-    }
-
-    static async getById(id){
-        try {
-            const employee = EmployeeService.employees.find(e => e.id == id);
-            if (!employee) throw new Error("No autorizado");
-            return employee.toJSON();
-        } catch (error) {
-            throw new Error("Error del servidor");
-        }
-    }
-      
-
+  static async create(data) {
+    return await Employee.create(data);
+  }
 }
-

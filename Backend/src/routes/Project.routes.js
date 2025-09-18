@@ -4,6 +4,6 @@ import { ProjectController } from "../controllers/Project.controller.js";
 const router = Router();
 
 router.get("/", ProjectController.getAll);
-router.post("/", ProjectController.create);
-
+/* router.post("/", ProjectController.create);
+*/
 export default router;

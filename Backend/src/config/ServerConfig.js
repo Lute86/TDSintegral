@@ -3,6 +3,8 @@ import { connectDB } from "./DB.config.js";
 import ClientRoutes from "../routes/Client.routes.js";
 import EmployeeRoutes from "../routes/Employee.routes.js";
 import ProjectRoutes from "../routes/Project.routes.js";
+import HttpResponse from "../utils/HttpResponse.utils.js";
+
 
 export class Server {
   constructor() {
@@ -20,6 +22,7 @@ export class Server {
     this.app.use("/client", ClientRoutes);
     this.app.use("/employee", EmployeeRoutes);
     this.app.use("/project", ProjectRoutes);
+    this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`))
   }
 
   async listen() {
@@ -28,4 +31,7 @@ export class Server {
       console.log(` Servidor corriendo en http://localhost:${this.port}`);
     });
   }
+
 }
+        
+
