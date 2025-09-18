@@ -20,4 +20,38 @@ export class EmployeeController{
             return HttpResponse.forbidden(res);
         }
     }
+    
+    static async deleteById(req, res) { // Controlador DELETE
+    try {
+        const { id } = req.params;
+        const deleted = await EmployeeService.deleteById(id);
+
+        if (!deleted) {
+            return HttpResponse.notFound(res, `Empleado con ID ${id} no existe`);
+        }
+
+        return HttpResponse.success(res, {
+            message: `Empleado con ID ${id} eliminado`,
+            data: deleted
+        });
+    } catch (error) {
+        return HttpResponse.serverError(res, error.message);
+           
+        
+    }
+    
+    
 }
+   static async getAllRaw() {
+  try {
+    return await EmployeeService.getAll();
+  } catch (error) {
+    console.error('Error en getAllRaw:', error);
+    return []; // o lanzar error si querés que la vista lo maneje
+  }
+}
+
+
+}
+
+
