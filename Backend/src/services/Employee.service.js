@@ -24,4 +24,16 @@ export class EmployeeService{
             throw new Error("Error del servidor");
         }
     }
+
+    static async deleteById(id) { // Servicio DELETE
+    try {
+        const index = EmployeeService.employees.findIndex(e => e.id == id);
+        if (index === -1) return null;
+
+        const deleted = EmployeeService.employees.splice(index, 1)[0];
+        return deleted.toJSON();
+    } catch (error) {
+        throw new Error("Error del servidor");
+    }
+    }
 }
