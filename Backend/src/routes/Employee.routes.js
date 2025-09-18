@@ -9,7 +9,10 @@ export class EmployeeRoutes{
         //rutas
         router.get('/profiles', EmployeeController.getAll) // => solo para probar. Pertenece a admin
         router.get('/myprofile/:id', EmployeeController.getById)
-        // Agregar post,put, patch, delete
+        router.post('/profiles', EmployeeController.create)
+        router.put('/myprofile/:id', EmployeeController.updatePut)
+        router.patch('/myprofile/:id', EmployeeController.update)
+        // Agregar delete
 
         router.delete('/employee/:id', EmployeeController.deleteById); // ✅ DELETE
 
