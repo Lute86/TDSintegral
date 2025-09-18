@@ -1,3 +1,4 @@
-console.log(process.env.CORS);
+import { Server } from "./config/ServerConfig.js";
 
-console.log("server");
+const server = new Server();
+server.listen();
