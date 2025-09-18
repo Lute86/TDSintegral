@@ -1,18 +1,16 @@
-export class Employee{
-  //  Rol: administrador, consultor, supervisor.
-  //  Área: SEO/SEM, Social Media, Contenidos, Administración.
-  // To do agregar campos: apellido, email, telefono, rol, area, password
-  constructor(id, nombre){
-        this.id = id;
-        this.nombre = nombre;
-    }
+import mongoose from "mongoose";
 
-    
-    toJSON(){
-        return {
-            id: this.id,
-            nombre: this.nombre,
-            //etc
-        }
-    }
-}
+// Roles: administrador, consultor, supervisor
+// Áreas: SEO/SEM, Social Media, Contenidos, Administración
+
+const employeeSchema = new mongoose.Schema({
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  telefono: { type: String },
+  rol: { type: String, enum: ["administrador", "consultor", "supervisor"], required: true },
+  area: { type: String, enum: ["SEO/SEM", "Social Media", "Contenidos", "Administración"], required: true },
+  password: { type: String, required: true }
+}, { timestamps: true });
+
+export const Employee = mongoose.model("Employee", employeeSchema);
