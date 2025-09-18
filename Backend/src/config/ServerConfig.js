@@ -1,8 +1,13 @@
-import express from 'express';
+
+import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { EmployeeRoutes } from '../routes/Employee.routes.js';
-import HttpResponse from '../utils/HttpResponse.utils.js';
+import { connectDB } from "./DB.config.js";
+import ClientRoutes from "../routes/Client.routes.js";
+import EmployeeRoutes from "../routes/Employee.routes.js";
+import ProjectRoutes from "../routes/Project.routes.js";
+import HttpResponse from "../utils/HttpResponse.utils.js";
+
 
 
 export class Server{
@@ -13,26 +18,29 @@ export class Server{
         this.app.set('view engine', 'pug'); // permite el uso del pug
         this.port = process.env.PORT || 3000;
         this.middlewares();
-        this.routes();
-        
-        
+        this.routes();      
     }
 
-    middlewares(){
-        this.app.use(express.json());
-    }
+  middlewares() {
+    this.app.use(express.json());
+  }
 
-    routes(){
-        this.app.use('/dashboard', EmployeeRoutes.getRouter()); // ruta del dashboard
-        this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`))
-    }
+  routes() {
+    this.app.use("/client", ClientRoutes);
+    this.app.use("/employee", EmployeeRoutes);
+    this.app.use("/project", ProjectRoutes);
+    this.app.use('/dashboard', EmployeeRoutes.getRouter()); // ruta del dashboard
+    this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`))
+  }
 
-    listen(){
-        this.app.listen(this.port, () => {
-            console.log(`Servidor corriendo en http://localhost:${this.port}`);
-        })
-    }
-
-    
-    
+  async listen() {
+    await connectDB();
+    this.app.listen(this.port, () => {
+      console.log(` Servidor corriendo en http://localhost:${this.port}`);
+    });
+  }
 }
+    
+    
+
+

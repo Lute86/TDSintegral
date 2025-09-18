@@ -1,27 +1,26 @@
-import HttpResponse from "../utils/HttpResponse.utils.js";
 import { EmployeeService } from "../services/Employee.service.js";
+import HttpResponse from "../utils/HttpResponse.utils.js";
 
-export class EmployeeController{
-    static async getAll(req, res){
-        try {
-            const employees = await EmployeeService.getAll();
-            return HttpResponse.success(res, employees);
-        } catch (error) {
-            return HttpResponse.serverError();
-        }
+export class EmployeeController {
+  static async getAll(req, res) {
+    try {
+      const employees = await EmployeeService.getAll();
+      HttpResponse.success(res, employees);
+    } catch (err) {
+      HttpResponse.serverError(res, err.message);
     }
+  }
 
-    static async getById(req, res){
-        try {
-            const { id } = req.params;
-            const employee = await EmployeeService.getById(id);
-            return HttpResponse.success(res, employee);
-        } catch (error) {
-            return HttpResponse.forbidden(res);
-        }
-    }
+   static async getAllRaw() {
+  try {
+    return await EmployeeService.getAll();
+  } catch (error) {
+    console.error('Error en getAllRaw:', error);
+    return []; // o lanzar error si querés que la vista lo maneje
+  }
 
-
+}  
+  
     static async create(req, res){
         try {
             const employeeData = req.body;
@@ -93,24 +92,10 @@ export class EmployeeController{
             data: deleted
         });
     } catch (error) {
-        return HttpResponse.serverError(res, error.message);
-           
-        
+        return HttpResponse.serverError(res, error.message); 
+    } 
+    
     }
-    
-    
-}
-   static async getAllRaw() {
-  try {
-    return await EmployeeService.getAll();
-  } catch (error) {
-    console.error('Error en getAllRaw:', error);
-    return []; // o lanzar error si querés que la vista lo maneje
-  }
 
 }
-
-
-}
-
 
