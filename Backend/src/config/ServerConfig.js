@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { connectDB } from "./DB.config.js";
 import ClientRoutes from "../routes/Client.routes.js";
 import EmployeeRoutes from "../routes/Employee.routes.js";
+
 import ProjectRoutes from "../routes/Project.routes.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
 
@@ -27,7 +28,8 @@ export class Server{
 
   routes() {
     this.app.use("/client", ClientRoutes);
-    this.app.use("/employee", EmployeeRoutes);
+    //this.app.use("/employee", EmployeeRoutes);
+    this.app.use("/employee", EmployeeRoutes.getRouter());
     this.app.use("/project", ProjectRoutes);
     this.app.use('/dashboard', EmployeeRoutes.getRouter()); // ruta del dashboard
     this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`))
