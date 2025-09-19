@@ -2,8 +2,6 @@ import { EmployeeService } from "../services/Employee.service.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
 
 export class EmployeeController {
-
-  
   static async getAll(req, res) {
     try {
       const employees = await EmployeeService.getAll();
@@ -12,21 +10,6 @@ export class EmployeeController {
       HttpResponse.serverError(res, err.message);
     }
   }
-
-    static async getById(req, res) {
-    try {
-        const { id } = req.params;
-        const employee = await EmployeeService.getById(id);
-
-        if (!employee) {
-        return HttpResponse.notFound(res, `Empleado con ID ${id} no encontrado`);
-        }
-
-        return HttpResponse.success(res, employee);
-    } catch (error) {
-        return HttpResponse.serverError(res, error.message);
-    }
-    }
 
    static async getAllRaw() {
   try {
