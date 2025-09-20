@@ -1,4 +1,3 @@
-// src/config/DB.config.js
 import mongoose from 'mongoose';
 
 const DB_CLIENT = process.env.DB_CLIENT || 'json';
