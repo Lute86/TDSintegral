@@ -1,5 +1,3 @@
-
-// El Dashboard con el CRUD completo
 html
   head
     title Dashboard | Empleados
@@ -35,10 +33,12 @@ html
             .col-md-6
               .employee-card
                 h5.mb-1 #{employee.nombre}
-                small.text-muted ID: #{employee.id}
+                small.text-muted ID: #{employee._id}
+                if employee.email
+                  p.text-muted Email: #{employee.email}
                 .mt-2
-                  a.btn.btn-sm.btn-outline-secondary(href="/dashboard/employee/" + employee.id + "/edit") Editar
-                  form(action="/dashboard/employee/" + employee.id method="POST" style="display:inline-block")
+                  a.btn.btn-sm.btn-outline-secondary(href="/dashboard/employee/" + employee._id + "/edit") Editar
+                  form(action="/dashboard/employee/" + employee._id method="POST" style="display:inline-block")
                     input(type="hidden" name="_method" value="DELETE")
                     button.btn.btn-sm.btn-outline-danger(type="submit") Eliminar
       else
@@ -52,4 +52,7 @@ html
           .mb-3
             label.form-label(for="nombre") Nombre completo
             input.form-control(type="text" name="nombre" required placeholder="Ej. Lucía Gómez")
+          .mb-3
+            label.form-label(for="email") Email
+            input.form-control(type="email" name="email" required placeholder="Ej. lucia@email.com")
           button.btn.btn-success(type="submit") Crear empleado
