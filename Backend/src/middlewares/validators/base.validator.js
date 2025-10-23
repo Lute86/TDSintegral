@@ -1,3 +1,5 @@
+import HttpResponse from "../../utils/HttpResponse.utils";
+
 export class ValidatorBase {
   static isEmpty(value) {
     return value === undefined || value === null || value === "";
@@ -19,7 +21,7 @@ export class ValidatorBase {
   static requireFields(res, fields, data) {
     const missing = fields.filter(f => this.isEmpty(data[f]));
     if (missing.length)
-      return res.status(400).json({ msg: `Faltan campos: ${missing.join(", ")}` });
+      return missing;
     return null;
   }
 }

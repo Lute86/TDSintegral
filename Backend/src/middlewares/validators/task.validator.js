@@ -1,3 +1,4 @@
+import HttpResponse from "../../utils/HttpResponse.utils.js";
 import { ValidatorBase } from "./base.validator.js";
 
 export class TaskValidator extends ValidatorBase {
@@ -5,16 +6,16 @@ export class TaskValidator extends ValidatorBase {
     const { proyecto, estado, prioridad } = req.body;
 
     const missing = this.requireFields(res, ["proyecto"], req.body);
-    if (missing) return;
+    if (missing) return HttpResponse.badRequest(res,{ msg: `Faltan campos: ${missing.join(", ")}` });
 
     const estados = ["pendiente", "en proceso", "finalizada"];
     const prioridades = ["alta", "media", "baja"];
 
     if (estado && !this.isEnum(estado, estados))
-      return res.status(400).json({ msg: "Estado inválido" });
+      return HttpResponse.badRequest(res, { msg: "Estado inválido" });
 
     if (prioridad && !this.isEnum(prioridad, prioridades))
-      return res.status(400).json({ msg: "Prioridad inválida" });
+      return HttpResponse.badRequest(res, { msg: "Prioridad inválida" });
 
     next();
   }
@@ -25,10 +26,10 @@ export class TaskValidator extends ValidatorBase {
     const prioridades = ["alta", "media", "baja"];
 
     if (estado && !this.isEnum(estado, estados))
-      return res.status(400).json({ msg: "Estado inválido" });
+      return HttpResponse.badRequest(res, { msg: "Estado inválido" });
 
     if (prioridad && !this.isEnum(prioridad, prioridades))
-      return res.status(400).json({ msg: "Prioridad inválida" });
+      return HttpResponse.badRequest(res, { msg: "Prioridad inválida" });
 
     next();
   }
