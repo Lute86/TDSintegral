@@ -1,11 +1,10 @@
-import HttpResponse from "../../utils/HttpResponse.utils";
-
 export class ValidatorBase {
   static isEmpty(value) {
     return value === undefined || value === null || value === "";
   }
 
   static isEmail(value) {
+    //TODO email gomarketing.com
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(value);
   }
