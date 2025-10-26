@@ -7,7 +7,10 @@ import EmployeeRoutes from "../routes/Employee.routes.js";
 import ProjectRoutes from "../routes/Project.routes.js";
 import TaskRoutes from "../routes/Task.routes.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
+import { PassportConfig } from "../config/passport.config.js";
 import methodOverride from "method-override";
+import { AuthValidator } from "../middlewares/validators/auth.validator.js";
+import { AuthController } from "../controllers/Auth.controller.js";
 
 export class Server{
     constructor(){
@@ -24,15 +27,18 @@ export class Server{
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
     this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
+
+    const passportConfig = new PassportConfig(process.env.JWT_SECRET);
+    this.app.use(passportConfig.initialize());
     }
 
-  /* routes() {
+  routes() {
+    this.app.use("/login", AuthValidator.validateLogin, AuthController.login);
     this.app.use("/client", ClientRoutes);
-    //this.app.use("/employee", EmployeeRoutes);
     this.app.use("/employee", EmployeeRoutes.getRouter());
     this.app.use("/project", ProjectRoutes);
-    this.app.use('/dashboard', EmployeeRoutes.getRouter()); // ruta del dashboard
-    this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`))<
+    this.app.use('/dashboard', EmployeeRoutes.getRouter());
+    this.app.use((req, res) => HttpResponse.notFound(res, `La ruta${req.path} no existe`));
     this.app.get("/ping", (req, res) => res.json({ ok: true }));
 
   }
