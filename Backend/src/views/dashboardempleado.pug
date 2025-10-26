@@ -1,0 +1,341 @@
+//- Nombre del archivo: views/dashboard-empleado.pug
+
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Dashboard | Clickwave
+    link(rel="icon", type="image/png", href="/favicon.png")
+    
+    //- Google Fonts (Inter) para un look de UI moderno
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap", rel="stylesheet")
+
+    style.
+      :root {
+        --bg-dark-primary: #1a1c23;
+        --bg-dark-secondary: #252831;
+        --bg-light: #ffffff;
+        --border-color: #3a3f4d;
+        --text-light: #f1f1f1;
+        --text-muted: #8892b0;
+        --text-dark: #333;
+        --accent-blue: #0052cc;
+        --accent-green: #28a745;
+        --accent-yellow: #ffc107;
+        --accent-red: #dc3545;
+        --font-main: 'Inter', sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background-color: var(--bg-dark-primary);
+        color: var(--text-light);
+        display: flex;
+        min-height: 100vh;
+      }
+      
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      ul {
+        list-style: none;
+      }
+
+      /* --- Layout Principal --- */
+      .dashboard-layout {
+        display: flex;
+        width: 100%;
+      }
+
+      /* --- 1. Sidebar (Menú Izquierdo) --- */
+      .sidebar {
+        width: 250px;
+        background-color: var(--bg-dark-secondary);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        transition: width 0.3s ease;
+      }
+      
+      .sidebar-header {
+        padding: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-light);
+        border-bottom: 1px solid var(--border-color);
+        text-align: center;
+      }
+      
+      .sidebar-nav {
+        flex-grow: 1;
+        padding-top: 1rem;
+      }
+      
+      .sidebar-nav ul li a {
+        display: block;
+        padding: 1rem 1.5rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+      
+      .sidebar-nav ul li a:hover,
+      .sidebar-nav ul li a.active {
+        background-color: var(--bg-dark-primary);
+        color: var(--text-light);
+        border-left: 3px solid var(--accent-blue);
+      }
+      
+      .sidebar-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+      
+      .sidebar-footer a {
+        color: var(--accent-red);
+        font-weight: 500;
+      }
+
+      /* --- 2. Contenedor Principal (Header + Contenido) --- */
+      .main-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* --- 3. Header (Barra Superior) --- */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: var(--bg-dark-secondary);
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .header-search input {
+        background-color: var(--bg-dark-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        color: var(--text-light);
+        font-family: var(--font-main);
+      }
+      
+      .header-user {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--accent-blue);
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+
+      /* --- 4. Main Content (Tu Boceto P y T) --- */
+      .main-content {
+        padding: 2rem;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+      
+      .main-content h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      /* El grid para las tarjetas */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+      }
+      
+      /* La tarjeta individual (P o T) */
+      .dash-card {
+        background-color: var(--bg-dark-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      
+      .dash-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .dash-card-header h3 {
+        font-size: 1.5rem;
+      }
+      
+      .btn-view-all {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--accent-blue);
+      }
+      
+      .dash-card-body {
+        padding: 1.5rem;
+      }
+      
+      .item-list .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .item-list .item:last-child {
+        border-bottom: none;
+      }
+      
+      .item-title {
+        font-weight: 500;
+      }
+      
+      .item-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      
+      /* Colores de Estado (basado en el modelo Proyecto) */
+      .item-status.en-curso,
+      .item-status.en-proceso {
+        background-color: var(--accent-yellow);
+        color: var(--text-dark);
+      }
+      .item-status.pendiente {
+        background-color: var(--text-muted);
+        color: var(--bg-dark-primary);
+      }
+      .item-status.finalizado {
+        background-color: var(--accent-green);
+        color: var(--text-light);
+      }
+      
+      /* Colores de Prioridad (basado en el modelo Tarea) */
+      .item-status.alta {
+        background-color: var(--accent-red);
+        color: var(--text-light);
+      }
+      .item-status.media {
+        background-color: var(--accent-yellow);
+        color: var(--text-dark);
+      }
+      .item-status.baja {
+        background-color: var(--accent-green);
+        color: var(--text-light);
+      }
+      
+  body.dashboard-layout
+  
+    //- --- 1. SIDEBAR (Menú) ---
+    aside.sidebar
+      .sidebar-header
+        h1 Clickwave
+      nav.sidebar-nav
+        ul
+          //- El 'a.active' marca la página actual
+          li: a(href="/dashboard").active 🏠 Dashboard
+          li: a(href="/mis-proyectos") 🗂️ Mis Proyectos
+          li: a(href="/mis-tareas") 📋 Mis Tareas
+      .sidebar-footer
+        a(href="/logout") 🚪 Cerrar Sesión
+
+    //- --- 2. CONTENEDOR DERECHO (Header + Contenido) ---
+    .main-container
+    
+      //- --- 3. HEADER (Barra Superior) ---
+      header.header
+        .header-search
+          input(type="text", placeholder="Buscar...")
+        .header-user
+          //- (Idealmente, aquí pasas el nombre del empleado)
+          span Bienvenido, #{user ? user.nombre : 'Empleado'}
+          .user-avatar E
+          
+      //- --- 4. CONTENIDO PRINCIPAL (Tu boceto P y T) ---
+      main.main-content
+        h2 Mi Dashboard
+
+        .dashboard-grid
+          
+          //- Tarjeta de Proyectos (P)
+          .dash-card
+            .dash-card-header
+              h3 Mis Proyectos
+              a(href="/mis-proyectos").btn-view-all Ver todos
+            .dash-card-body
+              ul.item-list
+                //-
+                //- ¡AQUÍ ES DONDE EL SERVIDOR DEBE PASAR LOS DATOS!
+                //- (He puesto datos de ejemplo, pero deberías usar un 'each')
+                //- 
+                //- each proyecto in proyectos
+                //-   li.item
+                //-     span.item-title= proyecto.nombre
+                //-     span(class=`item-status ${proyecto.estado}`)= proyecto.estado
+                //-
+                li.item
+                  span.item-title Proyecto Alpha (Cliente X)
+                  span.item-status.en-curso En Curso
+                li.item
+                  span.item-title Campaña SEO (Cliente Z)
+                  span.item-status.pendiente Pendiente
+                li.item
+                  span.item-title Rediseño Web (Cliente Y)
+                  span.item-status.finalizado Finalizado
+
+          //- Tarjeta de Tareas (T)
+          .dash-card
+            .dash-card-header
+              h3 Mis Tareas Pendientes
+              a(href="/mis-tareas").btn-view-all Ver todas
+            .dash-card-body
+              ul.item-list
+                //-
+                //- ¡AQUÍ ES DONDE EL SERVIDOR DEBE PASAR LOS DATOS!
+                //- (He puesto datos de ejemplo, pero deberías usar un 'each')
+                //-
+                //- each tarea in tareas
+                //-   li.item
+                //-     span.item-title= tarea.descripcion
+                //-     span(class=`item-status ${tarea.prioridad}`)= tarea.prioridad
+                //-
+                li.item
+                  //- (Tu modelo Tarea necesita un campo "nombre" o "descripcion")
+                  span.item-title Revisar métricas - Proyecto Alpha
+                  span.item-status.alta alta
+                li.item
+                  span.item-title Redactar 3 posts - Campaña SEO
+                  span.item-status.media media
+                li.item
+                  span.item-title Llamar a Cliente Y
+                  span.item-status.baja baja
