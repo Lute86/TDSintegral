@@ -5,8 +5,8 @@ import { connectDB } from "./DB.config.js";
 import ClientRoutes from "../routes/Client.routes.js";
 import EmployeeRoutes from "../routes/Employee.routes.js";
 import ProjectRoutes from "../routes/Project.routes.js";
+import TaskRoutes from "../routes/Task.routes.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
-
 import methodOverride from "method-override";
 
 export class Server{
@@ -26,7 +26,7 @@ export class Server{
     this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
     }
 
-  routes() {
+  /* routes() {
     this.app.use("/client", ClientRoutes);
     //this.app.use("/employee", EmployeeRoutes);
     this.app.use("/employee", EmployeeRoutes.getRouter());
@@ -36,6 +36,24 @@ export class Server{
     this.app.get("/ping", (req, res) => res.json({ ok: true }));
 
   }
+  */
+
+
+
+routes() {
+  this.app.use("/client", ClientRoutes.getRouter());
+  this.app.use("/employee", EmployeeRoutes.getRouter());
+  this.app.use("/project", ProjectRoutes.getRouter());
+  //this.app.use("/task", TaskRoutes.getRouter());
+  // Vistas o dashboard
+  this.app.use('/dashboard', EmployeeRoutes.getRouter());
+  this.app.use((req, res) =>
+    HttpResponse.notFound(res, `La ruta ${req.path} no existe`)
+  );
+
+  this.app.get("/ping", (req, res) => res.json({ ok: true }));
+}
+
 
   async listen() {
     await connectDB();

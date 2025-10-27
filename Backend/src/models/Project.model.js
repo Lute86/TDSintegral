@@ -1,22 +1,25 @@
 import mongoose from "mongoose";
 
-const projectSchema = new mongoose.Schema({
+const proyectSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
-  clientId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
-  employees: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }],
-  estado: { type: String, default: "pendiente" },
+  clienteId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
+  empleados: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }],
+  estado: { type: String, enum: ["pendiente", "en curso", "finalizado"], default: "pendiente" },
   metricas: {
-    horasTotales: Number,
-    horasRedes: Number,
-    horasMails: Number,
+    horasCotizadas: { type: Number, default: 0 },
+    horasTotales: { type: Number, default: 0 },
+    horasRedes: { type: Number, default: 0 },
+    horasMails: { type: Number, default: 0 },
     otras: { type: Map, of: Number }
   },
   pago: {
-    monto: Number,
-    fecha: Date,
-    status: String,
-    metodo: String
+    monto: { type: Number },
+    fecha: { type: Date },
+    status: { type: String, enum: ["pendiente", "pagado", "vencido"], default: "pendiente" },
+    metodo: { type: String }
   }
 }, { timestamps: true });
 
-export const Project = mongoose.model("Project", projectSchema);
+//export default mongoose.model("Proyect", proyectoSchema);
+export const Project = mongoose.model("Project", proyectSchema);
+

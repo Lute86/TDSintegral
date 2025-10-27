@@ -1,9 +1,19 @@
 import { Router } from "express";
 import { ClientController } from "../controllers/Client.controller.js";
 
-const router = Router();
+class ClientRoutes {
+  static getRouter() {
+    const router = Router();
+    
+    router.get("/", ClientController.getAll);
+    router.get("/:id", ClientController.getById);
+    router.post("/", ClientController.create);
+    router.put("/:id", ClientController.update);
+    router.delete("/:id", ClientController.deleteById);
 
-router.get("/", ClientController.getAll);
-/* router.post("/", ClientController.create);  */
+    return router;
+  }
+}
 
-export default router;
+export default ClientRoutes;
+

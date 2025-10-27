@@ -77,22 +77,22 @@ export class EmployeeController {
         }
     }
 
-    static async update(req, res){
-        try {
-            const { id } = req.params;
-            const updateData = req.body;
-            const updatedEmployee = await EmployeeService.update(id, updateData);
-            return HttpResponse.success(res, updatedEmployee);
-        } catch (error) {
-            if (error.message === "No autorizado") {
-                return HttpResponse.forbidden(res);
-            }
-            if (error.message === "Empleado no encontrado") {
-                return HttpResponse.notFound(res, "Empleado no encontrado");
-            }
-            return HttpResponse.serverError(res);
+ static async update(req, res){
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+        const updatedEmployee = await EmployeeService.update(id, updateData);
+        return HttpResponse.success(res, updatedEmployee);
+    } catch (error) {
+        if (error.message === "No autorizado") {
+            return HttpResponse.forbidden(res);
         }
+        if (error.message === "Empleado no encontrado") {
+            return HttpResponse.notFound(res, "Empleado no encontrado");
+        }
+        return HttpResponse.serverError(res);
     }
+}
 
     
     static async deleteById(req, res) { // Controlador DELETE
