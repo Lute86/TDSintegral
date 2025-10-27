@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import Task from "../models/Task.model.js";
+import { Task } from "../models/Task.model.js";
 import { Project } from "../models/Project.model.js";
 import { Employee } from "../models/Employee.model.js";
-import Client from "../models/Client.model.js";
+import { Client } from "../models/Client.model.js";
 
 export class TaskService {
   // Listar todas las tareas
