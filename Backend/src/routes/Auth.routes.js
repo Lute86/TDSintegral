@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { EmployeeController } from "../controllers/Employee.controller.js";
-import HttpResponse from "../utils/HttpResponse.utils.js";
+import { AuthController } from "../controllers/Auth.controller.js";
+import { AuthValidator } from "../middlewares/validators/auth.validator.js";
 
  class AuthRoutes{
     
@@ -14,4 +14,4 @@ import HttpResponse from "../utils/HttpResponse.utils.js";
     
 }
 
-export default EmployeeRoutes;
+export default AuthRoutes;

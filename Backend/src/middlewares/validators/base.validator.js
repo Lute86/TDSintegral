@@ -17,10 +17,11 @@ export class ValidatorBase {
     return !isNaN(parseFloat(value)) && isFinite(value);
   }
 
-  static requireFields(res, fields, data) {
-    const missing = fields.filter(f => this.isEmpty(data[f]));
-    if (missing.length)
-      return missing;
-    return null;
+  static requireFields(fields, data) {
+    return fields.filter(f => this.isEmpty(data[f]));
+  }
+
+  static minLen(value){
+    return value.length > 7;
   }
 }

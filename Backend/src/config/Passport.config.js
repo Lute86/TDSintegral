@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { Employee } from "../models/Employee.model.js";
 
-export class PassportConfig {
+export class Passport {
   constructor(secret) {
     this.secret = secret;
   }

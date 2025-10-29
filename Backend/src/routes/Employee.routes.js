@@ -1,15 +1,19 @@
 import { Router } from "express";
 import { EmployeeController } from "../controllers/Employee.controller.js";
 import methodOverride from "method-override";
+import { EmployeeValidator } from "../middlewares/validators/employee.validator.js";
+import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
+
+const auth = [AuthMiddleware.authorize("administrador", "supervisor")];
 
  class EmployeeRoutes{
     
     static getRouter(){
         const router = Router();
         //rutas
-        router.get('/profiles', EmployeeController.getAll) // => solo para probar. Pertenece a admin
+        router.get('/profiles', auth, EmployeeController.getAll)
         router.get('/myprofile/:id', EmployeeController.getById)
-        router.post('/profiles', EmployeeController.create)
+        router.post('/register', auth, EmployeeValidator.validateCreate, EmployeeController.create)
         router.put('/myprofile/:id', EmployeeController.updatePut)
         router.patch('/myprofile/:id', EmployeeController.update)
         router.delete('/employee/:id', EmployeeController.deleteById); 
