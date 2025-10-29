@@ -48,7 +48,6 @@ export class Server{
     this.app.use("/employee", auth, EmployeeRoutes.getRouter());
     this.app.use("/project", auth, ProjectRoutes.getRouter());
     this.app.use("/task", auth, TaskRoutes.getRouter());
-    // Vistas o dashboard
     this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
 
     //Estado servidor
