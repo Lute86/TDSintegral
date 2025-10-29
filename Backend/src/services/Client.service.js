@@ -11,7 +11,7 @@ export class ClientService {
     return client;
   }
 
-  static async create(data) {
+  static async create(data) {    
     // Validar email único
     const exists = await Client.findOne({ email: data.email });
     if (exists) throw new Error("Email ya existe");

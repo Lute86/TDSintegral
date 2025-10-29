@@ -1,5 +1,6 @@
 import { EmployeeService } from "../services/Employee.service.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
+import bcrypt from "bcryptjs";
 
 export class EmployeeController {
 
@@ -40,9 +41,17 @@ export class EmployeeController {
   
     static async create(req, res){
         try {
-            const employeeData = req.body;
-            const newEmployee = await EmployeeService.create(employeeData);
-            return HttpResponse.created(res, newEmployee);
+            const { password, ...employeeData } = req.body;
+            
+            if (!password) {
+                throw new Error("Datos incompletos");
+            }
+            // Encriptar password
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const newEmployeeData = { ...employeeData, password: hashedPassword };
+            const newEmployee = await EmployeeService.create(newEmployeeData);
+            if (newEmployee) return HttpResponse.created(res, {email: newEmployee.email, rol: newEmployee.rol});
         } catch (error) {
             if (error.message === "Datos incompletos") {
                 return HttpResponse.badRequest(res, "Faltan datos requeridos");

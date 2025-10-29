@@ -1,4 +1,4 @@
-import { Server } from "./config/ServerConfig.js";
+import { Server } from "./config/Server.config.js";
 
 const server = new Server();
 server.listen();

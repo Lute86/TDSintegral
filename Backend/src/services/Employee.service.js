@@ -13,9 +13,9 @@ export class EmployeeService {
 
   static async create(data) {
     // Validar email único
-    const exists = await Employee.findOne({ email: data.email });
-    if (exists) throw new Error("Email ya existe");
-    return await Employee.create(data);
+      const exists = await Employee.findOne({ email: data.email });
+      if (exists) throw new Error("Email ya existe");
+      return await Employee.create(data);
   }
 
   static async updatePut(id, data) {
