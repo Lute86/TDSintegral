@@ -2,6 +2,8 @@ import { EmployeeService } from "../services/Employee.service.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
 import bcrypt from "bcryptjs";
 
+
+
 export class EmployeeController {
 
   
@@ -86,6 +88,22 @@ export class EmployeeController {
         }
     }
 
+<<<<<<< HEAD
+    static async update(req, res){ 
+        try {
+            const { id } = req.params;
+            const updateData = req.body;
+            const updatedEmployee = await EmployeeService.update(id, updateData);
+            return HttpResponse.success(res, updatedEmployee);
+        } catch (error) {
+            if (error.message === "No autorizado") {
+                return HttpResponse.forbidden(res);
+            }
+            if (error.message === "Empleado no encontrado") {
+                return HttpResponse.notFound(res, "Empleado no encontrado");
+            }
+            return HttpResponse.serverError(res);
+=======
  static async update(req, res){
     try {
         const { id } = req.params;
@@ -95,6 +113,7 @@ export class EmployeeController {
     } catch (error) {
         if (error.message === "No autorizado") {
             return HttpResponse.forbidden(res);
+>>>>>>> develop
         }
         if (error.message === "Empleado no encontrado") {
             return HttpResponse.notFound(res, "Empleado no encontrado");
@@ -120,8 +139,47 @@ export class EmployeeController {
     } catch (error) {
         return HttpResponse.serverError(res, error.message); 
     } 
-    
+            
     }
+    static async dashboardCreate(req, res) {
+  try {
+    await Employee.create({ nombre: req.body.nombre, email: req.body.email });
+    res.redirect('/dashboard');
+  } catch (error) {
+    res.status(500).send('Error al crear empleado');
+  }
+}
+
+    static async edit(req, res) {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) return res.status(404).send('Empleado no encontrado');
+    res.render('edit', { employee });
+  } catch (error) {
+    res.status(500).send('Error al cargar formulario de edición');
+  }
+}
+
+    static async dashboardUpdate(req, res) {
+  try {
+    await Employee.findByIdAndUpdate(req.params.id, req.body);
+    res.redirect('/dashboard');
+  } catch (error) {
+    res.status(500).send('Error al actualizar empleado');
+  }
+}
+
+    static async dashboardDelete(req, res) {
+  try {
+    await Employee.findByIdAndDelete(req.params.id);
+    res.redirect('/dashboard');
+  } catch (error) {
+    res.status(500).send('Error al eliminar empleado');
+  }
+}
+
+
+    
 
 }
 
