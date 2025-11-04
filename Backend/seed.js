@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { Client } from "./src/models/Client.model.js";
 import { Employee } from "./src/models/Employee.model.js";
 import { Project } from "./src/models/Project.model.js";
+import { Task } from "./src/models/Task.model.js";
+import bcrypt from "bcryptjs";
 
 dotenv.config();
 
@@ -15,8 +17,12 @@ async function seed() {
     await Client.deleteMany({});
     await Employee.deleteMany({});
     await Project.deleteMany({});
+    await Task.deleteMany({});
 
     console.log(" Colecciones limpiadas");
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash("password", saltRounds);
 
     // ===== Clientes =====
     const clients = await Client.insertMany([
@@ -57,7 +63,7 @@ async function seed() {
         telefono: "444444444",
         rol: "administrador",
         area: "Contenidos",
-        password: "123456"
+        password: hashedPassword
       },
       {
         nombre: "Luis",
@@ -66,7 +72,7 @@ async function seed() {
         telefono: "555555555",
         rol: "consultor",
         area: "Social Media",
-        password: "abcdef"
+        password: hashedPassword
       },
       {
         nombre: "Sofia",
@@ -75,7 +81,7 @@ async function seed() {
         telefono: "666666666",
         rol: "supervisor",
         area: "Administración",
-        password: "qwerty"
+        password: hashedPassword
       },
       {
         nombre: "Pedro",
@@ -84,7 +90,7 @@ async function seed() {
         telefono: "777777777",
         rol: "consultor",
         area: "SEO/SEM",
-        password: "testing123"
+        password: hashedPassword
       }
     ]);
 
@@ -99,7 +105,7 @@ async function seed() {
         nombre: "Sistema de Gestión Comercial",
         clientId: clients[0]._id,
         employees: [employees[0]._id, employees[2]._id],
-        estado: "en progreso",
+        estado: "pendiente",
         pago: { monto: 12000, status: "pendiente" }
       },
       {
