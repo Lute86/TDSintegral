@@ -1,69 +1,86 @@
-import express from 'express';
+import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import methodOverride from 'method-override';
-import EmployeeRoutes from '../routes/Employee.routes.js';
-import HttpResponse from '../utils/HttpResponse.utils.js';
+import { connectDB } from "./DB.config.js";
+import ClientRoutes from "../routes/Client.routes.js";
+import EmployeeRoutes from "../routes/Employee.routes.js";
+import ProjectRoutes from "../routes/Project.routes.js";
+import TaskRoutes from "../routes/Task.routes.js";
+import HttpResponse from "../utils/HttpResponse.utils.js";
+import methodOverride from "method-override";
+import { Passport } from "./Passport.config.js";
+import { AuthValidator } from "../middlewares/validators/auth.validator.js";
+import { AuthController } from "../controllers/Auth.controller.js";
+import AuthRoutes from "../routes/Auth.routes.js";
+import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 
-// --- Imports needed ---
-import ClientRoutes from '../routes/Client.routes.js';
-import ProjectRoutes from '../routes/Project.routes.js';
-import { connectDB } from './DB.config.js'; // Make sure this path is correct
-
-export class Server {
-  constructor() {
-    this.app = express();
-    // Use 'this.__dirname' for class-wide access
-    this.__dirname = path.dirname(fileURLToPath(import.meta.url));
-
-    // --- Correct path to 'views' (2 levels up) ---
-    this.app.set('views', path.join(this.__dirname, '../views')); 
-    
-    this.app.set('view engine', 'pug');
-    this.port = process.env.PORT || 3000;
-    this.middlewares();
-    this.routes();
+export class Server{
+  constructor(){
+      this.app = express();
+      this.port = process.env.PORT || 3000;
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+      this.app.set('views', path.join(__dirname, '../views')); // o '../src/views' si corresponde
+      this.app.set('view engine', 'pug'); // permite el uso del pug
+      this.middlewares();
+      this.routes();      
   }
 
   middlewares() {
     this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
-
-    // --- Correct path to 'public' (2 levels up) ---
-    this.app.use(express.static(path.join(this.__dirname, '../../public')));
-
-    this.app.use(methodOverride('_method'));
+    this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
+    this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
+  
+    // Inicializar Passport
+    const passportConfig = new Passport(process.env.JWT_SECRET);
+    this.app.use(passportConfig.initialize());
   }
 
   routes() {
+    // Endpoints públicos
+    this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
+    this.app.use("/client", ClientRoutes.getRouter());
 
-    // --- Route for simple landing page ---
-    this.app.get('/landing', (req, res) => {
-      res.render('landingpage'); 
+    // Landing page pública
+    this.app.get('/', (req, res) => {
+      res.render('landingpage');
     });
 
-    // --- Route for simple dashboard page ---
-    this.app.get('/dashboard', (req, res) => {
-      // Render the simple PUG (no data needed)
-      res.render('dashboardempleados'); 
-    });
+    // Endpoints protegidos
+    const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "supervisor", "consultor")];
+
+    this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
+    this.app.use("/project", auth, ProjectRoutes.getRouter());
+    this.app.use("/task", auth, TaskRoutes.getRouter());
+
+    // Vista del dashboard protegida
+   /* this.app.get('/dashboard',  (req, res) => { //auth,
+      res.render('dashboard', {
+        user: req.user,
+        proyectos: [],
+        tareas: []
+      });
+    });*/
+    this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
     
-    // --- API Routes ---
-    this.app.use('/client', ClientRoutes);
-    this.app.use('/project', ProjectRoutes);
-    this.app.use('/employee', EmployeeRoutes.getRouter());
+    // Estado del servidor
+    this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));
 
-    // --- 404 Handler (MUST be last) ---
-    this.app.use((req, res) => HttpResponse.notFound(res, `La ruta ${req.path} no existe`));
+    // 404
+    this.app.use((req, res) =>
+      HttpResponse.notFound(res, `La ruta ${req.path} no existe`)
+    );
   }
 
-  // Ensure this is async
   async listen() {
-    // Call DB connection
     await connectDB();
-    
     this.app.listen(this.port, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${this.port}`);
+      console.log(` Servidor corriendo en http://localhost:${this.port}`);
     });
   }
 }
+    
+    
+
+
+
+

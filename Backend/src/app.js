@@ -1,13 +1,11 @@
-<<<<<<< HEAD
+
 import { Server } from "./config/ServerConfig.js";
 import express from 'express';
 import methodOverride from 'method-override'; // Botones PUG
 import path from 'path';
 
 
-=======
-import { Server } from "./config/Server.config.js";
->>>>>>> develop
+
 
 const server = new Server();
 server.listen();
