@@ -14,7 +14,6 @@ import { AuthController } from "../controllers/Auth.controller.js";
 import AuthRoutes from "../routes/Auth.routes.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 
-
 export class Server{
   constructor(){
       this.app = express();
@@ -39,26 +38,38 @@ export class Server{
   routes() {
     // Endpoints públicos
     this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
-  
     this.app.use("/client", ClientRoutes.getRouter());
-    
+
+    // Landing page pública
+    this.app.get('/', (req, res) => {
+      res.render('landingpage');
+    });
+
     // Endpoints protegidos
     const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "supervisor", "consultor")];
 
-    this.app.use("/employee", auth, EmployeeRoutes.getRouter());
+    this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
     this.app.use("/project", auth, ProjectRoutes.getRouter());
     this.app.use("/task", auth, TaskRoutes.getRouter());
-    this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
 
-    //Estado servidor
+    // Vista del dashboard protegida
+   /* this.app.get('/dashboard',  (req, res) => { //auth,
+      res.render('dashboard', {
+        user: req.user,
+        proyectos: [],
+        tareas: []
+      });
+    });*/
+    this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
+    
+    // Estado del servidor
     this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));
- 
-    //404
+
+    // 404
     this.app.use((req, res) =>
       HttpResponse.notFound(res, `La ruta ${req.path} no existe`)
     );
   }
-
 
   async listen() {
     await connectDB();
