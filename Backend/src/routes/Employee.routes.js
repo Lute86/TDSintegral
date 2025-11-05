@@ -1,11 +1,5 @@
 import { Router } from "express";
 import { EmployeeController } from "../controllers/Employee.controller.js";
-<<<<<<< HEAD
-
-class EmployeeRoutes {
-  static getRouter() {
-    const router = Router();
-=======
 import methodOverride from "method-override";
 import { EmployeeValidator } from "../middlewares/validators/employee.validator.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
@@ -23,15 +17,6 @@ const auth = [AuthMiddleware.authorize("administrador", "supervisor")];
         router.put('/myprofile/:id', EmployeeController.updatePut)
         router.patch('/myprofile/:id', EmployeeController.update)
         router.delete('/employee/:id', EmployeeController.deleteById); 
->>>>>>> develop
-
-    // REST
-    router.get('/profiles', EmployeeController.getAll);
-    router.get('/myprofile/:id', EmployeeController.getById);
-    router.post('/profiles', EmployeeController.create);
-    router.put('/myprofile/:id', EmployeeController.updatePut);
-    router.patch('/myprofile/:id', EmployeeController.update);
-    router.delete('/employee/:id', EmployeeController.deleteById);
 
     // Visual dashboard
 
