@@ -416,10 +416,10 @@ html(lang="es", style="scroll-behavior: smooth;")
       
       h1 Acceso de Administración
       
-      form(action="/admin/login" method="POST")
+      form(action="/auth/login" method="POST")
         .form-group
-          label(for="usuario") Usuario
-          input(type="text" name="usuario" id="usuario" placeholder="ej: juan.perez" required)
+          label(for="email") Email
+          input(type="text" name="email" id="email" placeholder="ej: juan@example.com" required)
           
         .form-group
           label(for="password") Password

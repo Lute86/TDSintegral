@@ -9,7 +9,12 @@ export class Passport {
 
   initialize() {
     const opts = {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    //  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+      ExtractJwt.fromAuthHeaderAsBearerToken(),
+      req => req?.cookies?.token
+      ]),
+
       secretOrKey: this.secret
     };
 

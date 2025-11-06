@@ -13,6 +13,7 @@ import { AuthValidator } from "../middlewares/validators/auth.validator.js";
 import { AuthController } from "../controllers/Auth.controller.js";
 import AuthRoutes from "../routes/Auth.routes.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
+import cookieParser from "cookie-parser";
 
 export class Server{
   constructor(){
@@ -22,6 +23,7 @@ export class Server{
       this.app.set('views', path.join(__dirname, '../views')); // o '../src/views' si corresponde
       this.app.set('view engine', 'pug'); // permite el uso del pug
       this.middlewares();
+     
       this.routes();      
   }
 
@@ -30,6 +32,7 @@ export class Server{
     this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
     this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
   
+     this.app.use(cookieParser());
     // Inicializar Passport
     const passportConfig = new Passport(process.env.JWT_SECRET);
     this.app.use(passportConfig.initialize());
@@ -53,15 +56,15 @@ export class Server{
     this.app.use("/task", auth, TaskRoutes.getRouter());
 
     // Vista del dashboard protegida
-   /* this.app.get('/dashboard',  (req, res) => { //auth,
-      res.render('dashboard', {
+    this.app.get('/dashboard',  (req, res) => { //auth,
+      res.render('dashboardempleados', {
         user: req.user,
         proyectos: [],
         tareas: []
       });
-    });*/
-    this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
-    
+    });
+    //this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
+
     // Estado del servidor
     this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));
 
