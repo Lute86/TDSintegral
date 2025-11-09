@@ -15,6 +15,8 @@ import AuthRoutes from "../routes/Auth.routes.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 import cookieParser from "cookie-parser";
 
+
+
 export class Server{
   constructor(){
       this.app = express();
@@ -28,6 +30,8 @@ export class Server{
   }
 
   middlewares() {
+
+
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
     this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
@@ -36,34 +40,57 @@ export class Server{
     // Inicializar Passport
     const passportConfig = new Passport(process.env.JWT_SECRET);
     this.app.use(passportConfig.initialize());
+    
+    //lo que esté en /src/public puede ser accedido por el navegador
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    this.app.use(express.static(path.join(__dirname, "../public")));
+
   }
 
   routes() {
     // Endpoints públicos
-    this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
+  //  this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
     this.app.use("/client", ClientRoutes.getRouter());
+
+    // Rutas públicas (landing y login/logout)
+     this.app.use("/auth", AuthRoutes.getRouter()); 
 
     // Landing page pública
     this.app.get('/', (req, res) => {
       res.render('landingpage');
     });
+    
 
     // Endpoints protegidos
-    const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "supervisor", "consultor")];
+    const auth = [
+  Passport.authenticate(),
+  AuthMiddleware.authorize("administrador", "empleado", "cliente")
+];
+
+   const authEmpleados = [
+      Passport.authenticate(),
+      AuthMiddleware.authorize("administrador", "empleado")
+    ];
+
+    const authAdmin = [
+      Passport.authenticate(),
+      AuthMiddleware.authorize("administrador")
+    ];
 
     this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
     this.app.use("/project", auth, ProjectRoutes.getRouter());
     this.app.use("/task", auth, TaskRoutes.getRouter());
 
     // Vista del dashboard protegida
-    this.app.get('/dashboard',  (req, res) => { //auth,
-      res.render('dashboardempleados', {
-        user: req.user,
-        proyectos: [],
-        tareas: []
-      });
+   this.app.get(  "/dashboard",  Passport.authenticate(),  AuthMiddleware.authorize("administrador", "empleado"),
+  (req, res) => {
+    res.render("dashboardempleados", {
+      user: req.user,
+      proyectos: [],
+      tareas: []
     });
-    //this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
+    })
+
 
     // Estado del servidor
     this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));

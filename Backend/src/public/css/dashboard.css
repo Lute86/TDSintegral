@@ -1,0 +1,221 @@
+      :root {
+        --bg-dark-primary: #1a1c23;
+        --bg-dark-secondary: #252831;
+        --bg-light: #ffffff;
+        --border-color: #3a3f4d;
+        --text-light: #f1f1f1;
+        --text-muted: #8892b0;
+        --text-dark: #333;
+        --accent-blue: #0052cc;
+        --accent-green: #28a745;
+        --accent-yellow: #ffc107;
+        --accent-red: #dc3545;
+        --font-main: 'Inter', sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        font-size: 16px;
+      }
+      body {
+        font-family: var(--font-main);
+        background-color: var(--bg-dark-primary);
+        color: var(--text-light);
+        display: flex;
+        min-height: 100vh;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      ul {
+        list-style: none;
+      }
+      .dashboard-layout {
+        display: flex;
+        width: 100%;
+      }
+      .sidebar {
+        width: 250px;
+        background-color: var(--bg-dark-secondary);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        transition: width 0.3s ease;
+      }
+      .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 70px;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--border-color);
+      overflow: hidden;
+      }
+
+      .sidebar-header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-light);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-align: center;
+      width: 100%;
+      }
+      .sidebar-nav {
+        flex-grow: 1;
+        padding-top: 1rem;
+        
+      }
+      .sidebar-nav ul li a {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* ✅ centra el ícono y texto horizontalmente */
+        text-align: center; /* opcional, pero ayuda si hay saltos de línea */
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+      }
+
+    .sidebar-nav ul li a:hover,
+    .sidebar-nav ul li a.active {
+      background-color: var(--bg-dark-primary);
+      color: var(--text-light);
+      border-left: 3px solid var(--accent-blue);
+    }
+
+      .sidebar-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+      .sidebar-footer a {
+        color: var(--accent-red);
+        font-weight: 500;
+      }
+      .main-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: var(--bg-dark-secondary);
+        border-bottom: 1px solid var(--border-color);
+      }
+      .header-search input {
+        background-color: var(--bg-dark-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        color: var(--text-light);
+        font-family: var(--font-main);
+      }
+      .header-user {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--accent-blue);
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+      .main-content {
+        padding: 2rem;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+      .main-content h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+      }
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+      }
+      .dash-card {
+        background-color: var(--bg-dark-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      .dash-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .dash-card-header h3 {
+        font-size: 1.5rem;
+      }
+      .btn-view-all {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--accent-blue);
+      }
+      .dash-card-body {
+        padding: 1.5rem;
+      }
+      .item-list .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .item-list .item:last-child {
+        border-bottom: none;
+      }
+      .item-title {
+        font-weight: 500;
+      }
+      .item-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .item-status.en-curso,
+      .item-status.en-proceso {
+        background-color: var(--accent-yellow);
+        color: var(--text-dark);
+      }
+      .item-status.pendiente {
+        background-color: var(--text-muted);
+        color: var(--bg-dark-primary);
+      }
+      .item-status.finalizado {
+        background-color: var(--accent-green);
+        color: var(--text-light);
+      }
+      .item-status.alta {
+        background-color: var(--accent-red);
+        color: var(--text-light);
+      }
+      .item-status.media {
+        background-color: var(--accent-yellow);
+        color: var(--text-dark);
+      }
+      .item-status.baja {
+        background-color: var(--accent-green);
+        color: var(--text-light);
+      }

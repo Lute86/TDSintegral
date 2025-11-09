@@ -111,7 +111,12 @@ http://localhost:3000/dashboard/employee/2
         npm install
 
   # corre tu script que: se conecta a MongoDB, borra colecciones anteriores, y crea datos de prueba (clientes, empleados, proyectos, tareas, etc.).
-        node seed.js           
+        node seed.js       
+
+        cuenta admin
+        admin@admin.com contr admin  
+       cuenta empleado
+        empleado@empleado.com contr admin  
 
 # Landigpage
 

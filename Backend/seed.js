@@ -55,7 +55,7 @@ async function seed() {
         apellido: "Martinez",
         email: "empleado@empleado.com",
         telefono: "555555555",
-        rol: "consultor", // tu modelo no tiene "empleado" como rol válido
+        rol: "empleado", 
         area: "Social Media",
         password: hashedPassword
       }
