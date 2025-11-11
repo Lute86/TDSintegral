@@ -4,69 +4,88 @@ html(lang="es")
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Dashboard | Clickwave
-    link(rel="icon", type="image/png", href="/favicon.png")
     link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap", rel="stylesheet")
     link(rel="stylesheet", href="/css/dashboard.css")
-
+    script(src="/js/dashboard.js" defer)
   body.dashboard-layout
-    aside.sidebar
-      .sidebar-header
+    // HEADER SUPERIOR
+    header.header
+      .header-left
         h1.logo Clickwave
-      nav.sidebar-nav
-        ul
-        li: a(href="/dashboard", class=(activePage === 'dashboard' ? 'active' : '')) 🏠 Dashboard
+      .header-center
+        input#globalSearch(type="text", placeholder="Buscar proyectos, tareas o empleados...")
+      .header-right
+        span.user-name #{user ? user.nombre : 'Empleado'}
+        a(href="/auth/logout").logout-btn Cerrar sesión
 
-        // Opciones solo para ADMINISTRADOR
-        if user && user.rol === 'administrador'
-          li: a(href="/admin/empleados") 👥 Gestión de Empleados
-          li: a(href="/admin/roles") ⚙️ Roles y Permisos
-          li: a(href="/proyectos") 🗂️ Proyectos
-          li: a(href="/empleado/tareas") 📋 Tareas
+    // CONTENIDO PRINCIPAL
+    main.main-content
+      h2 Mi Dashboard
 
-        // Opciones solo para EMPLEADO
-        if user && user.rol === 'empleado'
-          li: a(href="/empleado/proyectos") 🗂️ Mis Proyectos
-          li: a(href="/empleado/tareas") 📋 Mis Tareas
-      .sidebar-footer
-        a.logout(href="/auth/logout") 🚪 Cerrar Sesión
+      .dashboard-grid
+        // PROYECTOS (izq)
+        .dash-card#projectsCard
+          .dash-card-header
+            h3 Proyectos
+            if user && user.rol === 'administrador'
+              a.btn-view-all(href="/projects/new") ➕ Nuevo
+          .dash-card-body
+            ul.project-list#projectList
+              if proyectos && proyectos.length > 0
+                each proyecto in proyectos
+                  li.project-item(data-id=proyecto._id data-nombre=proyecto.nombre)
+                    .left
+                      strong.project-name= proyecto.nombre
+                      if proyecto.descripcion
+                        div.project-desc= proyecto.descripcion
+                      else
+                        div.project-desc.text-muted — sin descripción
+                    .right
+                      // status inline select only for admin (or show badge for employees)
+                      if user && user.rol === 'administrador'
+                        select.project-status-admin(data-id=proyecto._id onchange="updateProjectStatus(this)")
+                          option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
+                          option(value="en curso", selected=proyecto.estado==='en curso') En curso
+                          option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
+                        a.btn-edit(href=`/projects/${proyecto._id}/edit`) ✏️
+                        button.btn-delete(type="button", onclick=`deleteProject('${proyecto._id}')`) 🗑️
+                      else
+                        span.badge(class=`item-status ${proyecto.estado}`)= proyecto.estado
+              else
+                li No hay proyectos asignados.
 
-    .main-container
-      header.header
-        .header-search
-          input(type="text", placeholder="Buscar...")
-        .header-user
-          span Bienvenido, #{user ? user.nombre : 'Empleado'}
-          .user-avatar #{user ? user.nombre[0].toUpperCase() : 'E'}
+        // TAREAS (der)
+        .dash-card#tasksCard
+          .dash-card-header
+            h3 Tareas del Proyecto
+            if user && user.rol === 'administrador'
+              a.btn-view-all(href="/tasks/new") ➕ Nueva
+          .dash-card-body
+            p#selectedProjectLabel Seleccioná un proyecto a la izquierda
+            ul.task-list#taskList
+              // populated by JS
 
-      main.main-content
-        h2 Mi Dashboard
-        .dashboard-grid
-          .dash-card
-            .dash-card-header
-              h3 Mis Proyectos
-              a(href="/mis-proyectos").btn-view-all Ver todos
-            .dash-card-body
-              ul.item-list
-                if proyectos && proyectos.length > 0
-                  each proyecto in proyectos
-                    li.item
-                      span.item-title= proyecto.nombre
-                      span(class=`item-status ${proyecto.estado}`)= proyecto.estado
-                else
-                  li.item
-                    span No hay proyectos asignados.
+      // BLOQUE ADMIN: Empleados + métricas
+      if user && user.rol === 'administrador'
+        .dash-card.admin-section
+          .dash-card-header
+            h3 Gestión de Empleados
+            a.btn-view-all(href="/admin/empleados/new") ➕ Nuevo Empleado
+          .dash-card-body
+            ul.employee-list#employeeList
+              if empleados && empleados.length > 0
+                each e in empleados
+                  li.employee-item
+                    span.emp-name= `${e.nombre} ${e.apellido}`
+                    span.emp-role= e.rol
+                    .emp-actions
+                      a(href=`/admin/empleados/${e._id}/edit`) ✏️
+                      button(type="button", onclick=`deleteEmployee('${e._id}')`) 🗑️
+              else
+                li No hay empleados.
 
-          .dash-card
-            .dash-card-header
-              h3 Mis Tareas Pendientes
-              a(href="/mis-tareas").btn-view-all Ver todas
-            .dash-card-body
-              ul.item-list
-                if tareas && tareas.length > 0
-                  each tarea in tareas
-                    li.item
-                      span.item-title= tarea.descripcion || 'Tarea sin descripción'
-                      span(class=`item-status ${tarea.prioridad}`)= tarea.prioridad
-                else
-                  li.item
-                    span No tienes tareas pendientes.
+        .dash-card.metrics
+          .dash-card-header
+            h3 Métricas (próximamente)
+          .dash-card-body
+            p.text-muted Aquí se mostrarán métricas globales para administradores.

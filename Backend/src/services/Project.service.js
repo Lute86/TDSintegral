@@ -10,6 +10,18 @@ export class ProjectService {
     return await Project.find()
       .populate("clienteId", "nombre apellido email")
       .populate("empleados", "nombre apellido rol area email");
+      
+  }
+
+static async getByEmployee(employeeId) {
+    try {
+      // Ajustá este query según tu modelo
+      const projects = await Project.find({ empleado: employeeId });
+      return projects;
+    } catch (error) {
+      console.error("Error en ProjectService.getByEmployee:", error);
+      throw error;
+    }
   }
 
   // Obtener proyecto por ID
@@ -21,7 +33,7 @@ export class ProjectService {
     const project = await Project.findById(id)
       .populate("clienteId", "nombre apellido email")
       .populate("empleados", "nombre apellido rol area email");
-
+      
     if (!project) throw new Error("Proyecto no encontrado");
     return project;
   }
@@ -52,7 +64,6 @@ export class ProjectService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new Error("ID inválido");
     }
-
     const project = await Project.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
@@ -78,7 +89,7 @@ export class ProjectService {
   }
 
   // Eliminar proyecto
-  static async deleteById(id) {
+ /* static async deleteById(id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new Error("ID inválido");
     }
@@ -87,7 +98,22 @@ export class ProjectService {
     if (!project) throw new Error("Proyecto no encontrado");
 
     return project;
+  }*/
+
+static async deleteById(id) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error("ID inválido");
   }
+
+  const project = await Project.findById(id);
+  if (!project) throw new Error("Proyecto no encontrado");
+
+  // eliminar tareas asociadas
+  await Task.deleteMany({ project: id });
+
+  await project.deleteOne();
+  return { message: "Proyecto y tareas eliminadas correctamente" };
+}
 
 }
 

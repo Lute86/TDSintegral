@@ -3,9 +3,9 @@ import { ValidatorBase } from "./base.validator.js";
 
 export class TaskValidator {
   static validateCreate(req, res, next) {
-    const { proyecto, estado, prioridad } = req.body;
+    const { project, estado, prioridad } = req.body;
 
-    const missing = ValidatorBase.requireFields(["proyecto"], req.body);
+    const missing = ValidatorBase.requireFields(["project"], req.body);
     if (missing.length > 0) return HttpResponse.badRequest(res,{ msg: `Faltan campos: ${missing.join(", ")}` });
 
     const estados = ["pendiente", "en proceso", "finalizada"];

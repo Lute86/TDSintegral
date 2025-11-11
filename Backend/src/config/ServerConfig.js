@@ -14,6 +14,8 @@ import { AuthController } from "../controllers/Auth.controller.js";
 import AuthRoutes from "../routes/Auth.routes.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 import cookieParser from "cookie-parser";
+import { Project } from "../models/Project.model.js";
+import { Task } from "../models/Task.model.js";
 
 
 
@@ -62,35 +64,60 @@ export class Server{
     
 
     // Endpoints protegidos
-    const auth = [
-  Passport.authenticate(),
-  AuthMiddleware.authorize("administrador", "empleado", "cliente")
-];
+    const auth = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado", "cliente")];
 
-   const authEmpleados = [
-      Passport.authenticate(),
-      AuthMiddleware.authorize("administrador", "empleado")
-    ];
+   const authEmpleados = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado")];
 
-    const authAdmin = [
-      Passport.authenticate(),
-      AuthMiddleware.authorize("administrador")
-    ];
+    const authAdmin = [Passport.authenticate(),AuthMiddleware.authorize("administrador")];
 
+    this.app.use("/project", auth, ProjectRoutes.getRouter());
     this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
     this.app.use("/project", auth, ProjectRoutes.getRouter());
     this.app.use("/task", auth, TaskRoutes.getRouter());
 
-    // Vista del dashboard protegida
-   this.app.get(  "/dashboard",  Passport.authenticate(),  AuthMiddleware.authorize("administrador", "empleado"),
-  (req, res) => {
-    res.render("dashboardempleados", {
-      user: req.user,
-      proyectos: [],
-      tareas: []
-    });
-    })
+    
+      this.app.get(
+      "/dashboard",
+      Passport.authenticate(),
+      AuthMiddleware.authorize("administrador", "empleado"),
+      async (req, res) => {
+        try {
+          const user = req.user;
 
+          // Si es administrador, muestra todo
+          let proyectos = [];
+          let tareas = [];
+
+          if (user.rol === "administrador") {
+            proyectos = await Project.find().populate("clienteId").lean();
+            tareas = await Task.find().populate("empleados").lean();
+          }
+
+          // Si es empleado, solo sus proyectos y tareas asignadas
+          if (user.rol === "empleado") {
+            proyectos = await Project.find({ empleados: user.id })
+              .populate("clienteId")
+              .lean();
+
+            tareas = await Task.find({ empleados: user.id })
+              .populate("project")
+              .lean();
+          }
+
+          res.render("dashboardempleados", {
+            title: "Mi Dashboard",
+            user,
+            proyectos,
+            tareas,
+          });
+        } catch (error) {
+          console.error("Error al cargar dashboard:", error);
+          res.status(500).render("error", {
+            message: "Error al cargar el dashboard",
+          });
+        }
+      }
+    );
 
     // Estado del servidor
     this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));

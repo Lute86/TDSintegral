@@ -58,6 +58,15 @@ async function seed() {
         rol: "empleado", 
         area: "Social Media",
         password: hashedPassword
+      },
+       {
+        nombre: "empleado2",
+        apellido: "Martinez3",
+        email: "empleado1@empleado.com",
+        telefono: "42342342",
+        rol: "empleado", 
+        area: "Social Media",
+        password: hashedPassword
       }
     ]);
 
@@ -68,7 +77,24 @@ async function seed() {
       {
         nombre: "Sistema de Gestión Comercial",
         clienteId: clients[0]._id,
-        empleados: [employees[0]._id, employees[1]._id], // corregido índice
+        empleados: [employees[1]._id, ], // employees[1]._id     corregido índice
+        estado: "pendiente",
+        metricas: { horasCotizadas: 50 },
+        pago: { monto: 12000, status: "pendiente", metodo: "transferencia" }
+      },
+      {
+        nombre: "Sistema de pago",
+        clienteId: clients[0]._id,
+        empleados: [employees[1]._id], 
+        estado: "pendiente",
+        metricas: { horasCotizadas: 50 },
+        pago: { monto: 12000, status: "pendiente", metodo: "transferencia" }
+      }
+      ,
+      {
+        nombre: "Sistema de conteo",
+        clienteId: clients[0]._id,
+        empleados: [employees[2]._id], 
         estado: "pendiente",
         metricas: { horasCotizadas: 50 },
         pago: { monto: 12000, status: "pendiente", metodo: "transferencia" }
@@ -80,20 +106,34 @@ async function seed() {
     // ===== Tareas =====
     const tasks = await Task.insertMany([
       {
+        nombre: "Diseñar interfaz de login",
+        descripcion: "Crear pantalla de inicio de sesión y validación de usuario",
         estado: "en proceso",
         prioridad: "alta",
         fechaInicio: new Date("2025-11-01"),
-        empleados: [employees[0]._id],
-        proyect: projects[0]._id,
+        empleados: [employees[1]._id],
+        project: projects[0]._id,
         cliente: clients[0]._id,
         horasEstimadas: 20,
         horas: 10
       },
       {
+        nombre: "Configurar base de datos",
+        descripcion: "Crear esquema inicial en MongoDB y relaciones",
         estado: "pendiente",
         prioridad: "media",
         empleados: [employees[1]._id],
-        proyect: projects[0]._id,
+        project: projects[0]._id,
+        cliente: clients[0]._id,
+        horasEstimadas: 15
+      },
+      {
+        nombre: "crear conteo",
+        descripcion: "conteo",
+        estado: "pendiente",
+        prioridad: "media",
+        empleados: [employees[2]._id],
+        project: projects[1]._id,
         cliente: clients[0]._id,
         horasEstimadas: 15
       }

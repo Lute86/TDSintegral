@@ -1,0 +1,30 @@
+extends ../layout.pug
+
+block content
+  h2.text-center.mb-4 Tareas
+
+  if tasks.length
+    table.table.table-striped
+      thead.table-dark
+        tr
+          th Proyecto
+          th Estado
+          th Prioridad
+          th Empleados
+          th Horas
+      tbody
+        each task in tasks
+          tr
+            td #{task.project?.nombre || '—'}
+            td #{task.estado}
+            td #{task.prioridad}
+            td
+              if task.empleados.length
+                ul
+                  each emp in task.empleados
+                    li #{emp.nombre} #{emp.apellido}
+              else
+                | Sin empleados asignados
+            td #{task.horas} / #{task.horasEstimadas}
+  else
+    p.text-muted.text-center No hay tareas disponibles.

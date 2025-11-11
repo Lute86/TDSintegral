@@ -1,0 +1,45 @@
+extends ../layout.pug
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4.text-primary Listado de Proyectos
+
+    if projects && projects.length
+      table.table.table-hover.table-bordered.table-striped
+        thead.table-dark
+          tr
+            th Nombre
+            th Descripción
+            th Cliente
+            th Estado
+            th Fecha de Inicio
+            th Fecha de Fin
+            th Empleados Asignados
+            th Tareas Relacionadas
+        tbody
+          each project in projects
+            tr
+              td #{project.nombre}
+              td #{project.descripcion || '—'}
+              td #{project.clienteId && project.clienteId.nombre ? project.clienteId.nombre : '—'}
+              td 
+                span.badge(class=`bg-${project.estado === 'finalizado' ? 'success' : project.estado === 'en proceso' ? 'warning' : 'secondary'}`)
+                  #{project.estado}
+              td #{project.fechaInicio ? new Date(project.fechaInicio).toLocaleDateString() : '—'}
+              td #{project.fechaFin ? new Date(project.fechaFin).toLocaleDateString() : '—'}
+              td
+                if project.empleados && project.empleados.length
+                  ul.mb-0
+                    each emp in project.empleados
+                      li #{emp.nombre} #{emp.apellido}
+                else
+                  | Sin empleados asignados
+              td
+                if project.tareas && project.tareas.length
+                  ul.mb-0
+                    each tarea in project.tareas
+                      li #{tarea.nombre || 'Tarea sin nombre'} (#{tarea.estado})
+                else
+                  | Sin tareas asignadas
+    else
+      p.text-muted.text-center.mt-5 No hay proyectos disponibles actualmente.

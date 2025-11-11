@@ -66,6 +66,14 @@ class EmployeeRoutes {
     router.delete('/employee/:id', EmployeeController.deleteById);
     router.post('/profiles', EmployeeController.create);
 
+
+// vistas admin
+//router.get('/admin/empleados', AuthMiddleware.authorize('administrador'), EmployeeController.renderList);
+//router.get('/admin/empleados/new', AuthMiddleware.authorize('administrador'), EmployeeController.renderNewForm);
+//router.get('/admin/empleados/:id/edit', AuthMiddleware.authorize('administrador'), EmployeeController.renderEditForm);
+
+
+
     // --- VISTAS ---
     // Dashboard principal del empleado
     router.get('/dashboard', async (req, res) => {

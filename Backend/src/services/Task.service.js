@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"; 
 import { Task } from "../models/Task.model.js";
 import { Project } from "../models/Project.model.js";
 import { Employee } from "../models/Employee.model.js";
@@ -8,19 +8,38 @@ export class TaskService {
   // Listar todas las tareas
   static async getAll() {
     return await Task.find()
-      .populate("proyecto", "nombre estado")
+      .populate("project", "nombre estado")
       .populate("empleados", "nombre apellido rol")
       .populate("cliente", "nombre apellido email");
   }
+/*
+static async getByProject(projectId){
+  return await Task.find({ project: projectId })
+    .populate('empleados','nombre apellido')
+    .populate('project','nombre')
+    .lean();
+}
+*/
+static async getByProject(projectId) {
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    throw new Error("ID de proyecto inválido");
+  }
 
+  const tasks = await Task.find({ project: projectId })
+    .populate("empleados", "nombre apellido")
+    .populate("project", "nombre estado")
+    .populate("cliente", "nombre apellido email")
+    .lean();
+
+  return tasks;
+}
   // Obtener una tarea por ID
-
   static async getById(id) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new Error("ID de tarea inválido");
 
     const task = await Task.findById(id)
-      .populate("proyecto", "nombre estado")
+      .populate("project", "nombre estado")
       .populate("empleados", "nombre apellido rol")
       .populate("cliente", "nombre apellido email");
 
@@ -28,11 +47,10 @@ export class TaskService {
     return task;
   }
 
-
-  // 🔹 Crear una tarea
+  //  Crear una tarea
   static async create(data) {
     // Validar existencia de proyecto
-    const project = await Project.findById(data.proyecto);
+    const project = await Project.findById(data.project);
     if (!project) throw new Error("Proyecto no encontrado");
 
     // Validar cliente 
@@ -54,8 +72,18 @@ export class TaskService {
       throw new Error("Las horas no pueden ser negativas");
     }
 
-    // Crear tarea
-    const task = await Task.create(data);
+    //  Crear tarea con nombre y descripción
+    const task = await Task.create({
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      estado: data.estado,
+      prioridad: data.prioridad,
+      empleados: data.empleados,
+      project: data.project,
+      cliente: data.cliente,
+      horasEstimadas: data.horasEstimadas,
+      horas: data.horas
+    });
 
     // Vincular la tarea al proyecto (opcional)
     project.tareas = project.tareas || [];
@@ -65,9 +93,7 @@ export class TaskService {
     return task;
   }
 
-  
-  // Actualizar una Tarea - reemplazo completo
-
+  //  Actualización completa (PUT)
   static async updatePut(id, data) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new Error("ID inválido");
@@ -76,8 +102,8 @@ export class TaskService {
     if (!task) throw new Error("Tarea no encontrada");
 
     // Validaciones similares a create()
-    if (data.proyecto) {
-      const project = await Project.findById(data.proyecto);
+    if (data.project) {
+      const project = await Project.findById(data.project);
       if (!project) throw new Error("Proyecto no encontrado");
     }
 
@@ -88,7 +114,7 @@ export class TaskService {
       }
     }
 
-    // Actualiza
+    // Actualiza incluyendo nombre/descripcion 
     const updated = await Task.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
@@ -97,9 +123,7 @@ export class TaskService {
     return updated;
   }
 
-  
-  // Actualizacion parcial
-
+  // Actualización parcial (PATCH)
   static async update(id, data) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new Error("ID inválido");
@@ -107,11 +131,12 @@ export class TaskService {
     const task = await Task.findById(id);
     if (!task) throw new Error("Tarea no encontrada");
 
-    // Validación simple
+    // Si finaliza, registrar fechaFin
     if (data.estado === "finalizada" && !task.fechaFin) {
       data.fechaFin = new Date();
     }
 
+    // Permitir actualizar nombre o descripcion
     const updated = await Task.findByIdAndUpdate(
       id,
       { $set: data },
@@ -121,7 +146,7 @@ export class TaskService {
     return updated;
   }
 
-  // Borrar Tarea
+  //  Borrar Tarea
   static async deleteById(id) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new Error("ID inválido");
@@ -137,4 +162,9 @@ export class TaskService {
     await task.deleteOne();
     return { message: "Tarea eliminada correctamente" };
   }
+  
+  static async getByProject(projectId) {
+    return Task.find({ project: projectId }).populate("empleados project cliente");
+  }
+
 }
