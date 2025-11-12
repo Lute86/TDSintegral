@@ -72,7 +72,7 @@ static async getByProject(req, res) {
 
   // Vista PUG
 
-  
+  /*
   static async renderList(req, res) {
     try {
       const user = req.user;
@@ -94,7 +94,29 @@ static async getByProject(req, res) {
       res.status(500).send("Error al cargar tareas");
     }
   }
+*/
+static async renderList(req, res) {
+  try {
+    const user = req.user;
+    let tasks = [];
 
+    if (user.rol === "administrador") {
+      tasks = await TaskService.getAll();
+    } else {
+      // Empleado: ver solo tareas asignadas
+      tasks = await TaskService.getByEmployee(user._id);
+    }
+
+    res.render("tasks/list", {
+      title: "Listado de Tareas",
+      user,
+      tasks,
+    });
+  } catch (error) {
+    console.error("Error al renderizar tareas:", error);
+    res.status(500).send("Error al cargar tareas");
+  }
+}
 
 
 }

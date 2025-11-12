@@ -1,4 +1,5 @@
 import { ProjectService } from "../services/Project.service.js";
+import { TaskService } from "../services/Task.service.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
 
 export class ProjectController {
@@ -78,5 +79,51 @@ export class ProjectController {
     res.status(500).send("Error al cargar proyectos");
   }
 }
+
+//------------------------------------------------
+static async list(req, res) {
+    try {
+      const projects = await ProjectService.getAllWithTasks();
+      res.render("projects/list", { projects });
+    } catch (error) {
+      console.error("Error al listar proyectos:", error);
+      res.status(500).send("Error al listar proyectos");
+    }
+  }
+
+  static async showForm(req, res) {
+    const { id } = req.params;
+    let project = null;
+
+    if (id) project = await ProjectService.getById(id);
+    res.render("projects/form", { project });
+  }
+
+  static async save(req, res) {
+    try {
+      const { id, name, description } = req.body;
+      if (id) {
+        await ProjectService.update(id, { name, description });
+      } else {
+        await ProjectService.create({ name, description });
+      }
+      res.redirect("/projects");
+    } catch (error) {
+      console.error("Error al guardar proyecto:", error);
+      res.status(500).send("Error al guardar proyecto");
+    }
+  }
+
+  static async delete(req, res) {
+    try {
+      const { id } = req.params;
+      await ProjectService.delete(id);
+      res.redirect("/projects");
+    } catch (error) {
+      console.error("Error al eliminar proyecto:", error);
+      res.status(500).send("Error al eliminar proyecto");
+    }
+  }
+
 
 }

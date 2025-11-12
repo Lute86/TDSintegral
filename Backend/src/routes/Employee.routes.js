@@ -58,9 +58,9 @@ class EmployeeRoutes {
     const router = Router();
 
     // --- API REST ---
-    router.get('/profiles', auth, EmployeeController.getAll);
+    router.get('/profiles',  EmployeeController.getAll);//auth,
     router.get('/myprofile/:id', EmployeeController.getById);
-    router.post('/register', auth, EmployeeValidator.validateCreate, EmployeeController.create);
+    router.post('/register', EmployeeValidator.validateCreate, EmployeeController.create);//auth,
     router.put('/myprofile/:id', EmployeeController.updatePut);
     router.patch('/myprofile/:id', EmployeeController.update);
     router.delete('/employee/:id', EmployeeController.deleteById);

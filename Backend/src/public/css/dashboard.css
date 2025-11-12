@@ -1,24 +1,24 @@
 :root {
-  /* 🎨 Paleta de colores */
+  /*  Paleta de colores */
   --bg-dark-primary: #1a1c23;
   --bg-dark-secondary: #252831;
   --bg-light: #ffffff;
   --border-color: #3a3f4d;
 
-  /* 🧾 Tipografía y texto */
+  /*  Tipografía y texto */
   --font-main: 'Inter', sans-serif;
   --text-light: #f1f1f1;
   --text-muted: #8892b0;
   --text-dark: #333;
 
-  /* 🌈 Colores de acento */
+  /*  Colores de acento */
   --accent-blue: #0052cc;
   --accent-green: #28a745;
   --accent-yellow: #ffc107;
   --accent-red: #dc3545;
 }
 
-/* 🌐 Reset & Base */
+/*  Reset & Base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,7 +36,7 @@ body {
   margin: 0;
 }
 
-/* 🧭 Header */
+/* Header */
 .header {
   display: flex;
   align-items: center;
@@ -72,7 +72,7 @@ body {
   text-decoration: none;
 }
 
-/* 🧱 Main Layout */
+/*  Main Layout */
 .main-content {
   padding: 1.5rem;
 }
@@ -81,14 +81,14 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* 🧩 Dashboard Grid */
+/* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.25rem;
 }
 
-/* 🗂️ Cards */
+/*  Cards */
 .dash-card {
   background: var(--bg-dark-secondary);
   border: 1px solid var(--border-color);
@@ -113,7 +113,7 @@ h2 {
   padding: 1rem;
 }
 
-/* 📋 Lists */
+/*  Lists */
 .project-list,
 .task-list,
 .employee-list {
@@ -151,7 +151,7 @@ h2 {
   margin-top: 0.25rem;
 }
 
-/* 🏷️ Estados y prioridades */
+/*  Estados y prioridades */
 .item-status {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
@@ -196,7 +196,7 @@ h2 {
   background: var(--accent-green);
 }
 
-/* 🔘 Botones pequeños */
+/*  Botones pequeños */
 .btn-view-all,
 .btn-edit,
 .btn-delete {
@@ -223,7 +223,7 @@ h2 {
   opacity: 0.8;
 }
 
-/* 📊 Admin & Metrics */
+/*  Admin & Metrics */
 .admin-section {
   margin-top: 1rem;
 }
@@ -232,7 +232,7 @@ h2 {
   margin-top: 1rem;
 }
 
-/* 📱 Responsive */
+/* Responsive */
 @media (max-width: 900px) {
   .dashboard-grid {
     grid-template-columns: 1fr;

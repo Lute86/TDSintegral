@@ -1,148 +1,103 @@
-// -------- helper fetch with JSON
-async function fetchJSON(url, opts) {
-  const res = await fetch(url, opts);
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || 'Error');
-  }
-  return await res.json();
+// --------------------------------------
+// UTILIDADES BÁSICAS
+// --------------------------------------
+
+function openModal(url) {
+  const modal = document.getElementById("modal");
+  const iframe = document.getElementById("modal-frame");
+  iframe.src = url;
+  modal.classList.remove("hidden");
 }
 
-// -------- seleccionar proyecto (click en item)
-document.addEventListener('click', async (e) => {
-  const p = e.target.closest('.project-item');
-  if (!p) return;
-  const projectId = p.dataset.id;
-  const projectNombre = p.dataset.nombre || 'Proyecto';
-  selectProject(projectId, projectNombre);
-});
-
-async function selectProject(projectId, projectNombre){
-  const label = document.getElementById('selectedProjectLabel') || document.querySelector('#tasksCard .dash-card-body p');
-  if (label) label.textContent = `Tareas de: ${projectNombre}`;
-
-  const taskList = document.getElementById('taskList');
-  if (taskList) taskList.innerHTML = '<li>Cargando tareas...</li>';
-
-  try {
-    // endpoint que devuelve tareas por proyecto (debes exponerlo en backend)
-    const tareas = await fetchJSON(`/task/project/${projectId}`);
-    renderTasks(tareas);
-  } catch (err) {
-    if (taskList) taskList.innerHTML = `<li>Error al cargar tareas</li>`;
-    console.error(err);
-  }
+function closeModal() {
+  const modal = document.getElementById("modal");
+  const iframe = document.getElementById("modal-frame");
+  iframe.src = "";
+  modal.classList.add("hidden");
 }
 
-function renderTasks(tareas){
-  const ul = document.getElementById('taskList');
-  ul.innerHTML = '';
-  if (!tareas || tareas.length === 0) {
-    ul.innerHTML = '<li>No hay tareas para este proyecto.</li>';
-    return;
-  }
-  tareas.forEach(t => {
-    const li = document.createElement('li');
-    li.className = 'task-item';
-    li.dataset.id = t._id;
-    li.innerHTML = `
-      <div>
-        <div style="font-weight:600">${escapeHtml(t.descripcion || 'Sin descripción')}</div>
-        <div style="color:var(--text-muted);font-size:.9em">Prioridad: <span class="prioridad ${t.prioridad}">${t.prioridad}</span></div>
-      </div>
-      <div>
-        ${renderTaskControls(t)}
-      </div>
-    `;
-    ul.appendChild(li);
+// --------------------------------------
+// CONFIRMACIONES Y ACCIONES CRUD
+// --------------------------------------
+
+// --- PROYECTOS ---
+function confirmDeleteProject(projectId, nombre) {
+  if (!confirm(`¿Seguro que deseas eliminar el proyecto "${nombre}" junto a sus tareas?`)) return;
+  window.location.href = `/project/${projectId}/delete`; // ruta que hace el delete en backend
+}
+
+function openNewProject() {
+  openModal("/project/view/create"); // vista Pug con el formulario de nuevo proyecto
+}
+
+function openEditProject(projectId) {
+  openModal(`/project/view/edit/${projectId}`); // vista Pug con el form para editar
+}
+
+// --- TAREAS ---
+function openNewTask(projectId) {
+  openModal(`/task/view/create?projectId=${projectId}`); // vista Pug con form de tarea nueva
+}
+
+function openEditTask(taskId) {
+  openModal(`/task/view/edit/${taskId}`); // vista Pug con form de edición
+}
+
+function confirmDeleteTask(taskId, desc) {
+  if (!confirm(`¿Eliminar la tarea "${desc}"?`)) return;
+  window.location.href = `/task/${taskId}/delete`; // ruta delete backend
+}
+
+// --- EMPLEADOS ---
+function openNewEmployee() {
+  openModal(`/employee/view/create`);
+}
+
+function openEditEmployee(id) {
+  openModal(`/employee/view/edit/${id}`);
+}
+
+function confirmDeleteEmployee(id, nombre) {
+  if (!confirm(`¿Eliminar empleado "${nombre}"?`)) return;
+  window.location.href = `/employee/${id}/delete`;
+}
+
+// --------------------------------------
+// ACTUALIZACIÓN DE ESTADO DE TAREA / PROYECTO
+// (solo visible si se renderiza un <form> con select en servidor)
+// --------------------------------------
+
+function autoSubmit(formElem) {
+  formElem.submit(); // se usa cuando el select de estado cambia
+}
+
+// --------------------------------------
+// PEQUEÑO HELP VISUAL
+// --------------------------------------
+
+function highlightActiveProject(projectId) {
+  document.querySelectorAll(".project-item").forEach(el => {
+    el.classList.toggle("active", el.dataset.id === projectId);
   });
 }
 
-function renderTaskControls(t){
-  // si admin => botones editar/eliminar; si empleado => select para estado
-  const isAdmin = window.__USER_ROLE === 'administrador';
-  if (isAdmin) {
-    return `
-      <a class="btn-edit" href="/tasks/${t._id}/edit">✏️</a>
-      <button class="btn-delete" onclick="deleteTask('${t._id}')">🗑️</button>
-    `;
-  } else {
-    // empleado puede cambiar estado
-    const opt = (s, label) => `<option value="${s}" ${t.estado===s? 'selected' : ''}>${label}</option>`;
-    return `
-      <form onsubmit="return false;">
-        <select onchange="changeTaskStatus('${t._id}', this.value)">
-          ${opt('pendiente','Pendiente')}
-          ${opt('en proceso','En proceso')}
-          ${opt('finalizada','Finalizada')}
-        </select>
-      </form>
-    `;
-  }
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
-// -------- cambiar estado tarea (empleado)
-async function changeTaskStatus(taskId, nuevoEstado){
-  try {
-    await fetchJSON(`/task/${taskId}`, {
-      method: 'PATCH',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ estado: nuevoEstado })
-    });
-    // opcional: mostrar notificación
-  } catch (err) {
-    alert('No se pudo actualizar el estado');
-    console.error(err);
-  }
-}
+// --------------------------------------
+// ESCAPAR HTML (seguridad básica)
+// --------------------------------------
 
-// -------- actualizar status proyecto (admin)
-async function updateProjectStatus(selectElem){
-  const id = selectElem.dataset.id;
-  const nuevo = selectElem.value;
-  try {
-    await fetchJSON(`/project/${id}`, {
-      method: 'PUT',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ estado: nuevo })
-    });
-    // opcional: toast
-  } catch (err) {
-    alert('Error actualizando proyecto');
-  }
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;'
+  }[c]));
 }
-
-// -------- delete actions (admin)
-async function deleteProject(id){
-  if (!confirm('Eliminar proyecto?')) return;
-  try {
-    await fetchJSON(`/project/${id}`, { method: 'DELETE' });
-    // quitar del DOM
-    document.querySelector(`.project-item[data-id="${id}"]`)?.remove();
-  } catch (err) {
-    alert('No se pudo eliminar');
-  }
-}
-async function deleteTask(id){
-  if (!confirm('Eliminar tarea?')) return;
-  try {
-    await fetchJSON(`/task/${id}`, { method: 'DELETE' });
-    document.querySelector(`.task-item[data-id="${id}"]`)?.remove();
-  } catch (err) {
-    alert('No se pudo eliminar tarea');
-  }
-}
-async function deleteEmployee(id){
-  if (!confirm('Eliminar empleado?')) return;
-  try {
-    await fetchJSON(`/employee/${id}`, { method: 'DELETE' });
-    document.querySelector(`.employee-item[data-id="${id}"]`)?.remove();
-  } catch (err) {
-    alert('No se pudo eliminar empleado');
-  }
-}
-
-/* small helper to avoid XSS */
-function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-
-// expose role from server (render in layout Pug script block)

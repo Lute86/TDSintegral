@@ -23,7 +23,7 @@ html(lang="es")
       h2 Mi Dashboard
 
       .dashboard-grid
-        // PROYECTOS (izq)
+        // ================== PROYECTOS (izquierda)
         .dash-card#projectsCard
           .dash-card-header
             h3 Proyectos
@@ -33,20 +33,16 @@ html(lang="es")
             ul.project-list#projectList
               if proyectos && proyectos.length > 0
                 each proyecto in proyectos
-                  li.project-item(data-id=proyecto._id data-nombre=proyecto.nombre)
+                  li.project-item
                     .left
                       strong.project-name= proyecto.nombre
-                      if proyecto.descripcion
-                        div.project-desc= proyecto.descripcion
-                      else
-                        div.project-desc.text-muted — sin descripción
                     .right
-                      // status inline select only for admin (or show badge for employees)
                       if user && user.rol === 'administrador'
-                        select.project-status-admin(data-id=proyecto._id onchange="updateProjectStatus(this)")
-                          option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
-                          option(value="en curso", selected=proyecto.estado==='en curso') En curso
-                          option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
+                        form(action=`/projects/${proyecto._id}?_method=PUT`, method="POST", class="inline-form")
+                          select(name="estado", onchange="this.form.submit()")
+                            option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
+                            option(value="en curso", selected=proyecto.estado==='en curso') En curso
+                            option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
                         a.btn-edit(href=`/projects/${proyecto._id}/edit`) ✏️
                         button.btn-delete(type="button", onclick=`deleteProject('${proyecto._id}')`) 🗑️
                       else
@@ -54,18 +50,35 @@ html(lang="es")
               else
                 li No hay proyectos asignados.
 
-        // TAREAS (der)
+        // ================== TAREAS (derecha)
         .dash-card#tasksCard
           .dash-card-header
             h3 Tareas del Proyecto
             if user && user.rol === 'administrador'
               a.btn-view-all(href="/tasks/new") ➕ Nueva
           .dash-card-body
-            p#selectedProjectLabel Seleccioná un proyecto a la izquierda
-            ul.task-list#taskList
-              // populated by JS
+            if tareas && tareas.length > 0
+              ul.task-list#taskList
+                each t in tareas
+                  li.task-item
+                    .left
+                      strong.task-name= t.nombre
+                      p.task-desc= t.descripcion || 'Sin descripción'
+                      small Proyecto: #{t.project ? t.project.nombre : 'N/A'}
+                    .right
+                      if user && user.rol === 'administrador'
+                        a.btn-edit(href=`/tasks/${t._id}/edit`) ✏️
+                        button.btn-delete(type="button", onclick=`deleteTask('${t._id}')`) 🗑️
+                      else
+                        form(action=`/tasks/${t._id}?_method=PUT`, method="POST")
+                          select(name="estado", onchange="this.form.submit()")
+                            option(value="pendiente", selected=t.estado==='pendiente') Pendiente
+                            option(value="en proceso", selected=t.estado==='en proceso') En proceso
+                            option(value="finalizada", selected=t.estado==='finalizada') Finalizada
+            else
+              p No hay tareas disponibles.
 
-      // BLOQUE ADMIN: Empleados + métricas
+      // ================== ADMINISTRACIÓN (solo admin)
       if user && user.rol === 'administrador'
         .dash-card.admin-section
           .dash-card-header
@@ -82,10 +95,30 @@ html(lang="es")
                       a(href=`/admin/empleados/${e._id}/edit`) ✏️
                       button(type="button", onclick=`deleteEmployee('${e._id}')`) 🗑️
               else
-                li No hay empleados.
+                li No hay empleados registrados.
 
         .dash-card.metrics
           .dash-card-header
             h3 Métricas (próximamente)
           .dash-card-body
             p.text-muted Aquí se mostrarán métricas globales para administradores.
+
+    // ================== SCRIPTS
+    script.
+      async function deleteProject(id) {
+        if (!confirm('¿Eliminar proyecto y sus tareas asociadas?')) return;
+        await fetch(`/projects/${id}`, { method: 'DELETE' });
+        location.reload();
+      }
+
+      async function deleteTask(id) {
+        if (!confirm('¿Eliminar esta tarea?')) return;
+        await fetch(`/tasks/${id}`, { method: 'DELETE' });
+        location.reload();
+      }
+
+      async function deleteEmployee(id) {
+        if (!confirm('¿Eliminar este empleado?')) return;
+        await fetch(`/employee/${id}`, { method: 'DELETE' });
+        location.reload();
+      }

@@ -19,10 +19,30 @@ router.get('/project/:projectId', TaskController.getByProject);
     router.get("/view/list", 
       AuthMiddleware.authorize("administrador", "empleado"),
       TaskController.renderList
-    );
+        );
+    router.post("/:id/updateEstado", AuthMiddleware.authorize("empleado", "administrador"), async (req, res) => {
+      const { id } = req.params;
+      const { estado } = req.body;
+      try {
+        await Task.findByIdAndUpdate(id, { estado });
+        res.redirect("back"); // redirige al dashboard anterior
+      } catch (err) {
+        res.status(500).send("Error al actualizar estado");
+      }
+    });
 
-    return router;
-  }
-}
+    router.post("/:id/horas", AuthMiddleware.authorize("empleado", "administrador"), async (req, res) => {
+      const { id } = req.params;
+      const { horasTrabajadas } = req.body;
+      try {
+        await Task.findByIdAndUpdate(id, { horasTrabajadas });
+        res.redirect("back");
+      } catch (err) {
+        res.status(500).send("Error al registrar horas trabajadas");
+      }
+    });
+        return router;
+      }
+    }
 
 export default TaskRoutes;

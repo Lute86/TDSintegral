@@ -70,10 +70,10 @@ export class Server{
 
     const authAdmin = [Passport.authenticate(),AuthMiddleware.authorize("administrador")];
 
-    this.app.use("/project", auth, ProjectRoutes.getRouter());
+   
     this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
-    this.app.use("/project", auth, ProjectRoutes.getRouter());
-    this.app.use("/task", auth, TaskRoutes.getRouter());
+    this.app.use("/project",  ProjectRoutes.getRouter());// auth,
+    this.app.use("/task",  TaskRoutes.getRouter());//auth,
 
     
       this.app.get(

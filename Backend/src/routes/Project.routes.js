@@ -13,6 +13,20 @@ class ProjectRoutes {
     router.put("/:id", ProjectController.update);
     router.delete("/:id", ProjectController.deleteById);
 
+//------------
+
+
+
+router.get("/", ProjectController.list);
+router.get("/new", ProjectController.showForm);
+router.get("/edit/:id", ProjectController.showForm);
+router.post("/save", ProjectController.save);
+router.get("/delete/:id", ProjectController.delete);
+
+
+
+
+
     // VISTA 
     router.get("/view/list", 
       AuthMiddleware.authorize("administrador", "empleado"),
