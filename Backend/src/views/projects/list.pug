@@ -1,0 +1,23 @@
+extends ../layout.pug
+
+block content
+  h1 Proyectos
+  button(type="button" onclick="openModal('/projects/new')") Nuevo Proyecto
+
+  each project in projects
+    .project-card
+      h2= project.name
+      p= project.description
+      a(href=`/projects/edit/${project.id}`) Editar
+      a(href=`/projects/delete/${project.id}`) Eliminar
+
+      if project.Tasks && project.Tasks.length
+        ul
+          each task in project.Tasks
+            li #{task.name} - #{task.status}
+      else
+        p No hay tareas registradas
+
+  // Modal genérico
+  #modal.hidden
+    iframe#modal-frame(src="", width="100%", height="400px")

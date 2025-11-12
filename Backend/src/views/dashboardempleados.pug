@@ -4,266 +4,121 @@ html(lang="es")
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Dashboard | Clickwave
-    link(rel="icon", type="image/png", href="/favicon.png")
-    
     link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap", rel="stylesheet")
-
-    style.
-      :root {
-        --bg-dark-primary: #1a1c23;
-        --bg-dark-secondary: #252831;
-        --bg-light: #ffffff;
-        --border-color: #3a3f4d;
-        --text-light: #f1f1f1;
-        --text-muted: #8892b0;
-        --text-dark: #333;
-        --accent-blue: #0052cc;
-        --accent-green: #28a745;
-        --accent-yellow: #ffc107;
-        --accent-red: #dc3545;
-        --font-main: 'Inter', sans-serif;
-      }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html {
-        font-size: 16px;
-      }
-      body {
-        font-family: var(--font-main);
-        background-color: var(--bg-dark-primary);
-        color: var(--text-light);
-        display: flex;
-        min-height: 100vh;
-      }
-      a {
-        text-decoration: none;
-        color: inherit;
-      }
-      ul {
-        list-style: none;
-      }
-      .dashboard-layout {
-        display: flex;
-        width: 100%;
-      }
-      .sidebar {
-        width: 250px;
-        background-color: var(--bg-dark-secondary);
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        transition: width 0.3s ease;
-      }
-      .sidebar-header {
-        padding: 1.5rem;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-light);
-        border-bottom: 1px solid var(--border-color);
-        text-align: center;
-      }
-      .sidebar-nav {
-        flex-grow: 1;
-        padding-top: 1rem;
-      }
-      .sidebar-nav ul li a {
-        display: block;
-        padding: 1rem 1.5rem;
-        color: var(--text-muted);
-        font-weight: 500;
-        transition: all 0.2s ease;
-      }
-      .sidebar-nav ul li a:hover,
-      .sidebar-nav ul li a.active {
-        background-color: var(--bg-dark-primary);
-        color: var(--text-light);
-        border-left: 3px solid var(--accent-blue);
-      }
-      .sidebar-footer {
-        padding: 1.5rem;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
-      }
-      .sidebar-footer a {
-        color: var(--accent-red);
-        font-weight: 500;
-      }
-      .main-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: var(--bg-dark-secondary);
-        border-bottom: 1px solid var(--border-color);
-      }
-      .header-search input {
-        background-color: var(--bg-dark-primary);
-        border: 1px solid var(--border-color);
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        color: var(--text-light);
-        font-family: var(--font-main);
-      }
-      .header-user {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: var(--accent-blue);
-        color: var(--text-light);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-      }
-      .main-content {
-        padding: 2rem;
-        flex-grow: 1;
-        overflow-y: auto;
-      }
-      .main-content h2 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-      }
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 2rem;
-      }
-      .dash-card {
-        background-color: var(--bg-dark-secondary);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      }
-      .dash-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-      }
-      .dash-card-header h3 {
-        font-size: 1.5rem;
-      }
-      .btn-view-all {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--accent-blue);
-      }
-      .dash-card-body {
-        padding: 1.5rem;
-      }
-      .item-list .item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border-color);
-      }
-      .item-list .item:last-child {
-        border-bottom: none;
-      }
-      .item-title {
-        font-weight: 500;
-      }
-      .item-status {
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 700;
-      }
-      .item-status.en-curso,
-      .item-status.en-proceso {
-        background-color: var(--accent-yellow);
-        color: var(--text-dark);
-      }
-      .item-status.pendiente {
-        background-color: var(--text-muted);
-        color: var(--bg-dark-primary);
-      }
-      .item-status.finalizado {
-        background-color: var(--accent-green);
-        color: var(--text-light);
-      }
-      .item-status.alta {
-        background-color: var(--accent-red);
-        color: var(--text-light);
-      }
-      .item-status.media {
-        background-color: var(--accent-yellow);
-        color: var(--text-dark);
-      }
-      .item-status.baja {
-        background-color: var(--accent-green);
-        color: var(--text-light);
-      }
-
-body.dashboard-layout
-  
-  aside.sidebar
-    .sidebar-header
-      h1 Clickwave
-    nav.sidebar-nav
-      ul
-        li: a(href="/dashboard").active 🏠 Dashboard
-        li: a(href="/mis-proyectos") 🗂️ Mis Proyectos
-        li: a(href="/mis-tareas") 📋 Mis Tareas
-    .sidebar-footer
-      a(href="/logout") 🚪 Cerrar Sesión
-
-  .main-container
-  
+    link(rel="stylesheet", href="/css/dashboard.css")
+    script(src="/js/dashboard.js" defer)
+  body.dashboard-layout
+    // HEADER SUPERIOR
     header.header
-      .header-search
-        input(type="text", placeholder="Buscar...")
-      .header-user
-        span Bienvenido, #{user ? user.nombre : 'Empleado'}
-        .user-avatar #{user ? user.nombre[0].toUpperCase() : 'E'}
-        
+      .header-left
+        h1.logo Clickwave
+      .header-center
+        input#globalSearch(type="text", placeholder="Buscar proyectos, tareas o empleados...")
+      .header-right
+        span.user-name #{user ? user.nombre : 'Empleado'}
+        a(href="/auth/logout").logout-btn Cerrar sesión
+
+    // CONTENIDO PRINCIPAL
     main.main-content
       h2 Mi Dashboard
 
       .dashboard-grid
-        
-        .dash-card
+        // ================== PROYECTOS (izquierda)
+        .dash-card#projectsCard
           .dash-card-header
-            h3 Mis Proyectos
-            a(href="/mis-proyectos").btn-view-all Ver todos
+            h3 Proyectos
+            if user && user.rol === 'administrador'
+              a.btn-view-all(href="/projects/new") ➕ Nuevo
           .dash-card-body
-            ul.item-list
+            ul.project-list#projectList
               if proyectos && proyectos.length > 0
                 each proyecto in proyectos
-                  li.item
-                    span.item-title= proyecto.nombre
-                    span(class=`item-status ${proyecto.estado}`)= proyecto.estado
+                  li.project-item
+                    .left
+                      strong.project-name= proyecto.nombre
+                    .right
+                      if user && user.rol === 'administrador'
+                        form(action=`/projects/${proyecto._id}?_method=PUT`, method="POST", class="inline-form")
+                          select(name="estado", onchange="this.form.submit()")
+                            option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
+                            option(value="en curso", selected=proyecto.estado==='en curso') En curso
+                            option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
+                        a.btn-edit(href=`/projects/${proyecto._id}/edit`) ✏️
+                        button.btn-delete(type="button", onclick=`deleteProject('${proyecto._id}')`) 🗑️
+                      else
+                        span.badge(class=`item-status ${proyecto.estado}`)= proyecto.estado
               else
-                li.item
-                  span No hay proyectos asignados.
+                li No hay proyectos asignados.
 
-        .dash-card
+        // ================== TAREAS (derecha)
+        .dash-card#tasksCard
           .dash-card-header
-            h3 Mis Tareas Pendientes
-            a(href="/mis-tareas").btn-view-all Ver todas
+            h3 Tareas del Proyecto
+            if user && user.rol === 'administrador'
+              a.btn-view-all(href="/tasks/new") ➕ Nueva
           .dash-card-body
-            ul.item-list
-              if tareas && tareas.length > 0
-                each tarea in tareas
-                  li.item
-                    span.item-title= tarea.descripcion || 'Tarea sin descripción'
-                    span(class=`item-status ${tarea.prioridad}`)= tarea.prioridad
+            if tareas && tareas.length > 0
+              ul.task-list#taskList
+                each t in tareas
+                  li.task-item
+                    .left
+                      strong.task-name= t.nombre
+                      p.task-desc= t.descripcion || 'Sin descripción'
+                      small Proyecto: #{t.project ? t.project.nombre : 'N/A'}
+                    .right
+                      if user && user.rol === 'administrador'
+                        a.btn-edit(href=`/tasks/${t._id}/edit`) ✏️
+                        button.btn-delete(type="button", onclick=`deleteTask('${t._id}')`) 🗑️
+                      else
+                        form(action=`/tasks/${t._id}?_method=PUT`, method="POST")
+                          select(name="estado", onchange="this.form.submit()")
+                            option(value="pendiente", selected=t.estado==='pendiente') Pendiente
+                            option(value="en proceso", selected=t.estado==='en proceso') En proceso
+                            option(value="finalizada", selected=t.estado==='finalizada') Finalizada
+            else
+              p No hay tareas disponibles.
+
+      // ================== ADMINISTRACIÓN (solo admin)
+      if user && user.rol === 'administrador'
+        .dash-card.admin-section
+          .dash-card-header
+            h3 Gestión de Empleados
+            a.btn-view-all(href="/admin/empleados/new") ➕ Nuevo Empleado
+          .dash-card-body
+            ul.employee-list#employeeList
+              if empleados && empleados.length > 0
+                each e in empleados
+                  li.employee-item
+                    span.emp-name= `${e.nombre} ${e.apellido}`
+                    span.emp-role= e.rol
+                    .emp-actions
+                      a(href=`/admin/empleados/${e._id}/edit`) ✏️
+                      button(type="button", onclick=`deleteEmployee('${e._id}')`) 🗑️
               else
-                li.item
-                  span No tienes tareas pendientes.
+                li No hay empleados registrados.
+
+        .dash-card.metrics
+          .dash-card-header
+            h3 Métricas (próximamente)
+          .dash-card-body
+            p.text-muted Aquí se mostrarán métricas globales para administradores.
+
+    // ================== SCRIPTS
+    script.
+      async function deleteProject(id) {
+        if (!confirm('¿Eliminar proyecto y sus tareas asociadas?')) return;
+        await fetch(`/projects/${id}`, { method: 'DELETE' });
+        location.reload();
+      }
+
+      async function deleteTask(id) {
+        if (!confirm('¿Eliminar esta tarea?')) return;
+        await fetch(`/tasks/${id}`, { method: 'DELETE' });
+        location.reload();
+      }
+
+      async function deleteEmployee(id) {
+        if (!confirm('¿Eliminar este empleado?')) return;
+        await fetch(`/employee/${id}`, { method: 'DELETE' });
+        location.reload();
+      }

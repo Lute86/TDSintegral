@@ -1,0 +1,244 @@
+:root {
+  /*  Paleta de colores */
+  --bg-dark-primary: #1a1c23;
+  --bg-dark-secondary: #252831;
+  --bg-light: #ffffff;
+  --border-color: #3a3f4d;
+
+  /*  Tipografía y texto */
+  --font-main: 'Inter', sans-serif;
+  --text-light: #f1f1f1;
+  --text-muted: #8892b0;
+  --text-dark: #333;
+
+  /*  Colores de acento */
+  --accent-blue: #0052cc;
+  --accent-green: #28a745;
+  --accent-yellow: #ffc107;
+  --accent-red: #dc3545;
+}
+
+/*  Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-dark-primary);
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: var(--bg-dark-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-left .logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.header-center input {
+  width: 360px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-dark-primary);
+  color: var(--text-light);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logout-btn {
+  color: var(--accent-red);
+  text-decoration: none;
+}
+
+/*  Main Layout */
+.main-content {
+  padding: 1.5rem;
+}
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+/*  Cards */
+.dash-card {
+  background: var(--bg-dark-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.dash-card:hover {
+  transform: translateY(-2px);
+}
+
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dash-card-body {
+  padding: 1rem;
+}
+
+/*  Lists */
+.project-list,
+.task-list,
+.employee-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.project-item,
+.task-item,
+.employee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.12s ease;
+}
+
+.project-item:hover,
+.task-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.project-name {
+  font-weight: 600;
+}
+
+.project-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/*  Estados y prioridades */
+.item-status {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Estados */
+.item-status.pendiente {
+  background: var(--text-muted);
+  color: var(--bg-dark-primary);
+}
+
+.item-status.en-curso {
+  background: var(--accent-yellow);
+  color: var(--text-dark);
+}
+
+.item-status.finalizado {
+  background: var(--accent-green);
+  color: var(--text-light);
+}
+
+/* Prioridades */
+.prioridad {
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.prioridad.alta {
+  background: var(--accent-red);
+}
+
+.prioridad.media {
+  background: var(--accent-yellow);
+  color: var(--text-dark);
+}
+
+.prioridad.baja {
+  background: var(--accent-green);
+}
+
+/*  Botones pequeños */
+.btn-view-all,
+.btn-edit,
+.btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.btn-view-all,
+.btn-edit {
+  color: var(--accent-blue);
+}
+
+.btn-delete {
+  color: var(--accent-red);
+}
+
+.btn-view-all:hover,
+.btn-edit:hover,
+.btn-delete:hover {
+  opacity: 0.8;
+}
+
+/*  Admin & Metrics */
+.admin-section {
+  margin-top: 1rem;
+}
+
+.metrics {
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-center input {
+    width: 160px;
+  }
+}

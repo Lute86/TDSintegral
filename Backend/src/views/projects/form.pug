@@ -1,0 +1,17 @@
+extends ../layout.pug
+
+block content
+  h2= project ? 'Editar Proyecto' : 'Nuevo Proyecto'
+
+  form(action="/projects/save" method="POST")
+    if project
+      input(type="hidden" name="id" value=project.id)
+
+    label Nombre
+    input(type="text" name="name" required value=project?.name)
+
+    label Descripción
+    textarea(name="description")= project?.description
+
+    button(type="submit") Guardar
+    a(href="/projects") Cancelar

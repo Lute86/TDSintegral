@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const proyectSchema = new mongoose.Schema({
+const projectSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   clienteId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
   empleados: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }],
@@ -20,6 +20,5 @@ const proyectSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-//export default mongoose.model("Proyect", proyectoSchema);
-export const Project = mongoose.model("Project", proyectSchema);
+export const Project = mongoose.model("Project", projectSchema);
 

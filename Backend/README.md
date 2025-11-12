@@ -95,3 +95,29 @@ http://localhost:3000/dashboard/employee/2
     }
   }
 }
+
+# instalacion de paquetes 
+
+  # Permite a Express leer las cookies que el cliente (por ejemplo, el navegador) envía en las solicitudes HTTP.
+        npm install cookie-parser 
+
+  # Es un middleware de autenticación para Node.js. Permite manejar inicios de sesión (login) con diferentes estrategias
+        npm install passport passport-jwt
+
+  # Muestra si passport está instalado y su versión.
+        npm list passport   
+
+  # Reinstala todos los paquetes listados en package.json
+        npm install
+
+  # corre tu script que: se conecta a MongoDB, borra colecciones anteriores, y crea datos de prueba (clientes, empleados, proyectos, tareas, etc.).
+        node seed.js       
+
+        cuenta admin
+        admin@admin.com contr admin  
+       cuenta empleado
+        empleado@empleado.com contr admin  
+
+# Landigpage
+
+http://localhost:3000/
