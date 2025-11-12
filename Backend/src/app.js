@@ -5,7 +5,7 @@ import express from 'express';
 import methodOverride from 'method-override'; // Botones PUG
 import path from 'path';
 
-import { Server } from "./config/Server.config.js";
+//import { Server } from "./config/Server.config.js";
 
 
 const server = new Server();
