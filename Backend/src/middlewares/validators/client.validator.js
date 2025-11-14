@@ -15,9 +15,22 @@ export class ClientValidator {
   }
 
   static validateUpdate(req, res, next) {
-    const { email } = req.body;
-    if (email && !ValidatorBase.isEmail(email))
-      return HttpResponse.badRequest(res,{ msg: "Formato de email inválido" });
+    const { nombre, apellido, email, consulta, telefono } = req.body;
+
+    const hasData = nombre || apellido || email || consulta || telefono;
+    if (!hasData) return HttpResponse.badRequest(res, { msg: "No hay datos para modificar." });
+
+    if (email && !ValidatorBase.isEmail(email)) return HttpResponse.badRequest(res, { msg: "Formato de email inválido." });
+
+    if (telefono && !ValidatorBase.isPhone(telefono)) return HttpResponse.badRequest(res, { msg: "Formato de teléfono inválido." });
+    
+    next();
+  }
+
+  static validateIdType(req, res, next){
+    const id = req.params.id;
+    if  (!ValidatorBase.isUUID(id) && !ValidatorBase.isMongoId(id)) return HttpResponse.badRequest(res, {msg: "Id invalido"});
+
     next();
   }
 }

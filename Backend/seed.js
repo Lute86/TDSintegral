@@ -11,7 +11,7 @@ dotenv.config();
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Conectado a MongoDB para seed");
+    console.log("Conectado a MongoDB para seed");
 
     // Limpiar colecciones
     await Promise.all([
@@ -21,7 +21,7 @@ async function seed() {
       Task.deleteMany({})
     ]);
 
-    console.log("🧹 Colecciones limpiadas");
+    console.log("Colecciones limpiadas");
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash("admin", saltRounds);
@@ -37,7 +37,7 @@ async function seed() {
       }
     ]);
 
-    console.log(`👤 Clientes creados: ${clients.length}`);
+    console.log(`Clientes creados: ${clients.length}`);
 
     // ===== Empleados =====
     const employees = await Employee.insertMany([
@@ -70,14 +70,14 @@ async function seed() {
       }
     ]);
 
-    console.log(`💼 Empleados creados: ${employees.length}`);
+    console.log(`Empleados creados: ${employees.length}`);
 
     // ===== Proyectos =====
     const projects = await Project.insertMany([
       {
         nombre: "Sistema de Gestión Comercial",
         clienteId: clients[0]._id,
-        empleados: [employees[1]._id, ], // employees[1]._id     corregido índice
+        empleados: [employees[1]._id, ], 
         estado: "pendiente",
         metricas: { horasCotizadas: 50 },
         pago: { monto: 12000, status: "pendiente", metodo: "transferencia" }
@@ -101,7 +101,7 @@ async function seed() {
       }
     ]);
 
-    console.log(`📁 Proyectos creados: ${projects.length}`);
+    console.log(`Proyectos creados: ${projects.length}`);
 
     // ===== Tareas =====
     const tasks = await Task.insertMany([
@@ -139,12 +139,12 @@ async function seed() {
       }
     ]);
 
-    console.log(`🧩 Tareas creadas: ${tasks.length}`);
+    console.log(`Tareas creadas: ${tasks.length}`);
 
-    console.log("✅ Seed completado con éxito!");
+    console.log("Seed completado con éxito!");
     process.exit(0);
   } catch (err) {
-    console.error("❌ Error en seed:", err.message);
+    console.error("Error en seed:", err.message);
     process.exit(1);
   }
 }

@@ -11,6 +11,9 @@ export class EmployeeValidator {
     const roles = ["administrador", "consultor", "supervisor"];
     const areas = ["SEO/SEM", "Social Media", "Contenidos", "Administración"];
 
+    if (email && !ValidatorBase.isEmail(email))
+       return HttpResponse.badRequest(res, { msg: "Email inválido" });
+
     if (!ValidatorBase.isEnum(rol, roles))
       return HttpResponse.badRequest(res, { msg: "Rol inválido" });
 
@@ -21,11 +24,18 @@ export class EmployeeValidator {
   }
 
   static validateUpdate(req, res, next) {
-    const { rol, area } = req.body;
+    const { password, nombre, apellido, telefono, email, rol, area } = req.body;
     const roles = ["administrador", "consultor", "supervisor"];
     const areas = ["SEO/SEM", "Social Media", "Contenidos", "Administración"];
-    
-    //TODO validar inputs no nulos, contrasena si se quiere modificar
+
+    if (!nombre && !apellido && !telefono && !email && !rol && !area && !password) return HttpResponse.badRequest(res, { msg: "Nada para modificar" });
+
+    if (password && typeof(password) === 'number') return HttpResponse.badRequest(res, {msg : "Password debe ser un string"})
+    if (telefono && !ValidatorBase.isPhone(telefono)) return HttpResponse.badRequest(res, { msg: "Formato de teléfono inválido." });
+
+    //TODO validar contrasena si se quiere modificar
+    if (email && !ValidatorBase.isEmail(email))
+       return HttpResponse.badRequest(res, { msg: "Email inválido" });
 
     if (rol && !ValidatorBase.isEnum(rol, roles))
       return HttpResponse.badRequest(res, { msg: "Rol inválido" });

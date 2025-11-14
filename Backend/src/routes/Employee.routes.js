@@ -2,29 +2,21 @@
 import { Router } from "express";
 import { EmployeeController } from "../controllers/Employee.controller.js";
 import { EmployeeValidator } from "../middlewares/validators/employee.validator.js";
-import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
+import { ClientValidator } from "../middlewares/validators/client.validator.js";
 
-const auth = [AuthMiddleware.authorize("administrador", "supervisor", "empleado")];
 
+// /employee
 class EmployeeRoutes {
   static getRouter() {
     const router = Router();
 
     // --- API REST ---
-    router.get('/profiles',  EmployeeController.getAll);//auth,
-    router.get('/myprofile/:id', EmployeeController.getById);
+    router.get('/',  EmployeeController.getAll);//auth,
+    router.get('/myprofile/:id', ClientValidator.validateIdType ,EmployeeController.getById);
     router.post('/register', EmployeeValidator.validateCreate, EmployeeController.create);//auth,
-    router.put('/myprofile/:id', EmployeeController.updatePut);
-    router.patch('/myprofile/:id', EmployeeController.update);
-    router.delete('/employee/:id', EmployeeController.deleteById);
-    router.post('/profiles', EmployeeController.create);
-
-
-// vistas admin
-//router.get('/admin/empleados', AuthMiddleware.authorize('administrador'), EmployeeController.renderList);
-//router.get('/admin/empleados/new', AuthMiddleware.authorize('administrador'), EmployeeController.renderNewForm);
-//router.get('/admin/empleados/:id/edit', AuthMiddleware.authorize('administrador'), EmployeeController.renderEditForm);
-
+    router.put('/myprofile/:id', [ClientValidator.validateIdType, EmployeeValidator.validateUpdate], EmployeeController.updatePut);
+    router.patch('/myprofile/:id', [ClientValidator.validateIdType, EmployeeValidator.validateUpdate], EmployeeController.update);
+    router.delete('/:id', [ClientValidator.validateIdType], EmployeeController.deleteById);
 
 
     // --- VISTAS ---

@@ -7,7 +7,6 @@ export class EmployeeService {
 
   static async getById(id) {
     const employee = await Employee.findById(id);
-    if (!employee) throw new Error("Empleado no encontrado");
     return employee;
   }
 
@@ -19,6 +18,9 @@ export class EmployeeService {
   }
 
   static async updatePut(id, data) {
+    const exists = await Employee.findOne({ email: data.email });
+    if (exists) throw new Error("Email ya existe. Si no se quiere modificar, no agregarlo");
+    
     const employee = await Employee.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
@@ -28,6 +30,9 @@ export class EmployeeService {
   }
 
   static async update(id, data) {
+    const exists = await Employee.findOne({ email: data.email });
+    if (exists) throw new Error("Email ya existe. Si no se quiere modificar, no agregarlo");
+
     const employee = await Employee.findByIdAndUpdate(id, { $set: data }, {
       new: true,
       runValidators: true,

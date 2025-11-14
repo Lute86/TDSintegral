@@ -65,25 +65,23 @@ export class EmployeeController {
         }
     }
 
-    static async updatePut(req, res){
+    static async updatePut(req, res){      
         try {
-            const { id } = req.params;
-            const employeeData = req.body;
-            const updatedEmployee = await EmployeeService.updatePut(id, employeeData);
-            return HttpResponse.success(res, updatedEmployee);
+          const id = req.params.id;
+          const employeeData = req.body;
+          if (employeeData.password){
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(employeeData.password, saltRounds);
+            employeeData.password = hashedPassword;
+          }
+          const updatedEmployee = await EmployeeService.updatePut(id, employeeData);
+          
+          return HttpResponse.success(res, updatedEmployee);
         } catch (error) {
-            if (error.message === "No autorizado") {
-                return HttpResponse.forbidden(res);
-            }
-            if (error.message === "Empleado no encontrado") {
-                return HttpResponse.notFound(res, "Empleado no encontrado");
-            }
-            if (error.message === "Datos incompletos") {
-                return HttpResponse.badRequest(res, "Faltan datos requeridos");
-            }
-            if (error.message === "Email ya existe") {
-                return HttpResponse.conflict(res, "El email ya está registrado");
-            }
+            console.log(error.message);
+            
+            if (error.message.includes("Empleado")) return HttpResponse.conflict(res, error.message);
+            if (error.message.includes("Email")) return HttpResponse.notFound(res, error.message);
             return HttpResponse.serverError(res);
         }
     }
@@ -91,17 +89,18 @@ export class EmployeeController {
         
     static async update(req, res) { 
       try {
-        const { id } = req.params;
-        const updateData = req.body;
+        const id = req.params.id;
+          const employeeData = req.body;
+          if (employeeData.password){
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(employeeData.password, saltRounds);
+            employeeData.password = hashedPassword;
+          }
         const updatedEmployee = await EmployeeService.update(id, updateData);
         return HttpResponse.success(res, updatedEmployee);
       } catch (error) {
-        if (error.message === "No autorizado") {
-          return HttpResponse.forbidden(res);
-        }
-        if (error.message === "Empleado no encontrado") {
-          return HttpResponse.notFound(res, "Empleado no encontrado");
-        }
+        if (error.message.includes("Empleado")) return HttpResponse.conflict(res, error.message);
+        if (error.message.includes("Email")) return HttpResponse.notFound(res, error.message);
         return HttpResponse.serverError(res);
       }
     }
@@ -116,54 +115,51 @@ export class EmployeeController {
             return HttpResponse.notFound(res, `Empleado con ID ${id} no existe`);
         }
 
-        return HttpResponse.success(res, {
-            message: `Empleado con ID ${id} eliminado`,
-            data: deleted
-        });
+        return HttpResponse.noContent(res, {
+            msg: `Empleado con ID ${id} eliminado`});
     } catch (error) {
         return HttpResponse.serverError(res, error.message); 
     } 
             
     }
+
     static async dashboardCreate(req, res) {
-  try {
-    await Employee.create({ nombre: req.body.nombre, email: req.body.email });
-    res.redirect('/dashboard');
-  } catch (error) {
-    res.status(500).send('Error al crear empleado');
-  }
-}
+      try {
+        await Employee.create({ nombre: req.body.nombre, email: req.body.email });
+        res.redirect('/dashboard');
+      } catch (error) {
+        res.status(500).send('Error al crear empleado');
+      }
+    }
 
     static async edit(req, res) {
-  try {
-    const employee = await Employee.findById(req.params.id);
-    if (!employee) return res.status(404).send('Empleado no encontrado');
-    res.render('edit', { employee });
-  } catch (error) {
-    res.status(500).send('Error al cargar formulario de edición');
-  }
-}
+      try {
+        const employee = await Employee.findById(req.params.id);
+        if (!employee) return res.status(404).send('Empleado no encontrado');
+        res.render('edit', { employee });
+      } catch (error) {
+        res.status(500).send('Error al cargar formulario de edición');
+      }
+    }
 
     static async dashboardUpdate(req, res) {
-  try {
-    await Employee.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect('/dashboard');
-  } catch (error) {
-    res.status(500).send('Error al actualizar empleado');
-  }
-}
+      try {
+        await Employee.findByIdAndUpdate(req.params.id, req.body);
+        res.redirect('/dashboard');
+      } catch (error) {
+        res.status(500).send('Error al actualizar empleado');
+      }
+    }
 
     static async dashboardDelete(req, res) {
-  try {
-    await Employee.findByIdAndDelete(req.params.id);
-    res.redirect('/dashboard');
-  } catch (error) {
-    res.status(500).send('Error al eliminar empleado');
-  }
-}
+      try {
+        await Employee.findByIdAndDelete(req.params.id);
+        res.redirect('/dashboard');
+      } catch (error) {
+        res.status(500).send('Error al eliminar empleado');
+      }
+    }
 
-
-    
 
 }
 
