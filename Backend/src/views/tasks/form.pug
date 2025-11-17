@@ -1,0 +1,56 @@
+extends ../layout.pug
+
+block content
+  .container.mt-4
+    .card.shadow-lg.rounded-4
+      .card-header.bg-primary.text-white
+        h4.mb-0 #{isEdit ? 'Editar Tarea' : 'Nueva Tarea'}
+
+      .card-body
+        form(method="POST", action=action)
+          if isEdit
+            input(type="hidden", name="_method", value="PUT")
+
+          .row.mb-3
+            .col-md-6
+              label.form-label(for="nombre") Nombre de la tarea
+              input.form-control(type="text", name="nombre", id="nombre", required, value=task.nombre || "")
+            .col-md-6
+              label.form-label(for="prioridad") Prioridad
+              select.form-select(name="prioridad", id="prioridad", required)
+                option(value="baja", selected=task.prioridad=='baja') Baja
+                option(value="media", selected=task.prioridad=='media') Media
+                option(value="alta", selected=task.prioridad=='alta') Alta
+
+          .mb-3
+            label.form-label(for="descripcion") Descripción
+            textarea.form-control(name="descripcion", id="descripcion", rows="3") #{task.descripcion || ""}
+
+          .row.mb-3
+            .col-md-6
+              label.form-label(for="estado") Estado
+              select.form-select(name="estado", id="estado", required)
+                option(value="pendiente", selected=task.estado=='pendiente') Pendiente
+                option(value="en_progreso", selected=task.estado=='en_progreso') En progreso
+                option(value="finalizada", selected=task.estado=='finalizada') Finalizada
+
+            .col-md-6
+              label.form-label(for="horasEstimadas") Horas estimadas
+              input.form-control(type="number", name="horasEstimadas", id="horasEstimadas", min="1", required, value=task.horasEstimadas || "")
+
+          .row.mb-3
+            .col-md-6
+              label.form-label(for="horas") Horas trabajadas (si finalizada)
+              input.form-control(type="number", name="horas", id="horas", min="0", value=task.horas || "")
+            .col-md-6
+              label.form-label(for="project") Proyecto asignado
+              input.form-control(type="text", name="project", id="project", placeholder="ID del proyecto o selección futura", value=task.project || "")
+
+          .mb-3
+            label.form-label(for="empleados") Empleados asignados (IDs separados por coma)
+            input.form-control(type="text", name="empleados", id="empleados", placeholder="Ejemplo: 654a2b, 654a3c", value=(task.empleados && task.empleados.join(',')) || "")
+
+          .d-flex.justify-content-end.mt-4
+            a.btn.btn-secondary.me-2(href="/task/view/list") ← Volver
+            button.btn.btn-success(type="submit") #{isEdit ? 'Guardar Cambios' : 'Crear Tarea'}
+

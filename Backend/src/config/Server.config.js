@@ -1,4 +1,4 @@
-import express from "express";
+/*import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from "./DB.config.js";
@@ -13,6 +13,10 @@ import { AuthValidator } from "../middlewares/validators/auth.validator.js";
 import { AuthController } from "../controllers/Auth.controller.js";
 import AuthRoutes from "../routes/Auth.routes.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
+import cookieParser from "cookie-parser";
+import { Project } from "../models/Project.model.js";
+import { Task } from "../models/Task.model.js";
+import { Employee } from "../models/Employee.model.js";
 
 export class Server{
   constructor(){
@@ -33,12 +37,19 @@ export class Server{
     // Inicializar Passport
     const passportConfig = new Passport(process.env.JWT_SECRET);
     this.app.use(passportConfig.initialize());
+
+     //lo que esté en /src/public puede ser accedido por el navegador
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+      this.app.use(express.static(path.join(__dirname, "../public")));
   }
 
   routes() {
     // Endpoints públicos
     this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
     this.app.use("/client", ClientRoutes.getRouter());
+
+    // Rutas públicas (landing y login/logout)
+     this.app.use("/auth", AuthRoutes.getRouter()); 
 
     // Landing page pública
     this.app.get('/', (req, res) => {
@@ -53,14 +64,48 @@ export class Server{
     this.app.use("/task", auth, TaskRoutes.getRouter());
 
     // Vista del dashboard protegida
-   /* this.app.get('/dashboard',  (req, res) => { //auth,
-      res.render('dashboard', {
-        user: req.user,
-        proyectos: [],
-        tareas: []
-      });
-    });*/
-    this.app.use('/dashboard', auth, EmployeeRoutes.getRouter());
+   /*this.app.get("/dashboard",Passport.authenticate(), AuthMiddleware.authorize("administrador", "empleado"),
+         async (req, res) => {
+           try {
+             const user = req.user;
+   
+             // Si es administrador, muestra todo
+             let proyectos = [];
+             let tareas = [];
+             let empleados = [];
+   
+             if (user.rol === "administrador") {
+               proyectos = await Project.find().populate("clienteId").lean();
+               tareas = await Task.find().populate("empleados").lean();
+               empleados = await Employee.find().lean();
+             }
+   
+             // Si es empleado, solo sus proyectos y tareas asignadas
+             if (user.rol === "empleado") {
+               proyectos = await Project.find({ empleados: user.id })
+                 .populate("clienteId")
+                 .lean();
+               tareas = await Task.find({ empleados: user.id })
+                 .populate("project")
+                 .lean();
+             }
+   
+             res.render("dashboardempleados", {
+               title: "Mi Dashboard",
+               user,
+               proyectos,
+               tareas,
+               empleados, 
+             });
+           } catch (error) {
+             console.error("Error al cargar dashboard:", error);
+             res.status(500).render("error", {
+               message: "Error al cargar el dashboard",
+             });
+           }
+         }
+       );
+      
     
     // Estado del servidor
     this.app.use("/ping", (req, res) => HttpResponse.success(res, { ok: true }));
@@ -84,3 +129,4 @@ export class Server{
 
 
 
+*/

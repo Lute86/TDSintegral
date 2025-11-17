@@ -5,7 +5,7 @@ export class EmployeeValidator {
   static validateCreate(req, res, next) {
     const { nombre, apellido, email, rol, area, password } = req.body;
 
-    const missing = ValidatorBase.requireFields(["nombre", "apellido", "email", "rol", "area", "password"], req.body);
+    const missing = ValidatorBase.requireFields(["nombre", "apellido","telefono", "email", "rol", "area", "password"], req.body);
     if (missing.length > 0) return HttpResponse.badRequest(res,{ msg: `Faltan campos: ${missing.join(", ")}` });
     if (!ValidatorBase.minLen(password)) return HttpResponse.badRequest(res,{ msg: "Contrasena de al menos 8 caracteres"});
     const roles = ["administrador", "consultor", "supervisor"];

@@ -1,4 +1,4 @@
-import { Router } from "express";
+/*import { Router } from "express";
 import { DashboardController } from "../controllers/Dashboard.controller.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 
@@ -11,3 +11,4 @@ router.get(
 );
 
 export default router;
+*/

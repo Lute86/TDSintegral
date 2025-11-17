@@ -1,0 +1,87 @@
+.employee-modal-content {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  max-width: 400px;   /* 👈 más angosto */
+  margin: 1rem auto;
+}
+
+
+.employee-modal-content h2 {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #0a192f;
+}
+
+.employee-modal-content .form-group {
+  margin-bottom: 1rem;
+}
+
+.employee-modal-content label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.employee-modal-content input,
+.employee-modal-content select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cta-button {
+  flex: 1;
+  background: #0052cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel-button {
+  flex: 1;
+  background: #ddd;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#dashboardModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  z-index: 2001;
+  display: none;
+}
+
+#dashboardModal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal-frame {
+  border: 0;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 600px;     /* ancho máximo del modal */
+  height: auto;
+  min-height: 200px;
+  background: transparent;
+}

@@ -1,0 +1,96 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= employee ? "Editar empleado" : "Nuevo empleado"
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    .employee-modal-content
+      h2.text-center.mb-3= employee ? "Editar empleado" : "Nuevo empleado"
+
+      form#employeeForm(method="POST", action=actionUrl, onsubmit="handleEmployeeSubmit(event)")
+        // Si estamos editando, se pasa el _id oculto
+        if employee
+          input(type="hidden" name="_id" value=employee._id)
+
+        .form-group
+          label(for="nombre") Nombre
+          input#nombre.form-control(type="text" name="nombre" required value=employee ? employee.nombre : '')
+
+        .form-group
+          label(for="apellido") Apellido
+          input#apellido.form-control(type="text" name="apellido" value=employee ? employee.apellido : '')
+
+        .form-group
+          label(for="email") Email
+          input#email.form-control(type="email" name="email" required value=employee ? employee.email : '')
+
+        .form-group
+          label(for="telefono") Teléfono
+          input#telefono.form-control(type="text" name="telefono" value=employee ? employee.telefono : '')
+
+        .form-group
+          label(for="rol") Rol
+          select#rol.form-select(name="rol" required)
+            option(value="") Seleccionar rol
+            option(value="administrador" selected=employee && employee.rol === 'administrador') Administrador
+            option(value="empleado" selected=employee && employee.rol === 'empleado') Empleado
+
+        .form-group
+          label(for="area") Área
+          select#area.form-select(name="area")
+            option(value="") Seleccionar área
+            option(value="SEO/SEM" selected=employee && employee.area === 'SEO/SEM') SEO/SEM
+            option(value="Social Media" selected=employee && employee.area === 'Social Media') Social Media
+            option(value="Contenidos" selected=employee && employee.area === 'Contenidos') Contenidos
+            option(value="Administración" selected=employee && employee.area === 'Administración') Administración
+
+        .form-group
+          label(for="password") Contraseña
+          input#password.form-control(
+            type="password"
+            name="password"
+            placeholder=employee ? "Dejar vacío para no cambiar" : "Ingrese contraseña"
+          )
+
+        .form-buttons.mt-4.text-end
+          button.cta-button(type="submit") Guardar
+          button.cancel-button(type="button" onclick="window.parent.closeModal()") Cancelar
+
+    // ===== SCRIPT DE ENVÍO =====
+    script.
+      async function handleEmployeeSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+
+        //  Convertir FormData en formato que Express entiende
+        const formData = new URLSearchParams(new FormData(form));
+
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: formData, // Ya no es FormData sino URLSearchParams
+            headers: { 'Accept': 'application/json' }
+          });
+
+          //  Intentar leer respuesta como JSON o texto
+          const text = await res.text();
+          let result;
+          try { result = JSON.parse(text); } catch { result = { success: res.ok, message: text }; }
+
+          if (result.success || res.ok) {
+            window.parent.postMessage({ type: 'employee-updated' }, '*');
+            window.parent.closeModal();
+          } else {
+            alert(result.message || 'Error al guardar el empleado.');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error de conexión con el servidor.');
+        }
+      }
+
+
+  

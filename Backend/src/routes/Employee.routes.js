@@ -20,30 +20,38 @@ class EmployeeRoutes {
     router.post('/profiles', EmployeeController.create);
 
 
-// vistas admin
-//router.get('/admin/empleados', AuthMiddleware.authorize('administrador'), EmployeeController.renderList);
-//router.get('/admin/empleados/new', AuthMiddleware.authorize('administrador'), EmployeeController.renderNewForm);
-//router.get('/admin/empleados/:id/edit', AuthMiddleware.authorize('administrador'), EmployeeController.renderEditForm);
+// --- Rutas vistas del administrador ---
+//  Listado de empleados (vista principal)
+router.get("/", AuthMiddleware.authorize("administrador"), EmployeeController.renderAdminList);
 
+//  Formulario de creación
+router.get(  "/new",  AuthMiddleware.authorize("administrador"),  EmployeeController.renderNewForm);
 
+//  Crear empleado desde el formulario (POST clásico o AJAX)
+router.post( "/new",  AuthMiddleware.authorize("administrador"), EmployeeController.createFromForm);
 
-    // --- VISTAS ---
-    // Dashboard principal del empleado
-    router.get('/dashboard', async (req, res) => {
-      try {
-        const proyectos = await EmployeeController.getEmployeeProjects(req.user.id);
-        const tareas = await EmployeeController.getEmployeeTasks(req.user.id);
+//  Formulario de edición
+router.get( "/edit/:id", AuthMiddleware.authorize("administrador"), EmployeeController.renderEditForm);
 
-        res.render('dashboardempleados', {
-          user: req.user,
-          proyectos,
-          tareas
-        });
-      } catch (error) {
-        console.error("Error cargando dashboard:", error);
-        res.status(500).send('Error al cargar el dashboard');
-      }
-    });
+//  Actualizar empleado desde el formulario
+router.post( "/edit/:id", AuthMiddleware.authorize("administrador"), EmployeeController.updateFromForm);
+
+//  Eliminar empleado (POST tradicional o fetch)
+router.delete( "/delete/:id", AuthMiddleware.authorize("administrador"), EmployeeController.deleteFromForm);
+
+// 🔁 Ruta para recargar lista parcial (AJAX)
+router.get("/list", AuthMiddleware.authorize("administrador"), async (req, res) => {
+  try {
+    const empleados = await EmployeeController.getAllEmployees(); // asegurate que exista este método o usa el de tu controller
+    res.render("employee/list", { empleados, layout: false });
+  } catch (err) {
+    console.error("Error al recargar empleados:", err);
+    res.status(500).send("Error al cargar empleados");
+  }
+});
+//   VISTA DEL EMPLEADO (Dashboard)
+
+router.get( "/dashboard",AuthMiddleware.authorize(["empleado", "administrador"]), EmployeeController.renderDashboard);
 
     // Mis proyectos
     router.get('/proyectos', async (req, res) => {

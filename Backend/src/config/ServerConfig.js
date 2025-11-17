@@ -16,8 +16,7 @@ import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 import cookieParser from "cookie-parser";
 import { Project } from "../models/Project.model.js";
 import { Task } from "../models/Task.model.js";
-
-
+import { Employee } from "../models/Employee.model.js";
 
 export class Server{
   constructor(){
@@ -33,19 +32,18 @@ export class Server{
 
   middlewares() {
 
+  this.app.use(express.json());
+  this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
+  this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
 
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
-    this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
-  
-     this.app.use(cookieParser());
-    // Inicializar Passport
-    const passportConfig = new Passport(process.env.JWT_SECRET);
-    this.app.use(passportConfig.initialize());
-    
-    //lo que esté en /src/public puede ser accedido por el navegador
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    this.app.use(express.static(path.join(__dirname, "../public")));
+  this.app.use(cookieParser());
+  // Inicializar Passport
+  const passportConfig = new Passport(process.env.JWT_SECRET);
+  this.app.use(passportConfig.initialize());
+
+  //lo que esté en /src/public puede ser accedido por el navegador
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  this.app.use(express.static(path.join(__dirname, "../public")));
 
   }
 
@@ -65,21 +63,15 @@ export class Server{
 
     // Endpoints protegidos
     const auth = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado", "cliente")];
-
-   const authEmpleados = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado")];
-
+    const authEmpleados = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado")];
     const authAdmin = [Passport.authenticate(),AuthMiddleware.authorize("administrador")];
 
-   
-    this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
-    this.app.use("/project",  ProjectRoutes.getRouter());// auth,
-    this.app.use("/task",  TaskRoutes.getRouter());//auth,
+    this.app.use("/employee", auth , EmployeeRoutes.getRouter());//auth,
+    this.app.use("/project",  auth ,ProjectRoutes.getRouter());// auth,
+    this.app.use("/task",  auth ,TaskRoutes.getRouter());//auth,
 
     
-      this.app.get(
-      "/dashboard",
-      Passport.authenticate(),
-      AuthMiddleware.authorize("administrador", "empleado"),
+      this.app.get("/dashboard",Passport.authenticate(), AuthMiddleware.authorize("administrador", "empleado"),
       async (req, res) => {
         try {
           const user = req.user;
@@ -87,10 +79,12 @@ export class Server{
           // Si es administrador, muestra todo
           let proyectos = [];
           let tareas = [];
+          let empleados = [];
 
           if (user.rol === "administrador") {
             proyectos = await Project.find().populate("clienteId").lean();
             tareas = await Task.find().populate("empleados").lean();
+            empleados = await Employee.find().lean();
           }
 
           // Si es empleado, solo sus proyectos y tareas asignadas
@@ -98,7 +92,6 @@ export class Server{
             proyectos = await Project.find({ empleados: user.id })
               .populate("clienteId")
               .lean();
-
             tareas = await Task.find({ empleados: user.id })
               .populate("project")
               .lean();
@@ -109,6 +102,7 @@ export class Server{
             user,
             proyectos,
             tareas,
+            empleados, 
           });
         } catch (error) {
           console.error("Error al cargar dashboard:", error);

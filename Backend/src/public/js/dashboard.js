@@ -1,103 +1,110 @@
-// --------------------------------------
-// UTILIDADES BÁSICAS
-// --------------------------------------
+// === DASHBOARD.JS ===
+// Maneja el modal de empleados y operaciones CRUD dinámicas.
 
-function openModal(url) {
-  const modal = document.getElementById("modal");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log(" Dashboard JS cargado");
+
+  const modal = document.getElementById("dashboardModal");
+  const overlay = document.getElementById("modalOverlay");
   const iframe = document.getElementById("modal-frame");
-  iframe.src = url;
-  modal.classList.remove("hidden");
-}
 
-function closeModal() {
-  const modal = document.getElementById("modal");
-  const iframe = document.getElementById("modal-frame");
-  iframe.src = "";
-  modal.classList.add("hidden");
-}
+  //  Abrir modal
+  window.openModal = function (url) {
+    if (!url) return console.error(" No se proporcionó URL al abrir modal");
 
-// --------------------------------------
-// CONFIRMACIONES Y ACCIONES CRUD
-// --------------------------------------
+    overlay.classList.remove("hidden");
+    modal.classList.remove("hidden");
 
-// --- PROYECTOS ---
-function confirmDeleteProject(projectId, nombre) {
-  if (!confirm(`¿Seguro que deseas eliminar el proyecto "${nombre}" junto a sus tareas?`)) return;
-  window.location.href = `/project/${projectId}/delete`; // ruta que hace el delete en backend
-}
+    // Espera un frame para permitir transición CSS
+    requestAnimationFrame(() => {
+      overlay.classList.add("show");
+      modal.classList.add("show");
+    });
 
-function openNewProject() {
-  openModal("/project/view/create"); // vista Pug con el formulario de nuevo proyecto
-}
+    iframe.src = url;
+  };
 
-function openEditProject(projectId) {
-  openModal(`/project/view/edit/${projectId}`); // vista Pug con el form para editar
-}
+  //  Cerrar modal
+  window.closeModal = function () {
+    overlay.classList.remove("show");
+    modal.classList.remove("show");
 
-// --- TAREAS ---
-function openNewTask(projectId) {
-  openModal(`/task/view/create?projectId=${projectId}`); // vista Pug con form de tarea nueva
-}
+    setTimeout(() => {
+      overlay.classList.add("hidden");
+      modal.classList.add("hidden");
+      iframe.src = "";
+    }, 200);
+  };
 
-function openEditTask(taskId) {
-  openModal(`/task/view/edit/${taskId}`); // vista Pug con form de edición
-}
+  //  Click en botones con data-open-modal
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-open-modal]");
+    if (!btn) return;
 
-function confirmDeleteTask(taskId, desc) {
-  if (!confirm(`¿Eliminar la tarea "${desc}"?`)) return;
-  window.location.href = `/task/${taskId}/delete`; // ruta delete backend
-}
-
-// --- EMPLEADOS ---
-function openNewEmployee() {
-  openModal(`/employee/view/create`);
-}
-
-function openEditEmployee(id) {
-  openModal(`/employee/view/edit/${id}`);
-}
-
-function confirmDeleteEmployee(id, nombre) {
-  if (!confirm(`¿Eliminar empleado "${nombre}"?`)) return;
-  window.location.href = `/employee/${id}/delete`;
-}
-
-// --------------------------------------
-// ACTUALIZACIÓN DE ESTADO DE TAREA / PROYECTO
-// (solo visible si se renderiza un <form> con select en servidor)
-// --------------------------------------
-
-function autoSubmit(formElem) {
-  formElem.submit(); // se usa cuando el select de estado cambia
-}
-
-// --------------------------------------
-// PEQUEÑO HELP VISUAL
-// --------------------------------------
-
-function highlightActiveProject(projectId) {
-  document.querySelectorAll(".project-item").forEach(el => {
-    el.classList.toggle("active", el.dataset.id === projectId);
+    const url = btn.dataset.url;
+    openModal(url);
   });
-}
 
-function showToast(msg) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
+  //  Recargar lista cuando el iframe avisa “employee-updated”
+window.addEventListener("message", (event) => {
+  if (event.data?.type === "employee-updated") {
+    console.log("[Modal] Empleado actualizado, cerrando y recargando lista...");
+    closeModal();
 
-// --------------------------------------
-// ESCAPAR HTML (seguridad básica)
-// --------------------------------------
+    // Esperar a que el iframe se descargue del DOM antes de recargar
+    setTimeout(() => {
+      loadEmployees(true);
+    }, 600);
+  }
+});
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"]/g, c => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;'
-  }[c]));
+
+  //  Eliminar empleado
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-delete-url]");
+    if (!btn) return;
+
+    const url = btn.dataset.deleteUrl;
+    const confirmMsg = btn.dataset.confirm || "¿Eliminar?";
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      const res = await fetch(url, { method: "DELETE" });
+      if (!res.ok) throw new Error("Error al eliminar empleado");
+      console.log("[Empleado] Eliminado correctamente");
+      loadEmployees();
+    } catch (err) {
+      alert("Error al eliminar empleado");
+      console.error(err);
+    }
+  });
+
+  //  Recargar lista sin recargar página
+ async function loadEmployees(noCache = false) {
+  try {
+    const url = noCache
+      ? `/employee/list?_=${Date.now()}` // evita caché del navegador
+      : `/employee/list`;
+
+    const res = await fetch(url, {
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+
+    if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+
+    const html = await res.text();
+
+    const container = document.querySelector("#employeeTableBody");
+    if (container) {
+      container.innerHTML = html;
+      console.log(" Lista de empleados actualizada");
+    } else {
+      console.warn(" No se encontró #employeeTableBody para actualizar");
+    }
+  } catch (err) {
+    console.error(" Error al cargar empleados:", err);
+  }
 }
+  //  Cerrar modal si se hace clic fuera
+  overlay.addEventListener("click", () => closeModal());
+});

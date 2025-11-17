@@ -1,0 +1,20 @@
+ul.employee-list
+  if empleados && empleados.length
+    each e in empleados
+      li.employee-item
+        span.emp-name #{e.nombre} #{e.apellido}
+        span.emp-role #{e.rol}
+        .emp-actions
+          button.btn-edit(
+            type="button"
+            data-open-modal
+            data-url=`/employee/edit/${e._id}`
+            data-title="Editar Empleado"
+          ) ✏️
+          button.btn-delete(
+            type="button"
+            data-delete-url=`/employee/delete/${e._id}`
+            data-confirm=`¿Eliminar ${e.nombre} ${e.apellido}?`
+          ) 🗑️
+  else
+    li No hay empleados registrados

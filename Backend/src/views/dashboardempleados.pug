@@ -4,121 +4,125 @@ html(lang="es")
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Dashboard | Clickwave
-    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap", rel="stylesheet")
+    link(
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap",
+      rel="stylesheet"
+    )
     link(rel="stylesheet", href="/css/dashboard.css")
     script(src="/js/dashboard.js" defer)
+
+
   body.dashboard-layout
-    // HEADER SUPERIOR
+    // ===== HEADER SUPERIOR =====
     header.header
       .header-left
         h1.logo Clickwave
       .header-center
         input#globalSearch(type="text", placeholder="Buscar proyectos, tareas o empleados...")
+        button.btn-view-white(type="button" data-open-modal data-url="/" data-title="Facturacion") Facturacion
       .header-right
         span.user-name #{user ? user.nombre : 'Empleado'}
-        a(href="/auth/logout").logout-btn Cerrar sesión
+        a.logout-btn(href="/auth/logout") Cerrar sesión
 
-    // CONTENIDO PRINCIPAL
+    // ===== CONTENIDO PRINCIPAL =====
     main.main-content
-      h2 Mi Dashboard
+      h2 Mi Panel
 
-      .dashboard-grid
-        // ================== PROYECTOS (izquierda)
-        .dash-card#projectsCard
-          .dash-card-header
-            h3 Proyectos
-            if user && user.rol === 'administrador'
-              a.btn-view-all(href="/projects/new") ➕ Nuevo
-          .dash-card-body
-            ul.project-list#projectList
-              if proyectos && proyectos.length > 0
-                each proyecto in proyectos
-                  li.project-item
-                    .left
-                      strong.project-name= proyecto.nombre
-                    .right
-                      if user && user.rol === 'administrador'
-                        form(action=`/projects/${proyecto._id}?_method=PUT`, method="POST", class="inline-form")
-                          select(name="estado", onchange="this.form.submit()")
-                            option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
-                            option(value="en curso", selected=proyecto.estado==='en curso') En curso
-                            option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
-                        a.btn-edit(href=`/projects/${proyecto._id}/edit`) ✏️
-                        button.btn-delete(type="button", onclick=`deleteProject('${proyecto._id}')`) 🗑️
-                      else
-                        span.badge(class=`item-status ${proyecto.estado}`)= proyecto.estado
+        .dashboard-grid
+          // PROYECTOS
+          .dash-card#projectsCard
+            .dash-card-header
+              h3 Proyectos
+              if user && user.rol === 'administrador'
+                button.btn-view-all(type="button" data-open-modal data-url="/project/view/new" data-title="Nuevo Proyecto") ➕ Nuevo Proyecto
+            .dash-card-body
+              ul.project-list#projectList
+                if proyectos && proyectos.length
+                  each proyecto in proyectos
+                    li.project-item(data-id=proyecto._id)
+                      .left
+                        strong.project-name= proyecto.nombre
+                      .right
+                        if user && user.rol === 'administrador'
+                          .emp-actions
+                            button.btn-edit(type="button" data-open-modal data-url="/project/view/edit/${proyecto._id}" data-title="Editar Proyecto") ✏️
+                            button.btn-delete( type="button" data-delete-url=`/project/view/delete/${proyecto._id}` data-confirm=`¿Eliminar proyecto ${proyecto.nombre}?`) 🗑️
+                        else
+                          span.badge.item-status(class=proyecto.estado.replace(/\s+/g,'-'))= proyecto.estado
+                else
+                  li No hay proyectos asignados.
+
+          // TAREAS
+          .dash-card#tasksCard
+            .dash-card-header
+              h3 Tareas del Proyecto
+              if user && user.rol === 'administrador'
+                button.btn-view-all(type="button" data-open-modal data-url="/task/view/new" data-title="Nueva Tarea") ➕ Nueva
+            .dash-card-body
+              if tareas && tareas.length
+                ul.task-list#taskList
+                  each t in tareas
+                    li.task-item(data-id=t._id)
+                      .left
+                        strong.task-name= t.nombre
+                        p.task-desc= t.descripcion || 'Sin descripción'
+                      .right
+                        if user && user.rol === 'administrador'
+                          a.btn-edit(href=`/task/view/edit/${t._id}`) ✏️
+                          button.btn-delete(type="button" data-delete-url=`/task/view/${t._id}` data-confirm=`¿Eliminar la tarea ${t.nombre}?`) 🗑️
+                        else
+                          form(action=`/task/${t._id}?_method=PUT` method="POST")
+                            select(name="estado", onchange="this.form.submit()")
+                              option(value="pendiente" selected=t.estado==='pendiente') Pendiente
+                              option(value="en proceso" selected=t.estado==='en proceso') En proceso
+                              option(value="finalizada" selected=t.estado==='finalizada') Finalizada
               else
-                li No hay proyectos asignados.
+                p No hay tareas disponibles.
 
-        // ================== TAREAS (derecha)
-        .dash-card#tasksCard
-          .dash-card-header
-            h3 Tareas del Proyecto
-            if user && user.rol === 'administrador'
-              a.btn-view-all(href="/tasks/new") ➕ Nueva
-          .dash-card-body
-            if tareas && tareas.length > 0
-              ul.task-list#taskList
-                each t in tareas
-                  li.task-item
-                    .left
-                      strong.task-name= t.nombre
-                      p.task-desc= t.descripcion || 'Sin descripción'
-                      small Proyecto: #{t.project ? t.project.nombre : 'N/A'}
-                    .right
-                      if user && user.rol === 'administrador'
-                        a.btn-edit(href=`/tasks/${t._id}/edit`) ✏️
-                        button.btn-delete(type="button", onclick=`deleteTask('${t._id}')`) 🗑️
-                      else
-                        form(action=`/tasks/${t._id}?_method=PUT`, method="POST")
-                          select(name="estado", onchange="this.form.submit()")
-                            option(value="pendiente", selected=t.estado==='pendiente') Pendiente
-                            option(value="en proceso", selected=t.estado==='en proceso') En proceso
-                            option(value="finalizada", selected=t.estado==='finalizada') Finalizada
-            else
-              p No hay tareas disponibles.
+        // ADMIN (solo admin)
+        if user && user.rol === 'administrador'
+          .dash-card.admin-section
+            .dash-card-header
+              h3 Gestión de Empleados
+              button.btn-view-all(
+                type="button"
+                data-open-modal
+                data-url="/employee/new"
+                data-title="Nuevo Empleado"
+              ) ➕ Nuevo Empleado
 
-      // ================== ADMINISTRACIÓN (solo admin)
-      if user && user.rol === 'administrador'
-        .dash-card.admin-section
-          .dash-card-header
-            h3 Gestión de Empleados
-            a.btn-view-all(href="/admin/empleados/new") ➕ Nuevo Empleado
-          .dash-card-body
-            ul.employee-list#employeeList
-              if empleados && empleados.length > 0
-                each e in empleados
-                  li.employee-item
-                    span.emp-name= `${e.nombre} ${e.apellido}`
-                    span.emp-role= e.rol
-                    .emp-actions
-                      a(href=`/admin/empleados/${e._id}/edit`) ✏️
-                      button(type="button", onclick=`deleteEmployee('${e._id}')`) 🗑️
-              else
-                li No hay empleados registrados.
+            .dash-card-body
+              #employeeTableBody
+                ul.employee-list
+                  if empleados && empleados.length
+                    each e in empleados
+                      li.employee-item
+                        span.emp-name #{e.nombre} #{e.apellido}
+                        span.emp-role #{e.rol}
+                        .emp-actions
+                          button.btn-edit(
+                            type="button"
+                            data-open-modal
+                            data-url=`/employee/edit/${e._id}`
+                            data-title="Editar Empleado"
+                          ) ✏️
+                          button.btn-delete(
+                            type="button"
+                            data-delete-url=`/employee/delete/${e._id}`
+                            data-confirm=`¿Eliminar ${e.nombre} ${e.apellido}?`
+                          ) 🗑️
+                  else
+                    li No hay empleados registrados
 
-        .dash-card.metrics
-          .dash-card-header
-            h3 Métricas (próximamente)
-          .dash-card-body
-            p.text-muted Aquí se mostrarán métricas globales para administradores.
 
-    // ================== SCRIPTS
-    script.
-      async function deleteProject(id) {
-        if (!confirm('¿Eliminar proyecto y sus tareas asociadas?')) return;
-        await fetch(`/projects/${id}`, { method: 'DELETE' });
-        location.reload();
-      }
-
-      async function deleteTask(id) {
-        if (!confirm('¿Eliminar esta tarea?')) return;
-        await fetch(`/tasks/${id}`, { method: 'DELETE' });
-        location.reload();
-      }
-
-      async function deleteEmployee(id) {
-        if (!confirm('¿Eliminar este empleado?')) return;
-        await fetch(`/employee/${id}`, { method: 'DELETE' });
-        location.reload();
-      }
+            .dash-card.metrics
+              .dash-card-header
+                h3 Métricas (próximamente)
+              .dash-card-body
+                p.text-muted Aquí se mostrarán métricas globales para administradores.
+  
+  // ===== MODAL GLOBAL =====
+  div#modalOverlay.modal-overlay
+  div#dashboardModal.login-modal
+    span.modal-close(onclick="closeModal()") &times;
+    iframe#modal-frame.modal-frame
