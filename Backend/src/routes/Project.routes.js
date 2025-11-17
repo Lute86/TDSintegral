@@ -6,51 +6,33 @@ class ProjectRoutes {
   static getRouter() {
     const router = Router();
 
+    // ========== RUTAS ESPECÍFICAS PRIMERO (MUY IMPORTANTE EL ORDEN) ==========
+    
+    // VISTAS
     router.get("/projects", AuthMiddleware.isAuthenticated, ProjectController.renderList);
-    router.get("/", ProjectController.getAll);
-    router.get("/:id", ProjectController.getById);
-    router.post("/", ProjectController.create);
-    router.put("/:id", ProjectController.update);
-    router.delete("/:id", ProjectController.deleteById);
-
-//------------
-
-
-
-router.get("/", ProjectController.list);
-router.get("/new", ProjectController.showForm);
-router.get("/edit/:id", ProjectController.showForm);
-router.post("/save", ProjectController.save);
-router.get("/delete/:id", ProjectController.delete);
-
-
-
-
-
-    // VISTA 
+    router.get("/new", ProjectController.showForm);
+    router.get("/edit/:id", ProjectController.showForm);
+    router.get("/delete/:id", ProjectController.delete);
     router.get("/view/list", 
       AuthMiddleware.authorize("administrador", "empleado"),
       ProjectController.renderList
     );
-
-    //
-    // vista/CRUD pages (pug)
-router.get('/projects', AuthMiddleware.isAuthenticated, ProjectController.renderList); // view list
-//router.get('/projects/new', AuthMiddleware.authorize('administrador'), ProjectController.renderNewForm);
-//router.get('/projects/:id/edit', AuthMiddleware.authorize('administrador'), ProjectController.renderEditForm);
-
-    // Protege la ruta
     router.get("/mis-proyectos",
       AuthMiddleware.authorize("administrador", "empleado"),
       ProjectController.renderList
     );
-    router.get("/projects",
-      AuthMiddleware.isAuthenticated, 
-      ProjectController.renderList    
-    );
 
-  
-  
+    // ========== RUTAS DE FORMULARIOS (POST/PUT/DELETE) ==========
+    router.post("/save", ProjectController.save);  // ← LA MÁS IMPORTANTE
+    router.put("/:id", ProjectController.update);
+    router.delete("/:id", ProjectController.deleteById);
+
+    // ========== RUTAS API GENERALES AL FINAL ==========
+    router.post("/", ProjectController.create);
+    router.get("/:id", ProjectController.getById);
+    router.get("/", ProjectController.list);  // ← Esta debe ir AL FINAL
+    router.get("/", ProjectController.getAll); // ← Esta también AL FINAL
+
     return router;
   }
 }

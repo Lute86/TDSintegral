@@ -118,6 +118,6 @@ http://localhost:3000/dashboard/employee/2
        cuenta empleado
         empleado@empleado.com contr admin  
 
-# Landigpage
+# Landingpage
 
 http://localhost:3000/

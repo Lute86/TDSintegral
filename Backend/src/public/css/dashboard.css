@@ -137,7 +137,8 @@ h2 {
 }
 
 .project-item:hover,
-.task-item:hover {
+.task-item:hover,
+.employee-item:hover {
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -232,6 +233,96 @@ h2 {
   margin-top: 1rem;
 }
 
+/* ========== GESTIÓN DE EMPLEADOS ========== */
+.employee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.employee-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-blue);
+}
+
+.employee-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.emp-name {
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.emp-role {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.role-admin {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.role-employee {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.emp-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.emp-actions .btn-edit,
+.emp-actions .btn-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.emp-actions .btn-edit {
+  color: #60a5fa;
+}
+
+.emp-actions .btn-edit:hover {
+  background: rgba(96, 165, 250, 0.1);
+  transform: scale(1.1);
+}
+
+.emp-actions .btn-delete {
+  color: #f87171;
+}
+
+.emp-actions .btn-delete:hover {
+  background: rgba(248, 113, 113, 0.1);
+  transform: scale(1.1);
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .dashboard-grid {
@@ -241,4 +332,42 @@ h2 {
   .header-center input {
     width: 160px;
   }
+}
+
+/* ========== ESTILOS ADICIONALES PARA EMPLEADOS ========== */
+.employee-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emp-email {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.password-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }

@@ -16,67 +16,56 @@ import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
 import cookieParser from "cookie-parser";
 import { Project } from "../models/Project.model.js";
 import { Task } from "../models/Task.model.js";
-
-
+import { Client } from "../models/Client.model.js";
+import { Employee } from "../models/Employee.model.js";
 
 export class Server{
   constructor(){
       this.app = express();
       this.port = process.env.PORT || 3000;
       const __dirname = path.dirname(fileURLToPath(import.meta.url));
-      this.app.set('views', path.join(__dirname, '../views')); // o '../src/views' si corresponde
-      this.app.set('view engine', 'pug'); // permite el uso del pug
+      this.app.set('views', path.join(__dirname, '../views'));
+      this.app.set('view engine', 'pug');
       this.middlewares();
-     
       this.routes();      
   }
 
   middlewares() {
-
-
     this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true })); // necesario para <form>
-    this.app.use(methodOverride('_method')); // habilita PUT/DELETE en formularios
-  
-     this.app.use(cookieParser());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(methodOverride('_method'));
+    this.app.use(cookieParser());
+    
     // Inicializar Passport
     const passportConfig = new Passport(process.env.JWT_SECRET);
     this.app.use(passportConfig.initialize());
     
-    //lo que esté en /src/public puede ser accedido por el navegador
+    // Archivos estáticos
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     this.app.use(express.static(path.join(__dirname, "../public")));
-
   }
 
   routes() {
     // Endpoints públicos
-  //  this.app.use("/auth", AuthValidator.validateLogin, AuthRoutes.getRouter());
     this.app.use("/client", ClientRoutes.getRouter());
-
-    // Rutas públicas (landing y login/logout)
-     this.app.use("/auth", AuthRoutes.getRouter()); 
+    this.app.use("/auth", AuthRoutes.getRouter()); 
 
     // Landing page pública
     this.app.get('/', (req, res) => {
       res.render('landingpage');
     });
     
-
     // Endpoints protegidos
-    const auth = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado", "cliente")];
+    const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "empleado", "cliente")];
+    const authEmpleados = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "empleado")];
+    const authAdmin = [Passport.authenticate(), AuthMiddleware.authorize("administrador")];
 
-   const authEmpleados = [Passport.authenticate(),AuthMiddleware.authorize("administrador", "empleado")];
+    this.app.use("/employee", EmployeeRoutes.getRouter());
+    this.app.use("/project", ProjectRoutes.getRouter());
+    this.app.use("/tasks", TaskRoutes.getRouter()); // ⬅️ ÚNICO CAMBIO: /task → /tasks
 
-    const authAdmin = [Passport.authenticate(),AuthMiddleware.authorize("administrador")];
-
-   
-    this.app.use("/employee",  EmployeeRoutes.getRouter());//auth,
-    this.app.use("/project",  ProjectRoutes.getRouter());// auth,
-    this.app.use("/task",  TaskRoutes.getRouter());//auth,
-
-    
-      this.app.get(
+    // ========== DASHBOARD (VERSIÓN ACTUALIZADA CON CLIENTES Y EMPLEADOS) ==========
+    this.app.get(
       "/dashboard",
       Passport.authenticate(),
       AuthMiddleware.authorize("administrador", "empleado"),
@@ -84,16 +73,18 @@ export class Server{
         try {
           const user = req.user;
 
-          // Si es administrador, muestra todo
           let proyectos = [];
           let tareas = [];
+          let clientes = [];
+          let empleados = [];
 
           if (user.rol === "administrador") {
             proyectos = await Project.find().populate("clienteId").lean();
-            tareas = await Task.find().populate("empleados").lean();
+            tareas = await Task.find().populate("empleados").populate("project").lean();
+            clientes = await Client.find().lean();
+            empleados = await Employee.find().lean();
           }
 
-          // Si es empleado, solo sus proyectos y tareas asignadas
           if (user.rol === "empleado") {
             proyectos = await Project.find({ empleados: user.id })
               .populate("clienteId")
@@ -104,11 +95,13 @@ export class Server{
               .lean();
           }
 
-          res.render("dashboardempleados", {
+          res.render("dashboardempleados", { // ⬅️ SIN CAMBIOS (como estaba originalmente)
             title: "Mi Dashboard",
             user,
             proyectos,
             tareas,
+            clientes,
+            empleados
           });
         } catch (error) {
           console.error("Error al cargar dashboard:", error);
@@ -135,9 +128,3 @@ export class Server{
     });
   }
 }
-    
-    
-
-
-
-

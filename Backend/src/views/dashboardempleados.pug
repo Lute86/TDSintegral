@@ -6,6 +6,7 @@ html(lang="es")
     title Dashboard | Clickwave
     link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap", rel="stylesheet")
     link(rel="stylesheet", href="/css/dashboard.css")
+    link(rel="stylesheet", href="/css/modals.css")
     script(src="/js/dashboard.js" defer)
   body.dashboard-layout
     // HEADER SUPERIOR
@@ -28,7 +29,7 @@ html(lang="es")
           .dash-card-header
             h3 Proyectos
             if user && user.rol === 'administrador'
-              a.btn-view-all(href="/projects/new") ➕ Nuevo
+              a.btn-view-all(href="#" onclick="openProjectModal(); return false;") ➕ Nuevo
           .dash-card-body
             ul.project-list#projectList
               if proyectos && proyectos.length > 0
@@ -36,14 +37,16 @@ html(lang="es")
                   li.project-item
                     .left
                       strong.project-name= proyecto.nombre
+                      if proyecto.horasCotizadas
+                        small.project-hours 💼 #{proyecto.horasCotizadas} horas cotizadas
                     .right
                       if user && user.rol === 'administrador'
-                        form(action=`/projects/${proyecto._id}?_method=PUT`, method="POST", class="inline-form")
+                        form(action=`/project/${proyecto._id}?_method=PUT`, method="POST", class="inline-form")
                           select(name="estado", onchange="this.form.submit()")
                             option(value="pendiente", selected=proyecto.estado==='pendiente') Pendiente
                             option(value="en curso", selected=proyecto.estado==='en curso') En curso
                             option(value="finalizado", selected=proyecto.estado==='finalizado') Finalizado
-                        a.btn-edit(href=`/projects/${proyecto._id}/edit`) ✏️
+                        a.btn-edit(href=`/project/${proyecto._id}/edit`) ✏️
                         button.btn-delete(type="button", onclick=`deleteProject('${proyecto._id}')`) 🗑️
                       else
                         span.badge(class=`item-status ${proyecto.estado}`)= proyecto.estado
@@ -55,7 +58,7 @@ html(lang="es")
           .dash-card-header
             h3 Tareas del Proyecto
             if user && user.rol === 'administrador'
-              a.btn-view-all(href="/tasks/new") ➕ Nueva
+              a.btn-view-all(href="#" onclick="openTaskModal(); return false;") ➕ Nueva
           .dash-card-body
             if tareas && tareas.length > 0
               ul.task-list#taskList
@@ -83,19 +86,22 @@ html(lang="es")
         .dash-card.admin-section
           .dash-card-header
             h3 Gestión de Empleados
-            a.btn-view-all(href="/admin/empleados/new") ➕ Nuevo Empleado
+            a.btn-view-all(href="#" onclick="openEmployeeModal(); return false;") ➕ Nuevo Empleado
           .dash-card-body
-            ul.employee-list#employeeList
-              if empleados && empleados.length > 0
+            if empleados && empleados.length > 0
+              ul.employee-list#employeeList
                 each e in empleados
                   li.employee-item
-                    span.emp-name= `${e.nombre} ${e.apellido}`
-                    span.emp-role= e.rol
+                    .employee-info
+                      .employee-details
+                        span.emp-name= `${e.nombre} ${e.apellido || ''}`
+                        span.emp-email= e.email
+                      span.emp-role(class=e.rol === 'administrador' ? 'role-admin' : 'role-employee')= e.rol
                     .emp-actions
-                      a(href=`/admin/empleados/${e._id}/edit`) ✏️
-                      button(type="button", onclick=`deleteEmployee('${e._id}')`) 🗑️
-              else
-                li No hay empleados registrados.
+                      a.btn-edit(href="#" onclick=`openEditEmployeeModal('${e._id}', '${e.nombre}', '${e.apellido || ''}', '${e.email}', '${e.rol}'); return false;` title="Editar empleado") ✏️
+                      button.btn-delete(type="button" onclick=`deleteEmployee('${e._id}')` title="Eliminar empleado") 🗑️
+            else
+              p.text-muted No hay empleados registrados.
 
         .dash-card.metrics
           .dash-card-header
@@ -103,22 +109,287 @@ html(lang="es")
           .dash-card-body
             p.text-muted Aquí se mostrarán métricas globales para administradores.
 
+    // ================== MODAL NUEVO PROYECTO
+    #projectModalOverlay.modal-overlay
+      .modal-container
+        .modal-header
+          h2 Nuevo Proyecto
+          button.modal-close(onclick="closeProjectModal()") &times;
+        form#projectForm(action="/project/save", method="POST")
+          .modal-body
+            .form-group
+              label(for="projectName") Nombre del Proyecto *
+              input(type="text", name="nombre", id="projectName", required, placeholder="Ej: Rediseño Web Corporativo")
+            
+            .form-group
+              label(for="projectClient") Cliente *
+              select(name="clienteId", id="projectClient", required)
+                option(value="", disabled, selected) Seleccionar cliente...
+                if clientes && clientes.length > 0
+                  each cliente in clientes
+                    option(value=cliente._id)= `${cliente.nombre} ${cliente.apellido || ''}`
+                else
+                  option(value="", disabled) No hay clientes registrados
+            
+            .form-group
+              label(for="projectDescription") Descripción
+              textarea(name="descripcion", id="projectDescription", placeholder="Describe brevemente el proyecto...")
+            
+            .form-group
+              label Servicios Asociados (las horas se calculan automáticamente)
+              .servicios-container
+                label.servicio-chip(data-horas="40")
+                  input(type="checkbox", name="servicios[]", value="diseño_web")
+                  span Diseño Web (40h)
+                label.servicio-chip(data-horas="30")
+                  input(type="checkbox", name="servicios[]", value="seo")
+                  span SEO (30h)
+                label.servicio-chip(data-horas="25")
+                  input(type="checkbox", name="servicios[]", value="adwords")
+                  span AdWords (25h)
+                label.servicio-chip(data-horas="35")
+                  input(type="checkbox", name="servicios[]", value="cm")
+                  span Community Manager (35h)
+                label.servicio-chip(data-horas="20")
+                  input(type="checkbox", name="servicios[]", value="email_marketing")
+                  span Email Marketing (20h)
+                label.servicio-chip(data-horas="30")
+                  input(type="checkbox", name="servicios[]", value="google_ads")
+                  span Google Ads (30h)
+                label.servicio-chip(data-horas="28")
+                  input(type="checkbox", name="servicios[]", value="rrss_ads")
+                  span Publicidad RRSS (28h)
+            
+            .form-group
+              label(for="horasCotizadas") Horas Totales Cotizadas
+              input(type="number", name="horasCotizadas", id="horasCotizadas", readonly, value="0", style="background: #f3f4f6; cursor: not-allowed;")
+            
+            .form-group
+              label(for="projectStatus") Estado Inicial
+              select(name="estado", id="projectStatus")
+                option(value="pendiente", selected) Pendiente
+                option(value="en curso") En curso
+                option(value="finalizado") Finalizado
+          
+          .modal-footer
+            button.btn-modal.btn-cancel(type="button", onclick="closeProjectModal()") Cancelar
+            button.btn-modal.btn-submit(type="submit") Crear Proyecto
+
+    // ================== MODAL NUEVA TAREA
+    #taskModalOverlay.modal-overlay
+      .modal-container
+        .modal-header
+          h2 Nueva Tarea
+          button.modal-close(onclick="closeTaskModal()") &times;
+        form#taskForm(action="/tasks/save", method="POST")
+          .modal-body
+            .form-group
+              label(for="taskName") Título de la Tarea *
+              input(type="text", name="nombre", id="taskName", required, placeholder="Ej: Diseñar mockup homepage")
+            
+            .form-group
+              label(for="taskDescription") Descripción de la Tarea
+              textarea(name="descripcion", id="taskDescription", placeholder="Detalla qué debe hacerse en esta tarea...")
+            
+            .form-group
+              label(for="taskProject") Proyecto Asociado *
+              select(name="project", id="taskProject", required)
+                option(value="", disabled, selected) Seleccionar proyecto...
+                if proyectos && proyectos.length > 0
+                  each proyecto in proyectos
+                    option(value=proyecto._id)= proyecto.nombre
+                else
+                  option(value="", disabled) No hay proyectos disponibles
+            
+            .form-group
+              label(for="taskStatus") Estado Inicial
+              select(name="estado", id="taskStatus")
+                option(value="pendiente", selected) Pendiente
+                option(value="en proceso") En proceso
+                option(value="finalizada") Finalizada
+          
+          .modal-footer
+            button.btn-modal.btn-cancel(type="button", onclick="closeTaskModal()") Cancelar
+            button.btn-modal.btn-submit(type="submit") Crear Tarea
+
+    // ================== MODAL NUEVO EMPLEADO
+    #employeeModalOverlay.modal-overlay
+      .modal-container
+        .modal-header
+          h2#employeeModalTitle Nuevo Empleado
+          button.modal-close(onclick="closeEmployeeModal()") &times;
+        form#employeeForm(action="/employee/save", method="POST")
+          input(type="hidden", name="employeeId", id="employeeId")
+          .modal-body
+            .form-group
+              label(for="employeeName") Nombre *
+              input(type="text", name="nombre", id="employeeName", required, placeholder="Ej: Juan")
+            
+            .form-group
+              label(for="employeeLastName") Apellido *
+              input(type="text", name="apellido", id="employeeLastName", required, placeholder="Ej: Pérez")
+            
+            .form-group
+              label(for="employeeEmail") Email *
+              input(type="email", name="email", id="employeeEmail", required, placeholder="Ej: juan.perez@clickwave.com")
+            
+            .form-group
+              label(for="employeePassword") Contraseña *
+              input(type="password", name="password", id="employeePassword", placeholder="Mínimo 6 caracteres")
+              small.password-hint Se requiere solo al crear un nuevo empleado
+            
+            .form-group
+              label(for="employeeRole") Rol *
+              select(name="rol", id="employeeRole", required)
+                option(value="", disabled, selected) Seleccionar rol...
+                option(value="empleado") Empleado
+                option(value="administrador") Administrador
+          
+          .modal-footer
+            button.btn-modal.btn-cancel(type="button", onclick="closeEmployeeModal()") Cancelar
+            button.btn-modal.btn-submit(type="submit" id="employeeSubmitBtn") Crear Empleado
+
     // ================== SCRIPTS
     script.
       async function deleteProject(id) {
         if (!confirm('¿Eliminar proyecto y sus tareas asociadas?')) return;
-        await fetch(`/projects/${id}`, { method: 'DELETE' });
+        await fetch(`/project/${id}`, { method: 'DELETE' });
         location.reload();
       }
 
       async function deleteTask(id) {
         if (!confirm('¿Eliminar esta tarea?')) return;
-        await fetch(`/tasks/${id}`, { method: 'DELETE' });
-        location.reload();
+        try {
+          const response = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            location.reload();
+          } else {
+            alert('Error al eliminar la tarea');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al eliminar la tarea');
+        }
       }
 
       async function deleteEmployee(id) {
-        if (!confirm('¿Eliminar este empleado?')) return;
-        await fetch(`/employee/${id}`, { method: 'DELETE' });
-        location.reload();
+        if (!confirm('¿Estás seguro de eliminar este empleado? Esta acción no se puede deshacer.')) return;
+        try {
+          const response = await fetch(`/employee/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            location.reload();
+          } else {
+            const error = await response.json();
+            alert(error.message || 'Error al eliminar el empleado');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al eliminar el empleado');
+        }
+      }
+
+      // Modal de Proyectos
+      function openProjectModal() {
+        document.getElementById('projectModalOverlay').classList.add('show');
+      }
+
+      function closeProjectModal() {
+        document.getElementById('projectModalOverlay').classList.remove('show');
+        document.getElementById('projectForm').reset();
+      }
+
+      // Modal de Tareas
+      function openTaskModal() {
+        document.getElementById('taskModalOverlay').classList.add('show');
+      }
+
+      function closeTaskModal() {
+        document.getElementById('taskModalOverlay').classList.remove('show');
+        document.getElementById('taskForm').reset();
+      }
+
+      // Modal de Empleados
+      function openEmployeeModal() {
+        // Resetear formulario para crear nuevo
+        document.getElementById('employeeForm').reset();
+        document.getElementById('employeeId').value = '';
+        document.getElementById('employeeModalTitle').textContent = 'Nuevo Empleado';
+        document.getElementById('employeeSubmitBtn').textContent = 'Crear Empleado';
+        document.getElementById('employeeForm').action = '/employee/save';
+        document.getElementById('employeePassword').required = true;
+        document.querySelector('.password-hint').style.display = 'block';
+        document.getElementById('employeeModalOverlay').classList.add('show');
+      }
+
+      function openEditEmployeeModal(id, nombre, apellido, email, rol) {
+        // Llenar formulario para editar
+        document.getElementById('employeeId').value = id;
+        document.getElementById('employeeName').value = nombre;
+        document.getElementById('employeeLastName').value = apellido;
+        document.getElementById('employeeEmail').value = email;
+        document.getElementById('employeeRole').value = rol;
+        document.getElementById('employeePassword').value = '';
+        document.getElementById('employeePassword').required = false;
+        document.querySelector('.password-hint').style.display = 'none';
+        
+        document.getElementById('employeeModalTitle').textContent = 'Editar Empleado';
+        document.getElementById('employeeSubmitBtn').textContent = 'Guardar Cambios';
+        document.getElementById('employeeForm').action = `/employee/update/${id}`;
+        
+        document.getElementById('employeeModalOverlay').classList.add('show');
+      }
+
+      function closeEmployeeModal() {
+        document.getElementById('employeeModalOverlay').classList.remove('show');
+        document.getElementById('employeeForm').reset();
+      }
+
+      // Cerrar modales con tecla ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeProjectModal();
+          closeTaskModal();
+          closeEmployeeModal();
+        }
+      });
+
+      // Cerrar modal al hacer clic fuera
+      document.getElementById('projectModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeProjectModal();
+      });
+
+      document.getElementById('taskModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeTaskModal();
+      });
+
+      document.getElementById('employeeModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeEmployeeModal();
+      });
+
+      // Efecto visual para servicios seleccionados
+      document.querySelectorAll('.servicio-chip').forEach(chip => {
+        const checkbox = chip.querySelector('input[type="checkbox"]');
+        
+        chip.addEventListener('click', function(e) {
+          if (e.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+          this.classList.toggle('selected', checkbox.checked);
+          calcularHorasTotales();
+        });
+      });
+
+      // Calcular horas totales según servicios seleccionados
+      function calcularHorasTotales() {
+        let totalHoras = 0;
+        document.querySelectorAll('.servicio-chip input[type="checkbox"]:checked').forEach(checkbox => {
+          const chip = checkbox.closest('.servicio-chip');
+          const horas = parseInt(chip.getAttribute('data-horas')) || 0;
+          totalHoras += horas;
+        });
+        
+        const horasInput = document.getElementById('horasCotizadas');
+        if (horasInput) {
+          horasInput.value = totalHoras;
+        }
       }
