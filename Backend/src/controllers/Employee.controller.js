@@ -216,7 +216,61 @@ static async updateEmployee(req, res) {
     res.status(500).send('Error al actualizar empleado');
   }
 }
+
+static async save(req, res) {
+  try {
+    const { nombre, apellido, email, password, rol } = req.body;
     
+    if (!password || password.length < 6) {
+      return res.status(400).send('La contraseña debe tener al menos 6 caracteres');
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    
+    const newEmployee = await EmployeeService.create({
+      nombre,
+      apellido,
+      email,
+      password: hashedPassword,
+      rol: rol || 'empleado'
+    });
+    
+    res.redirect('/dashboard');
+  } catch (error) {
+    console.error('Error al crear empleado:', error);
+    if (error.code === 11000) {
+      return res.status(400).send('El email ya está registrado');
+    }
+    res.status(500).send('Error al crear empleado');
+  }
+}
+
+static async updateEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const { nombre, apellido, email, password, rol } = req.body;
+    
+    const updateData = {
+      nombre,
+      apellido,
+      email,
+      rol
+    };
+    
+    // Solo actualizar password si se proporciona uno nuevo
+    if (password && password.length >= 6) {
+      const saltRounds = 10;
+      updateData.password = await bcrypt.hash(password, saltRounds);
+    }
+    
+    await EmployeeService.update(id, updateData);
+    res.redirect('/dashboard');
+  } catch (error) {
+    console.error('Error al actualizar empleado:', error);
+    res.status(500).send('Error al actualizar empleado');
+  }
+}
 
 }
 

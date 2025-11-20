@@ -59,8 +59,14 @@ export class TaskController {
         fechaFin, 
         horasEstimadas, 
         project,
-        empleadoAsignado 
+        empleados
       } = req.body;
+      
+      // Convertir empleados a array si viene como string único
+      let empleadosArray = [];
+      if (empleados) {
+        empleadosArray = Array.isArray(empleados) ? empleados : [empleados];
+      }
       
       const task = new Task({
         nombre,
@@ -71,7 +77,7 @@ export class TaskController {
         fechaFin,
         horasEstimadas,
         project,
-        empleados: empleadoAsignado ? [empleadoAsignado] : [],
+        empleados: empleadosArray,
         horas: 0
       });
       
@@ -96,6 +102,32 @@ export class TaskController {
       res.json(task);
     } catch (error) {
       res.status(400).json({ message: error.message });
+    }
+  }
+
+  static async updateTask(req, res) {
+    try {
+      const { id } = req.params;
+      const { nombre, descripcion, estado, project, empleados } = req.body;
+      
+      // Convertir empleados a array si viene como string único
+      let empleadosArray = [];
+      if (empleados) {
+        empleadosArray = Array.isArray(empleados) ? empleados : [empleados];
+      }
+      
+      await Task.findByIdAndUpdate(id, {
+        nombre,
+        descripcion,
+        estado,
+        project,
+        empleados: empleadosArray
+      });
+      
+      res.redirect('/dashboard');
+    } catch (error) {
+      console.error('Error al actualizar tarea:', error);
+      res.status(500).send('Error al actualizar la tarea');
     }
   }
 

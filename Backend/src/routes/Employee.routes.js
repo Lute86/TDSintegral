@@ -17,6 +17,10 @@ const auth = [AuthMiddleware.authorize("administrador", "supervisor")];
         router.put('/myprofile/:id', EmployeeController.updatePut)
         router.patch('/myprofile/:id', EmployeeController.update)
         router.delete('/employee/:id', EmployeeController.deleteById); 
+        
+        // Rutas para el dashboard
+        router.post('/save', EmployeeController.save);
+        router.post('/update/:id', EmployeeController.updateEmployee);
 
     // REST
     router.get('/profiles', EmployeeController.getAll);
