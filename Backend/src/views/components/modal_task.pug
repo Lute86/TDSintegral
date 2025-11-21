@@ -1,0 +1,49 @@
+#taskModalOverlay.modal-overlay
+  .modal-container
+    .modal-header
+      h2#taskModalTitle Nueva Tarea
+      button.modal-close(onclick="closeTaskModal()") &times;
+    form#taskForm(action="/tasks/save", method="POST")
+      input#taskId(type="hidden", name="taskId")
+      .modal-body
+        .form-group
+          label(for="taskName") Título de la Tarea *
+          input#taskName(
+            type="text",
+            name="nombre",
+            required,
+            placeholder="Ej: Diseñar mockup homepage"
+          )
+        .form-group
+          label(for="taskDescription") Descripción de la Tarea
+          textarea#taskDescription(
+            name="descripcion",
+            placeholder="Detalla qué debe hacerse..."
+          )
+        .form-group
+          label(for="taskProject") Proyecto Asociado *
+          select#taskProject(name="project", required)
+            option(value="", disabled, selected) Seleccionar proyecto...
+            if proyectos && proyectos.length > 0
+              each proyecto in proyectos
+                option(value=proyecto._id)= proyecto.nombre
+            else
+              option(value="", disabled) No hay proyectos disponibles
+        .form-group
+          label(for="taskEmployees") Asignar Empleados
+          select#taskEmployees(name="empleados", multiple, size="4")
+            if empleados && empleados.length > 0
+              each empleado in empleados
+                option(value=empleado._id)= empleado.nombre + " " + (empleado.apellido || "")
+            else
+              option(value="", disabled) No hay empleados disponibles
+          small.hint-text Mantén Ctrl para seleccionar múltiples
+        .form-group
+          label(for="taskStatus") Estado Inicial
+          select#taskStatus(name="estado")
+            option(value="pendiente", selected) Pendiente
+            option(value="en proceso") En proceso
+            option(value="finalizada") Finalizada
+      .modal-footer
+        button.btn-modal.btn-cancel(type="button", onclick="closeTaskModal()") Cancelar
+        button#taskSubmitBtn.btn-modal.btn-submit(type="submit") Crear Tarea

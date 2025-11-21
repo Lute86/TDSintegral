@@ -1,0 +1,52 @@
+#employeeModalOverlay.modal-overlay
+  .modal-container
+    .modal-header
+      h2#employeeModalTitle Nuevo Empleado
+      button.modal-close(onclick="closeEmployeeModal()") &times;
+    form#employeeForm(action="/employee/save", method="POST")
+      input#employeeId(type="hidden", name="employeeId")
+      .modal-body
+        .form-group
+          label(for="employeeName") Nombre *
+          input#employeeName(
+            type="text",
+            name="nombre",
+            required,
+            placeholder="Ej: Juan"
+          )
+        .form-group
+          label(for="employeeLastName") Apellido *
+          input#employeeLastName(
+            type="text",
+            name="apellido",
+            required,
+            placeholder="Ej: Pérez"
+          )
+        .form-group
+          label(for="employeeEmail") Email *
+          input#employeeEmail(
+            type="email",
+            name="email",
+            required,
+            placeholder="Ej: juan@clickwave.com"
+          )
+        .form-group
+          label(for="employeePassword") Contraseña *
+          input#employeePassword(
+            type="password",
+            name="password",
+            placeholder="Mínimo 6 caracteres"
+          )
+          small.password-hint Se requiere solo al crear nuevo empleado
+        .form-group
+          label(for="employeeRole") Rol *
+          select#employeeRole(name="rol", required)
+            option(value="", disabled, selected) Seleccionar rol...
+            option(value="empleado") Empleado
+            option(value="administrador") Administrador
+      .modal-footer
+        button.btn-modal.btn-cancel(
+          type="button",
+          onclick="closeEmployeeModal()"
+        ) Cancelar
+        button#employeeSubmitBtn.btn-modal.btn-submit(type="submit") Crear Empleado

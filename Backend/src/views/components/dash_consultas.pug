@@ -1,0 +1,49 @@
+.dash-card.consultas-section
+  .dash-card-header
+    h3 📩 Consultas de Clientes
+    if consultas && consultas.length > 0
+      - const nuevas = consultas.filter((c) => c.estado === "nuevo").length;
+      if nuevas > 0
+        span.consultas-badge= nuevas
+  .dash-card-body
+    if consultas && consultas.length > 0
+      ul.consultas-list
+        each c in consultas
+          li.consulta-item(class=c.estado)
+            .consulta-main
+              .consulta-header
+                strong.consulta-nombre= c.nombre + " " + c.apellido
+                span.consulta-badge(class="badge-" + c.estado)= c.estado
+              .consulta-details
+                small.consulta-email 📧 #{ c.email }
+                small.consulta-servicio 🎯 #{ c.servicio }
+                if c.consulta
+                  p.consulta-mensaje= c.consulta
+            .consulta-actions
+              if c.estado === "nuevo"
+                form(
+                  action="/clientes/" + c._id + "/estado",
+                  method="POST",
+                  style="display: inline"
+                )
+                  input(type="hidden", name="estado", value="contactado")
+                  button.btn-contactar(type="submit") ✓
+              if c.estado === "contactado"
+                form(
+                  action="/clientes/" + c._id + "/estado",
+                  method="POST",
+                  style="display: inline"
+                )
+                  input(type="hidden", name="estado", value="cerrado")
+                  button.btn-cerrar(type="submit") ✅
+              form(
+                action="/clientes/" + c._id + "?_method=DELETE",
+                method="POST",
+                style="display: inline"
+              )
+                button.btn-delete(
+                  type="submit",
+                  onclick="return confirm('¿Eliminar consulta?')"
+                ) 🗑️
+    else
+      p.text-muted No hay consultas registradas.
