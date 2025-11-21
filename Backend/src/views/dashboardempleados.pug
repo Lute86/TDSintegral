@@ -72,7 +72,7 @@ html(lang="es")
                           small.task-assigned 👤 Sin asignar
                     .task-actions
                       if user && user.rol === 'administrador'
-                        a.btn-edit(href="#", onclick=`openEditTaskModal(${t._id}); return false;`) ✏️
+                        a.btn-edit(href="#", onclick="openEditTaskModal('" + t._id + "'); return false;") ✏️
                         form(action="/tasks/" + t._id + "?_method=DELETE", method="POST", style="display:inline")
                           button.btn-delete(type="submit", onclick="return confirm('¿Eliminar tarea?')") 🗑️
                       else
@@ -326,7 +326,7 @@ html(lang="es")
         document.getElementById('taskForm').action = '/tasks/save';
         document.getElementById('taskModalOverlay').classList.add('show');
       }
-      function openEditTaskModal(id) { //esto falla
+      function openEditTaskModal(id) {
         fetch('/tasks/' + id)
           .then(function(res) { return res.json(); })
           .then(function(task) {
