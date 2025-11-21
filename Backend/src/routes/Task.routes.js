@@ -22,7 +22,7 @@ class TaskRoutes {
 
     // ========== RUTAS API REST ==========
     router.get("/", auth, TaskController.getAll);
-    router.get("/:id", auth, TaskController.getById);
+    router.get("/:id",  TaskController.getById);
     router.post("/", auth, TaskValidator.validateCreate, TaskController.create);
     router.put("/:id", auth, TaskValidator.validateUpdate, TaskController.update);
     router.delete("/:id", auth, TaskController.deleteById);

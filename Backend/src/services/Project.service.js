@@ -221,14 +221,14 @@ export class ProjectService {
 //----------------------------------------
 
  static async getAllWithTasks() {
-    return await Project.findAll({
+    return await Project.find({
       include: [{ model: Task }],
       order: [["id", "ASC"]],
     });
-  }
+  } 
 
   static async getById(id) {
-    return await Project.findByPk(id, { include: [{ model: Task }] });
+    return await Project.findById(id, { include: [{ model: Task }] });
   }
 
   static async create(data) {
@@ -236,13 +236,13 @@ export class ProjectService {
   }
 
   static async update(id, data) {
-    const project = await Project.findByPk(id);
+    const project = await Project.findById(id);
     if (!project) throw new Error("Proyecto no encontrado");
     return await project.update(data);
   }
 
   static async delete(id) {
-    const project = await Project.findByPk(id);
+    const project = await Project.findById(id);
     if (!project) throw new Error("Proyecto no encontrado");
     await project.destroy();
   }

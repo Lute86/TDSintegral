@@ -92,8 +92,8 @@ export class ProjectController {
   }
 
   static async showForm(req, res) {
-    const { id } = req.params;
-    let project = null;
+    const { id } = req.params; 
+    let project = null; 
 
     if (id) project = await ProjectService.getById(id);
     res.render("projects/form", { project });
