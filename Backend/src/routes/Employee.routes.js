@@ -1,57 +1,27 @@
 import { Router } from "express";
 import { EmployeeController } from "../controllers/Employee.controller.js";
-import methodOverride from "method-override";
 import { EmployeeValidator } from "../middlewares/validators/employee.validator.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
+import { Passport } from "../config/Passport.config.js";
 
-const auth = [AuthMiddleware.authorize("administrador", "supervisor")];
+class EmployeeRoutes {
+  static getRouter() {
+    const router = Router();
 
- class EmployeeRoutes{
-    
-    static getRouter(){
-        const router = Router();
-        //rutas
-        router.get('/profiles', auth, EmployeeController.getAll)
-        router.get('/myprofile/:id', EmployeeController.getById)
-        router.post('/register', auth, EmployeeValidator.validateCreate, EmployeeController.create)
-        router.put('/myprofile/:id', EmployeeController.updatePut)
-        router.patch('/myprofile/:id', EmployeeController.update)
-        router.delete('/employee/:id', EmployeeController.deleteById); 
-        
-        // Rutas para el dashboard
-        router.post('/save', EmployeeController.save);
-        router.post('/update/:id', EmployeeController.updateEmployee);
+    const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "supervisor")];
+    const authAdmin = [Passport.authenticate(), AuthMiddleware.authorize("administrador")];
 
-    // REST
-    router.get('/profiles', EmployeeController.getAll);
+    // ========== RUTAS DASHBOARD (POST forms) ==========
+    router.post('/save', authAdmin, EmployeeController.save);
+    router.post('/update/:id', authAdmin, EmployeeController.updateEmployee);
+
+    // ========== RUTAS API REST ==========
+    router.get('/profiles', auth, EmployeeController.getAll);
     router.get('/myprofile/:id', EmployeeController.getById);
-    router.post('/profiles', EmployeeController.create);
-    router.put('/myprofile/:id', EmployeeController.updatePut);
-    router.patch('/myprofile/:id', EmployeeController.update);
-    router.delete('/employee/:id', EmployeeController.deleteById);
-    
-    router.post('/save', EmployeeController.save);
-    router.post('/update/:id', EmployeeController.updateEmployee);
-
-    // Visual dashboard
-
-    router.get('/', (req, res) => {
-    res.redirect('/dashboard');
-    });
-
-    router.get('/dashboard', async (req, res) => {
-      try {
-        const employees = await EmployeeController.getAllRaw();
-        res.render('index', { employees });
-      } catch (error) {
-        res.status(500).send('Error al cargar el dashboard');
-      }
-    });
-
-    router.post('/dashboard/employee', EmployeeController.dashboardCreate);
-    router.get('/dashboard/employee/:id/edit', EmployeeController.edit);
-    router.put('/dashboard/employee/:id', EmployeeController.dashboardUpdate);
-    router.delete('/dashboard/employee/:id', EmployeeController.dashboardDelete);
+    router.post('/register', auth, EmployeeValidator.validateCreate, EmployeeController.create);
+    router.put('/myprofile/:id', auth, EmployeeController.updatePut);
+    router.patch('/myprofile/:id', auth, EmployeeController.update);
+    router.delete('/:id', authAdmin, EmployeeController.deleteById);
 
     return router;
   }
