@@ -1,0 +1,10 @@
+// views/includes/header.pug
+
+header.header
+  .header-left
+    h1.logo Clickwave 
+  .header-center
+    input#globalSearch(type="text", placeholder="Buscar proyectos, tareas o empleados...") 
+  .header-right
+    span.user-name= user ? user.nombre : 'Empleado' 
+    a(href="/auth/logout").logout-btn Cerrar sesión 

@@ -1,0 +1,123 @@
+//- SCRIPTS 
+script.
+  // Modal Proyecto
+  function openProjectModal() {
+    document.getElementById("projectModalOverlay").classList.add("show");
+  }
+  function closeProjectModal() {
+    document.getElementById("projectModalOverlay").classList.remove("show");
+    document.getElementById("projectForm").reset();
+  }
+
+  // Modal Tarea
+  function openTaskModal() {
+    document.getElementById("taskForm").reset();
+    document.getElementById("taskId").value = "";
+    document.getElementById("taskModalTitle").textContent = "Nueva Tarea";
+    document.getElementById("taskSubmitBtn").textContent = "Crear Tarea";
+    document.getElementById("taskForm").action = "/tasks/save";
+    document.getElementById("taskModalOverlay").classList.add("show");
+  }
+  function openEditTaskModal(id) {
+    fetch("/tasks/" + id)
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (task) {
+        document.getElementById("taskId").value = id;
+        document.getElementById("taskName").value = task.nombre;
+        document.getElementById("taskDescription").value = task.descripcion || "";
+        document.getElementById("taskProject").value = task.project._id || task.project;
+        document.getElementById("taskStatus").value = task.estado;
+        var empSelect = document.getElementById("taskEmployees");
+        for (var i = 0; i < empSelect.options.length; i++) {
+          var opt = empSelect.options[i];
+          opt.selected =
+            task.empleados &&
+            task.empleados.some(function (emp) {
+              return (emp._id || emp) === opt.value;
+            });
+        }
+        document.getElementById("taskModalTitle").textContent = "Editar Tarea";
+        document.getElementById("taskSubmitBtn").textContent = "Guardar Cambios";
+        document.getElementById("taskForm").action = "/tasks/update/" + id;
+        document.getElementById("taskModalOverlay").classList.add("show");
+      })
+      .catch(function (err) {
+        console.error("Error:", err);
+        alert("Error al cargar la tarea");
+      });
+  }
+  function closeTaskModal() {
+    document.getElementById("taskModalOverlay").classList.remove("show");
+    document.getElementById("taskForm").reset();
+  }
+
+  // Modal Empleado
+  function openEmployeeModal() {
+    document.getElementById("employeeForm").reset();
+    document.getElementById("employeeId").value = "";
+    document.getElementById("employeeModalTitle").textContent = "Nuevo Empleado";
+    document.getElementById("employeeSubmitBtn").textContent = "Crear Empleado";
+    document.getElementById("employeeForm").action = "/employee/save";
+    document.getElementById("employeePassword").required = true;
+    document.querySelector(".password-hint").style.display = "block";
+    document.getElementById("employeeModalOverlay").classList.add("show");
+  }
+  function openEditEmployeeModal(id, nombre, apellido, email, rol) {
+    document.getElementById("employeeId").value = id;
+    document.getElementById("employeeName").value = nombre;
+    document.getElementById("employeeLastName").value = apellido;
+    document.getElementById("employeeEmail").value = email;
+    document.getElementById("employeeRole").value = rol;
+    document.getElementById("employeePassword").value = "";
+    document.getElementById("employeePassword").required = false;
+    document.querySelector(".password-hint").style.display = "none";
+    document.getElementById("employeeModalTitle").textContent = "Editar Empleado";
+    document.getElementById("employeeSubmitBtn").textContent = "Guardar Cambios";
+    document.getElementById("employeeForm").action = "/employee/update/" + id;
+    document.getElementById("employeeModalOverlay").classList.add("show");
+  }
+  function closeEmployeeModal() {
+    document.getElementById("employeeModalOverlay").classList.remove("show");
+    document.getElementById("employeeForm").reset();
+  }
+
+  // Cerrar modales con ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeProjectModal();
+      closeTaskModal();
+      closeEmployeeModal();
+    }
+  });
+
+  // Cerrar modales al hacer clic fuera
+  document.getElementById("projectModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeProjectModal();
+  });
+  document.getElementById("taskModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeTaskModal();
+  });
+  document.getElementById("employeeModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeEmployeeModal();
+  });
+
+  // Calcular horas por servicios
+  document.querySelectorAll(".servicio-chip").forEach(function (chip) {
+    var checkbox = chip.querySelector('input[type="checkbox"]');
+    chip.addEventListener("click", function (e) {
+      if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+      chip.classList.toggle("selected", checkbox.checked);
+      calcularHorasTotales();
+    });
+  });
+  function calcularHorasTotales() {
+    var total = 0;
+    document.querySelectorAll('.servicio-chip input[type="checkbox"]:checked').forEach(function (cb) {
+      var chip = cb.closest(".servicio-chip");
+      total += parseInt(chip.getAttribute("data-horas")) || 0;
+    });
+    var input = document.getElementById("horasCotizadas");
+    if (input) input.value = total;
+  }
