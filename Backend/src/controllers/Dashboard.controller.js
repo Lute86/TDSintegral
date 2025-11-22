@@ -47,7 +47,7 @@ export class DashboardController {
         consultas: consultas.length
       });
 
-      res.render("dashboardempleados", {
+      res.render("dashboard", {
         title: "Mi Dashboard",
         user,
         proyectos,
