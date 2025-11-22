@@ -1,0 +1,25 @@
+.dash-card.metrics-section
+  .dash-card-header
+    h3 📊 Métricas de Tareas
+  .dash-card-body
+    .metrics-grid
+      .metric-card.metric-pendiente
+        .metric-icon 📋
+        .metric-content
+          .metric-value= metricas.tareasPendientes
+          .metric-label Pendientes
+      .metric-card.metric-proceso
+        .metric-icon ⚡
+        .metric-content
+          .metric-value= metricas.tareasEnProceso
+          .metric-label En Proceso
+      .metric-card.metric-finalizada
+        .metric-icon ✅
+        .metric-content
+          .metric-value= metricas.tareasFinalizadas
+          .metric-label Finalizadas
+      .metric-card.metric-total
+        .metric-icon 📈
+        .metric-content
+          .metric-value= metricas.totalTareas
+          .metric-label Total

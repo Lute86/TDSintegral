@@ -1,38 +1,67 @@
-import { Project } from "../models/Project.model.js";
-import { Task } from "../models/Task.model.js";
-import { Employee } from "../models/Employee.model.js";
+import { ProjectService } from "../services/Project.service.js";
+import { TaskService } from "../services/Task.service.js";
+import { EmployeeService } from "../services/Employee.service.js";
+import { ClientService } from "../services/Client.service.js";
+import { ContactService } from "../services/Contact.service.js";
 
 export class DashboardController {
   static async renderDashboard(req, res) {
     try {
       const user = req.user;
-      const projectId = req.query.project || null;
 
-      // Listar todos los proyectos
-      const projects = await Project.find().lean();
+      let proyectos = [];
+      let tareas = [];
+      let clientes = [];
+      let empleados = [];
+      let consultas = [];
+      let metricas = {
+        tareasPendientes: 0,
+        tareasEnProceso: 0,
+        tareasFinalizadas: 0,
+        totalTareas: 0
+      };
 
-      // Si hay un proyecto seleccionado, mostrar sus tareas
-      let tasks = [];
-      if (projectId) {
-        if (user.rol === "administrador") {
-          tasks = await Task.find({ project: projectId }).populate("assignedTo").lean();
-        } else {
-          tasks = await Task.find({
-            project: projectId,
-            assignedTo: user._id
-          }).populate("assignedTo").lean();
-        }
+      if (user.rol === "administrador") {
+        // Admin ve todo
+        proyectos = await ProjectService.getAll();
+        tareas = await TaskService.getAll();
+        clientes = await ClientService.getAll();
+        empleados = await EmployeeService.getAll();
+        consultas = await ContactService.getAll();
+      } else if (user.rol === "empleado") {
+        // Empleado ve solo sus proyectos y tareas
+        proyectos = await ProjectService.getByEmployee(user._id);
+        tareas = await TaskService.getByEmployee(user._id);
       }
 
-      res.render("dashboard", {
-        user,
-        projects,
-        selectedProject: projectId,
-        tasks,
+      // Calcular métricas
+      metricas.totalTareas = tareas.length;
+      metricas.tareasPendientes = tareas.filter(t => t.estado === 'pendiente').length;
+      metricas.tareasEnProceso = tareas.filter(t => t.estado === 'en proceso').length;
+      metricas.tareasFinalizadas = tareas.filter(t => t.estado === 'finalizada').length;
+
+      console.log('📊 Dashboard cargado:', {
+        proyectos: proyectos.length,
+        tareas: tareas.length,
+        empleados: empleados.length,
+        consultas: consultas.length
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Error al cargar dashboard");
+
+      res.render("dashboard", {
+        title: "Mi Dashboard",
+        user,
+        proyectos,
+        tareas,
+        clientes,
+        empleados,
+        consultas,
+        metricas
+      });
+    } catch (error) {
+      console.error("❌ Error al cargar dashboard:", error);
+      res.status(500).render("error", {
+        message: "Error al cargar el dashboard"
+      });
     }
   }
 }

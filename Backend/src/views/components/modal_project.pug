@@ -1,0 +1,78 @@
+#projectModalOverlay.modal-overlay
+  .modal-container
+    .modal-header
+      h2 Nuevo Proyecto
+      button.modal-close(onclick="closeProjectModal()") &times;
+    form#projectForm(action="/project/save", method="POST")
+      .modal-body
+        .form-group
+          label(for="projectName") Nombre del Proyecto *
+          input#projectName(
+            type="text",
+            name="nombre",
+            required,
+            placeholder="Ej: Rediseño Web Corporativo"
+          )
+        .form-group
+          label(for="projectClient") Cliente *
+          select#projectClient(name="clienteId", required)
+            option(value="", disabled, selected) Seleccionar cliente...
+            if clientes && clientes.length > 0
+              each cliente in clientes
+                option(value=cliente._id)= cliente.nombre + " " + (cliente.apellido || "")
+            else
+              option(value="", disabled) No hay clientes registrados
+        .form-group
+          label(for="projectDescription") Descripción
+          textarea#projectDescription(
+            name="descripcion",
+            placeholder="Describe brevemente el proyecto..."
+          )
+        .form-group
+          label Servicios Asociados
+          .servicios-container
+            label.servicio-chip(data-horas="40")
+              input(type="checkbox", name="servicios[]", value="diseño_web")
+              span Diseño Web (40h)
+            label.servicio-chip(data-horas="30")
+              input(type="checkbox", name="servicios[]", value="seo")
+              span SEO (30h)
+            label.servicio-chip(data-horas="25")
+              input(type="checkbox", name="servicios[]", value="adwords")
+              span AdWords (25h)
+            label.servicio-chip(data-horas="35")
+              input(type="checkbox", name="servicios[]", value="cm")
+              span Community Manager (35h)
+            label.servicio-chip(data-horas="20")
+              input(
+                type="checkbox",
+                name="servicios[]",
+                value="email_marketing"
+              )
+              span Email Marketing (20h)
+            label.servicio-chip(data-horas="30")
+              input(type="checkbox", name="servicios[]", value="google_ads")
+              span Google Ads (30h)
+            label.servicio-chip(data-horas="28")
+              input(type="checkbox", name="servicios[]", value="rrss_ads")
+              span Publicidad RRSS (28h)
+        .form-group
+          label(for="horasCotizadas") Horas Totales Cotizadas
+          input#horasCotizadas(
+            type="number",
+            name="horasCotizadas",
+            readonly,
+            value="0"
+          )
+        .form-group
+          label(for="projectStatus") Estado Inicial
+          select#projectStatus(name="estado")
+            option(value="pendiente", selected) Pendiente
+            option(value="en curso") En curso
+            option(value="finalizado") Finalizado
+      .modal-footer
+        button.btn-modal.btn-cancel(
+          type="button",
+          onclick="closeProjectModal()"
+        ) Cancelar
+        button.btn-modal.btn-submit(type="submit") Crear Proyecto

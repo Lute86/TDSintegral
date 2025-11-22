@@ -1,0 +1,30 @@
+//- PROYECTOS
+#projectsCard.dash-card
+  .dash-card-header
+    h3 Proyectos
+    if user && user.rol === "administrador"
+      a.btn-view-all(href="#", onclick="openProjectModal(); return false;") ➕ Nuevo
+  .dash-card-body
+    ul.project-list
+      if proyectos && proyectos.length > 0
+        each proyecto in proyectos
+          li.project-item
+            .left
+              strong.project-name= proyecto.nombre
+              if proyecto.metricas && proyecto.metricas.horasCotizadas
+                small.project-hours 💼 #{ proyecto.metricas.horasCotizadas } horas cotizadas
+            .right
+              span.item-status(class=proyecto.estado)= proyecto.estado
+              if user && user.rol === "administrador"
+                a.btn-edit(href="/project/edit/" + proyecto._id) ✏️
+                form(
+                  action="/project/" + proyecto._id + "?_method=DELETE",
+                  method="POST",
+                  style="display: inline"
+                )
+                  button.btn-delete(
+                    type="submit",
+                    onclick="return confirm('¿Eliminar proyecto?')"
+                  ) 🗑️
+      else
+        li.text-muted No hay proyectos asignados.

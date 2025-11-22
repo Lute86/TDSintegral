@@ -1,66 +1,31 @@
 import { Router } from "express";
 import { TaskController } from "../controllers/Task.controller.js";
+import { TaskValidator } from "../middlewares/validators/task.validator.js";
 import { AuthMiddleware } from "../middlewares/auth/Auth.middleware.js";
-import { Task } from "../models/Task.model.js";
+import { Passport } from "../config/Passport.config.js";
 
 class TaskRoutes {
   static getRouter() {
     const router = Router();
-    
+
+    const auth = [Passport.authenticate(), AuthMiddleware.authorize("administrador", "empleado")];
+
     // ========== RUTAS ESPECÍFICAS PRIMERO ==========
-    // Tareas por proyecto (usado por JS)
-    router.get('/project/:projectId', TaskController.getByProject);
-    
-    // Vista de lista
-    router.get("/view/list", 
-      AuthMiddleware.authorize("administrador", "empleado"),
-      TaskController.renderList
-    );
+    router.get('/project/:projectId', auth, TaskController.getByProject);
+    router.get("/view/list", auth, TaskController.renderList);
 
-    // ========== RUTAS DE FORMULARIOS (POST/PUT/DELETE) ==========
-    // Guardar tarea desde el modal (la más importante)
-    router.post("/save", TaskController.save);
-    
-    // Actualizar estado de tarea
-    router.post("/:id/updateEstado", 
-      AuthMiddleware.authorize("empleado", "administrador"), 
-      async (req, res) => {
-        const { id } = req.params;
-        const { estado } = req.body;
-        try {
-          await Task.findByIdAndUpdate(id, { estado });
-          res.redirect("back");
-        } catch (err) {
-          console.error("Error al actualizar estado:", err);
-          res.status(500).send("Error al actualizar estado");
-        }
-      }
-    );
+    // ========== RUTAS DASHBOARD (POST forms) ==========
+    router.post("/save", auth, TaskController.save);
+    router.post("/update/:id", auth, TaskController.updateTask);
+    router.post("/:id/estado", auth, TaskController.updateEstado);
+    router.post("/:id/horas", auth, TaskController.updateHoras);
 
-    // Registrar horas trabajadas
-    router.post("/:id/horas", 
-      AuthMiddleware.authorize("empleado", "administrador"), 
-      async (req, res) => {
-        const { id } = req.params;
-        const { horasTrabajadas } = req.body;
-        try {
-          await Task.findByIdAndUpdate(id, { horasTrabajadas });
-          res.redirect("back");
-        } catch (err) {
-          console.error("Error al registrar horas:", err);
-          res.status(500).send("Error al registrar horas trabajadas");
-        }
-      }
-    );
-
-    // ========== RUTAS API (JSON) ==========
-    router.post("/", TaskController.create);
-    router.put("/:id", TaskController.update);
-    router.delete("/:id", TaskController.deleteById);
-    
-    // ========== RUTAS GENERALES AL FINAL ==========
-    router.get("/:id", TaskController.getById);
-    router.get("/", TaskController.getAll);
+    // ========== RUTAS API REST ==========
+    router.get("/", auth, TaskController.getAll);
+    router.get("/:id", auth, TaskController.getById);
+    router.post("/", auth, TaskValidator.validateCreate, TaskController.create);
+    router.put("/:id", auth, TaskValidator.validateUpdate, TaskController.update);
+    router.delete("/:id", auth, TaskController.deleteById);
 
     return router;
   }
