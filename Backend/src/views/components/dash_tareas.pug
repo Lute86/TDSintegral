@@ -17,39 +17,36 @@
                 small.task-project 📁 #{ t.project ? t.project.nombre : 'N/A' }
                 if t.empleados && t.empleados.length > 0
                   small.task-assigned 👤
-                    |
                     each emp, i in t.empleados
                       span= emp.nombre + " " + (emp.apellido || "")
                       if i < t.empleados.length - 1
                         span ,
                 else
                   small.task-assigned 👤 Sin asignar
+
             .task-actions
               if user && user.rol === "administrador"
                 a.btn-edit(
                   href="#",
-                  onclick="openEditTaskModal('" + t._id + "'); return false;"
+                  onclick=`openEditTaskModal(
+                    '${t._id}',
+                    '${t.nombre || ""}',
+                    '${(t.descripcion || "").replace(/'/g,"\\'").replace(/"/g,'\\"')}',
+                    '${t.project ? t.project._id : t.project}',
+                    '${t.estado}',
+                    '${(t.empleados || []).map(e => e._id || e).join(",")}'
+                  ); return false;`
                 ) ✏️
-                form(
-                  action="/tasks/" + t._id + "?_method=DELETE",
-                  method="POST",
-                  style="display: inline"
-                )
-                  button.btn-delete(
-                    type="submit",
-                    onclick="return confirm('¿Eliminar tarea?')"
-                  ) 🗑️
+                button.btn-delete(
+                  type="button",
+                  onclick=`if(confirm('¿Eliminar tarea?')) deleteTask('${t._id}')`
+                ) 🗑️
+
               else
                 form(action="/tasks/" + t._id + "/estado", method="POST")
                   select(name="estado", onchange="this.form.submit()")
                     option(value="pendiente", selected=t.estado === "pendiente") Pendiente
-                    option(
-                      value="en proceso",
-                      selected=t.estado === "en proceso"
-                    ) En proceso
-                    option(
-                      value="finalizada",
-                      selected=t.estado === "finalizada"
-                    ) Finalizada
+                    option(value="en proceso", selected=t.estado === "en proceso") En proceso
+                    option(value="finalizada", selected=t.estado === "finalizada") Finalizada
     else
       p.text-muted No hay tareas disponibles.

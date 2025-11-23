@@ -2,8 +2,50 @@
 script.
   // Modal Proyecto
   function openProjectModal() {
+    document.getElementById("projectForm").reset();
+    document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Nuevo Proyecto";
+    document.querySelector("#projectModalOverlay .btn-submit").textContent = "Crear Proyecto";
+    document.getElementById("projectForm").action = "/project/save";
+
     document.getElementById("projectModalOverlay").classList.add("show");
   }
+
+  function openEditProjectModal(id, nombre, clienteId, descripcion, estado) {
+    document.getElementById("projectName").value = nombre;
+    document.getElementById("projectClient").value = clienteId;
+    document.getElementById("projectDescription").value = descripcion;
+    document.getElementById("projectStatus").value = estado;
+
+    document.getElementById("projectForm").action = "/project/update/" + id;
+
+    document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Editar Proyecto";
+    document.querySelector("#projectModalOverlay .btn-submit").textContent = "Guardar Cambios";
+
+    document.getElementById("projectModalOverlay").classList.add("show");
+  }
+
+  async function deleteProject(projectId) {
+    try {
+      const response = await fetch(`/project/${projectId}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar el proyecto.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
+
+
   function closeProjectModal() {
     document.getElementById("projectModalOverlay").classList.remove("show");
     document.getElementById("projectForm").reset();
@@ -18,36 +60,47 @@ script.
     document.getElementById("taskForm").action = "/tasks/save";
     document.getElementById("taskModalOverlay").classList.add("show");
   }
-  function openEditTaskModal(id) {
-    fetch("/tasks/" + id)
-      .then(function (res) {
-        return res.json();
-      })
-      .then(function (task) {
-        document.getElementById("taskId").value = id;
-        document.getElementById("taskName").value = task.nombre;
-        document.getElementById("taskDescription").value = task.descripcion || "";
-        document.getElementById("taskProject").value = task.project._id || task.project;
-        document.getElementById("taskStatus").value = task.estado;
-        var empSelect = document.getElementById("taskEmployees");
-        for (var i = 0; i < empSelect.options.length; i++) {
-          var opt = empSelect.options[i];
-          opt.selected =
-            task.empleados &&
-            task.empleados.some(function (emp) {
-              return (emp._id || emp) === opt.value;
-            });
-        }
-        document.getElementById("taskModalTitle").textContent = "Editar Tarea";
-        document.getElementById("taskSubmitBtn").textContent = "Guardar Cambios";
-        document.getElementById("taskForm").action = "/tasks/update/" + id;
-        document.getElementById("taskModalOverlay").classList.add("show");
-      })
-      .catch(function (err) {
-        console.error("Error:", err);
-        alert("Error al cargar la tarea");
-      });
+  function openEditTaskModal(id, nombre, descripcion, projectId, estado, empleadosCSV) {
+    document.getElementById("taskId").value = id;
+    document.getElementById("taskName").value = nombre;
+    document.getElementById("taskDescription").value = descripcion;
+    document.getElementById("taskProject").value = projectId;
+    document.getElementById("taskStatus").value = estado;
+
+    // Selección múltiple de empleados
+    const empSelect = document.getElementById("taskEmployees");
+    const empIds = empleadosCSV ? empleadosCSV.split(",") : [];
+    [...empSelect.options].forEach(opt => {
+      opt.selected = empIds.includes(opt.value);
+    });
+
+    document.getElementById("taskModalTitle").textContent = "Editar Tarea";
+    document.getElementById("taskSubmitBtn").textContent = "Guardar Cambios";
+    document.getElementById("taskForm").action = "/tasks/update/" + id;
+
+    document.getElementById("taskModalOverlay").classList.add("show");
   }
+
+  async function deleteTask(taskId) {
+    try {
+      const response = await fetch(`/tasks/${taskId}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar la tarea.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
   function closeTaskModal() {
     document.getElementById("taskModalOverlay").classList.remove("show");
     document.getElementById("taskForm").reset();
@@ -78,6 +131,27 @@ script.
     document.getElementById("employeeForm").action = "/employee/update/" + id;
     document.getElementById("employeeModalOverlay").classList.add("show");
   }
+
+  async function deleteEmployee(id) {
+    try {
+      const response = await fetch(`/employee/${id}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar el empleado.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
   function closeEmployeeModal() {
     document.getElementById("employeeModalOverlay").classList.remove("show");
     document.getElementById("employeeForm").reset();
