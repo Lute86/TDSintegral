@@ -12,7 +12,7 @@ export class DashboardController {
       let proyectos = [];
       let tareas = [];
       let clientes = [];
-      let empleados = [];
+      let empleados = []; 
       let consultas = [];
       let metricas = {
         tareasPendientes: 0,

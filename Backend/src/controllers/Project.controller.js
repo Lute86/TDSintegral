@@ -52,8 +52,8 @@ export class ProjectController {
     }
   }
 
-   // VISTA PUG 
-  static async renderList(req, res) {
+   // VISTAS PUG 
+  static async renderList(req, res) { 
     try {
       const user = req.user;
       let projects;
@@ -102,35 +102,18 @@ export class ProjectController {
   // ========== MÉTODO SAVE CON DEPURACIÓN ==========
   static async save(req, res) {
     try {
-      console.log('🔍 ========== INICIO SAVE ==========');
-      console.log('🔍 REQ.BODY COMPLETO:', req.body);
-      console.log('🔍 REQ.USER:', req.user);
-      
       const { id, nombre, name, descripcion, description, servicios, estado, horasCotizadas, clienteId } = req.body;
-      
-      console.log('🔍 Variables extraídas:');
-      console.log('   - nombre:', nombre);
-      console.log('   - name:', name);
-      console.log('   - clienteId:', clienteId);
-      console.log('   - horasCotizadas:', horasCotizadas);
-      console.log('   - servicios:', servicios);
-      console.log('   - estado:', estado);
-      console.log('   - descripcion:', descripcion);
-
+    
       // Usar nombre/descripcion (español) o name/description (inglés)
       const projectName = nombre || name;
       const projectDescription = descripcion || description;
 
-      console.log('📝 Nombre final:', projectName);
-      console.log('📝 ClienteId final:', clienteId);
 
       if (!projectName) {
-        console.log('❌ ERROR: El nombre del proyecto está vacío');
         throw new Error("El nombre del proyecto es obligatorio");
       }
 
       if (!clienteId) {
-        console.log('❌ ERROR: El clienteId está vacío');
         throw new Error("Debe seleccionar un cliente");
       }
 
@@ -159,34 +142,83 @@ export class ProjectController {
         projectData.descripcion = projectDescription || '';
       }
 
-      console.log('📦 Datos preparados para guardar:', JSON.stringify(projectData, null, 2));
-
+ 
       if (id) {
         // Actualizar proyecto existente
         const actualizado = await ProjectService.update(id, projectData);
-        console.log('✅ Proyecto actualizado:', actualizado);
       } else {
         // Crear nuevo proyecto
         const nuevoProyecto = await ProjectService.create(projectData);
-        console.log('✅ Proyecto creado exitosamente:', nuevoProyecto);
       }
       
-      console.log('🔍 ========== FIN SAVE ==========');
       res.redirect("/dashboard");
     } catch (error) {
-      console.error("❌ Error al guardar proyecto:", error);
-      res.status(500).send("Error al guardar proyecto: " + error.message);
+      console.error("Error al guardar proyecto: " + error.message);
+      res.redirect("/dashboard");
     }
   }
 
-  static async delete(req, res) {
+  static async updateView(req, res) {
     try {
       const { id } = req.params;
+      const { nombre, name, descripcion, description, servicios, estado, horasCotizadas, clienteId } = req.body;
+
+      if (!id) throw new Error("ID de proyecto faltante");
+
+      // Aceptar nombre en español o inglés
+      const projectName = nombre || name;
+      const projectDescription = descripcion || description;
+
+      if (!projectName) {
+        throw new Error("El nombre del proyecto es obligatorio");
+      }
+
+      if (!clienteId) {
+        throw new Error("Debe seleccionar un cliente");
+      }
+
+      // Construcción del objeto final (idéntico a save)
+      const projectData = {
+        nombre: projectName,
+        clienteId: clienteId,
+        estado: estado || 'pendiente',
+        metricas: {
+          horasCotizadas: parseInt(horasCotizadas) || 0,
+          horasTotales: 0,
+          horasRedes: 0,
+          horasMails: 0
+        }
+      };
+
+      // Servicios (opcional)
+      if (servicios) {
+        const serviciosArray = Array.isArray(servicios) ? servicios : [servicios];
+        const serviciosText = serviciosArray.join(', ');
+        projectData.descripcion = projectDescription
+          ? `${projectDescription}\n\nServicios contratados: ${serviciosText}`
+          : `Servicios contratados: ${serviciosText}`;
+      } else {
+        projectData.descripcion = projectDescription || '';
+      }
+
+      // Actualizar proyecto
+      await ProjectService.update(id, projectData);
+
+      res.redirect("/dashboard");
+
+    } catch (error) {
+      console.error("Error al actualizar proyecto:", error);
+      res.status(500).send("Error al actualizar proyecto: " + error.message);
+    }
+  }
+ 
+    static async delete(req, res) {
+      try {
+        const { id } = req.params;
       await ProjectService.deleteById(id);
       res.redirect("/dashboard");
     } catch (error) {
-      console.error("Error al eliminar proyecto:", error);
-      res.status(500).send("Error al eliminar proyecto");
+      res.redirect("/dashboard?error=delete_failed");
     }
   }
 }

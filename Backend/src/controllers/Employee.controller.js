@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 
 export class EmployeeController {
 
-  
+  //API
   static async getAll(req, res) {
     try {
       const employees = await EmployeeService.getAll();
@@ -125,6 +125,8 @@ export class EmployeeController {
     } 
             
     }
+
+    // VISTAS
     static async dashboardCreate(req, res) {
   try {
     await Employee.create({ nombre: req.body.nombre, email: req.body.email });

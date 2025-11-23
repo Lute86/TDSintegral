@@ -19,14 +19,9 @@
                 href="#",
                 onclick="openEditEmployeeModal('" + e._id + "', '" + e.nombre + "', '" + (e.apellido || "") + "', '" + e.email + "', '" + e.rol + "'); return false;"
               ) ✏️
-              form(
-                action="/employee/" + e._id + "?_method=DELETE",
-                method="POST",
-                style="display: inline"
-              )
-                button.btn-delete(
-                  type="submit",
-                  onclick="return confirm('¿Eliminar empleado?')"
+              button.btn-delete(
+                  type="button",
+                  onclick=`if(confirm('¿Eliminar tarea?')) deleteEmployee('${e._id}')`
                 ) 🗑️
     else
       p.text-muted No hay empleados registrados.
