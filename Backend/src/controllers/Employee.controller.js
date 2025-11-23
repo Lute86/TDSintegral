@@ -132,7 +132,9 @@ export class EmployeeController {
     await Employee.create({ nombre: req.body.nombre, email: req.body.email });
     res.redirect('/dashboard');
   } catch (error) {
-    res.status(500).send('Error al crear empleado');
+    res.status(500).render("error", {
+        message: `Error al crear el registro ${error.message}`
+      });
   }
 }
 
@@ -142,7 +144,9 @@ export class EmployeeController {
     if (!employee) return res.status(404).send('Empleado no encontrado');
     res.render('edit', { employee });
   } catch (error) {
-    res.status(500).send('Error al cargar formulario de edición');
+    res.status(500).render("error", {
+        message: `Error al crgar el registro ${error.message}`
+      });
   }
 }
 
@@ -151,7 +155,9 @@ export class EmployeeController {
     await Employee.findByIdAndUpdate(req.params.id, req.body);
     res.redirect('/dashboard');
   } catch (error) {
-    res.status(500).send('Error al actualizar empleado');
+    res.status(500).render("error", {
+        message: `Error al actualizar el registro ${error.message}`
+      });
   }
 }
 
@@ -160,7 +166,9 @@ export class EmployeeController {
     await Employee.findByIdAndDelete(req.params.id);
     res.redirect('/dashboard');
   } catch (error) {
-    res.status(500).send('Error al eliminar empleado');
+    res.status(500).render("error", {
+        message: `Error al borrar el registro ${error.message}`
+      });
   }
 }
 
@@ -185,11 +193,12 @@ static async save(req, res) {
     
     res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error al crear empleado:', error);
     if (error.code === 11000) {
       return res.status(400).send('El email ya está registrado');
     }
-    res.status(500).send('Error al crear empleado');
+    res.status(500).render("error", {
+        message: `Error al crear el registro ${error.message}`
+      });
   }
 }
 
@@ -214,8 +223,9 @@ static async updateEmployee(req, res) {
     await EmployeeService.update(id, updateData);
     res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error al actualizar empleado:', error);
-    res.status(500).send('Error al actualizar empleado');
+    res.status(500).render("error", {
+        message: `Error al actualizar el registro ${error.message}`
+      });
   }
 }
 
@@ -224,7 +234,9 @@ static async save(req, res) {
     const { nombre, apellido, email, password, rol } = req.body;
     
     if (!password || password.length < 6) {
-      return res.status(400).send('La contraseña debe tener al menos 6 caracteres');
+      return res.status(400).render("error", {
+        message: `Error de contrasena ${error.message}`
+      });
     }
 
     const saltRounds = 10;
@@ -240,11 +252,14 @@ static async save(req, res) {
     
     res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error al crear empleado:', error);
     if (error.code === 11000) {
-      return res.status(400).send('El email ya está registrado');
+      return res.status(500).render("error", {
+        message: `Error ${error.message}`
+      });
     }
-    res.status(500).send('Error al crear empleado');
+    res.status(500).render("error", {
+        message: `Error al crear el registro ${error.message}`
+      });
   }
 }
 
@@ -269,8 +284,9 @@ static async updateEmployee(req, res) {
     await EmployeeService.update(id, updateData);
     res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error al actualizar empleado:', error);
-    res.status(500).send('Error al actualizar empleado');
+    res.status(500).render("error", {
+        message: `Error al actualizar el registro ${error.message}`
+      });
   }
 }
 

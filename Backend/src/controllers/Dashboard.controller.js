@@ -40,13 +40,6 @@ export class DashboardController {
       metricas.tareasEnProceso = tareas.filter(t => t.estado === 'en proceso').length;
       metricas.tareasFinalizadas = tareas.filter(t => t.estado === 'finalizada').length;
 
-      console.log('📊 Dashboard cargado:', {
-        proyectos: proyectos.length,
-        tareas: tareas.length,
-        empleados: empleados.length,
-        consultas: consultas.length
-      });
-
       res.render("dashboard", {
         title: "Mi Dashboard",
         user,
@@ -58,7 +51,6 @@ export class DashboardController {
         metricas
       });
     } catch (error) {
-      console.error("❌ Error al cargar dashboard:", error);
       res.status(500).render("error", {
         message: "Error al cargar el dashboard"
       });

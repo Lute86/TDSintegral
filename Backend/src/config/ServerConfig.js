@@ -45,14 +45,14 @@ export class Server {
     // ========== RUTAS PÚBLICAS ==========
     this.app.get('/', (req, res) => res.render('landingpage'));
     this.app.use("/auth", AuthRoutes.getRouter());
-    this.app.use("/clientes", ContactRoutes.getRouter()); // Formulario landing
+    this.app.use("/clientes", ContactRoutes.getRouter());
 
     // ========== RUTAS PROTEGIDAS ==========
     this.app.use("/client", ClientRoutes.getRouter());
     this.app.use("/employee", EmployeeRoutes.getRouter());
     this.app.use("/project", ProjectRoutes.getRouter());
     this.app.use("/tasks", TaskRoutes.getRouter());
-    this.app.use("/contacts", ContactRoutes.getRouter()); // Admin consultas
+    this.app.use("/contacts", ContactRoutes.getRouter());
 
     // ========== DASHBOARD ==========
     this.app.get(
@@ -74,7 +74,7 @@ export class Server {
   async listen() {
     await connectDB();
     this.app.listen(this.port, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${this.port}`);
+      console.log(`Servidor corriendo en http://localhost:${this.port}`);
     });
   }
 }

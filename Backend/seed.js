@@ -77,6 +77,7 @@ async function seed() {
       {
         nombre: "Sistema de Gestión Comercial",
         clienteId: clients[0]._id,
+        descripcion: `Proyecto para cliente ${clients[0].nombre}`,
         empleados: [employees[1]._id, ], // employees[1]._id     corregido índice
         estado: "pendiente",
         metricas: { horasCotizadas: 50 },
@@ -84,6 +85,7 @@ async function seed() {
       },
       {
         nombre: "Sistema de pago",
+        descripcion: `Proyecto para cliente ${clients[0].nombre}`,
         clienteId: clients[0]._id,
         empleados: [employees[1]._id], 
         estado: "pendiente",
@@ -93,6 +95,7 @@ async function seed() {
       ,
       {
         nombre: "Sistema de conteo",
+        descripcion: `Proyecto para cliente ${clients[0].nombre}`,
         clienteId: clients[0]._id,
         empleados: [employees[2]._id], 
         estado: "pendiente",

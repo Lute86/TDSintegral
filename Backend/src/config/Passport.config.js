@@ -9,10 +9,9 @@ export class Passport {
 
   initialize() {
     const opts = {
-    // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       jwtFromRequest: ExtractJwt.fromExtractors([
       ExtractJwt.fromAuthHeaderAsBearerToken(),
-      req => req?.cookies?.token || null, // lee token de cookie si existe
+      req => req?.cookies?.token || null,
       ]),
       secretOrKey: this.secret
     };

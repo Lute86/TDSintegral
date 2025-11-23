@@ -227,19 +227,6 @@ export class ProjectService {
     });
   } 
 
-  // static async getById(id) {
-  //   return await Project.findById(id, { include: [{ model: Task }] });
-  // }
-
-  // static async create(data) {
-  //   return await Project.create(data);
-  // }
-
-  // static async update(id, data) {
-  //   const project = await Project.findById(id);
-  //   if (!project) throw new Error("Proyecto no encontrado");
-  //   return await project;
-  // }
 
 }
 
