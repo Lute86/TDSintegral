@@ -44,7 +44,6 @@ export class ContactController {
       const { estado } = req.body;
 
       await ContactService.updateEstado(id, estado);
-      console.log(`✅ Estado actualizado: ${estado}`);
       res.redirect('/dashboard');
     } catch (error) {
       res.status(500).render("error", {
@@ -66,7 +65,6 @@ export class ContactController {
         estado: 'nuevo'
       });
 
-      console.log('✅ Consulta guardada correctamente');
       res.redirect('/?success=true');
     } catch (error) {
       res.redirect('/?error=true');
