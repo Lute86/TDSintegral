@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
+  descripcion: { type: String }, // <--- ¡CAMPO AGREGADO!
   clienteId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
   empleados: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }],
   estado: { type: String, enum: ["pendiente", "en curso", "finalizado"], default: "pendiente" },

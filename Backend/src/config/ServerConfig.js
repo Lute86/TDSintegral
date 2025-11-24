@@ -25,6 +25,9 @@ export class Server {
     this.middlewares();
     this.routes();
   }
+    getApp() {
+     return this.app;
+    } 
 
   middlewares() {
     this.app.use(express.json());

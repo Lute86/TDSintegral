@@ -1,9 +1,12 @@
 import dotenv from 'dotenv';
-dotenv.config();
 import { Server } from "./config/ServerConfig.js";
 
+dotenv.config();
 const server = new Server();
-server.listen();
+// Exportamos la instancia de Express (el objeto 'app') directamente
+// para que Supertest pueda simular las peticiones HTTP en el test.
+export const app = server.getApp();
+//server.listen();
 
 
 // para cargar los datos desde el seed.js ejecutar desde terminal: node seed.js

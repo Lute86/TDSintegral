@@ -13,15 +13,25 @@ export class ProjectController {
     }
   }
 
-  static async getById(req, res) {
-    try {
-      const project = await ProjectService.getById(req.params.id);
-      if (!project) return HttpResponse.notFound(res, "Proyecto no encontrado");
-      HttpResponse.success(res, project);
-    } catch (err) {
-      HttpResponse.serverError(res, err.message);
+static async getById(req, res) {
+  try {
+    const project = await ProjectService.getById(req.params.id);
+
+    if (!project || (typeof project === "object" && !Array.isArray(project) && Object.keys(project).length === 0)) {
+      return HttpResponse.notFound(res, "Proyecto no encontrado");
     }
+
+    HttpResponse.success(res, project);
+
+  } catch (err) {
+    if (err.name === "CastError") {
+      return HttpResponse.notFound(res, "Proyecto no encontrado");
+    }
+
+    HttpResponse.serverError(res, err.message);
   }
+}
+
 
   static async create(req, res) {
     try {
@@ -38,19 +48,27 @@ export class ProjectController {
       if (!updated) return HttpResponse.notFound(res, "Proyecto no encontrado");
       HttpResponse.success(res, updated);
     } catch (err) {
+      console.log("Error en update",err)
+      if (err.name === 'CastError') {
+        return HttpResponse.notFound(res, "Proyecto no encontrado");
+      }
       HttpResponse.serverError(res, err.message);
     }
   }
 
   static async deleteById(req, res) {
-    try {
-      const deleted = await ProjectService.deleteById(req.params.id);
-      if (!deleted) return HttpResponse.notFound(res, "Proyecto no encontrado");
-      HttpResponse.success(res, { message: "Proyecto eliminado" });
-    } catch (err) {
-      HttpResponse.serverError(res, err.message);
-    }
-  }
+    try {
+      const deleted = await ProjectService.deleteById(req.params.id);
+      if (!deleted) return HttpResponse.notFound(res, "Proyecto no encontrado");
+      HttpResponse.success(res, { message: "Proyecto eliminado" });
+    } catch (err) {
+      // AÑADIDO: Si es un CastError, devolvemos 404
+      if (err.name === 'CastError') {
+        return HttpResponse.notFound(res, "Proyecto no encontrado");
+      }
+      HttpResponse.serverError(res, err.message);
+    }
+  }
 
    // VISTA PUG 
   static async renderList(req, res) {
