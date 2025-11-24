@@ -22,8 +22,12 @@
                     '${proyecto._id}',
                     '${proyecto.nombre}',
                     '${proyecto.clienteId._id || proyecto.clienteId}',
-                    '${(proyecto.descripcion || "").replace(/'/g, "\\'").replace(/"/g, '\\"')}',
-                    '${proyecto.estado}'
+                    '${(proyecto.descripcion || "")
+                      .replace(/'/g, "\\'")
+                      .replace(/"/g, '\\"')
+                      .replace(/\n/g, " ")}',
+                    '${proyecto.estado}',
+                    '${proyecto.metricas ? proyecto.metricas.horasCotizadas : 0}'
                   ); return false;`
                 ) ✏️
                 button.btn-delete(

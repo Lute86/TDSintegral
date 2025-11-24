@@ -132,7 +132,7 @@ export class TaskController {
       const { estado } = req.body;
 
       await TaskService.update(id, { estado });
-      res.redirect('back');
+      res.redirect('/dashboard');
     } catch (error) {
       res.status(500).render("error", {
         message: `Error al actualizar el estado ${error.message}`
@@ -146,7 +146,7 @@ export class TaskController {
       const { horas } = req.body;
 
       await TaskService.update(id, { horas });
-      res.redirect('back');
+      res.redirect('/dashboard');
     } catch (error) {
       res.status(500).render("error", {
         message: `Error al actualizar el registro ${error.message}`

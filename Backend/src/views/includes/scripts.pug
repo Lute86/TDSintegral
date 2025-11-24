@@ -10,12 +10,12 @@ script.
     document.getElementById("projectModalOverlay").classList.add("show");
   }
 
-  function openEditProjectModal(id, nombre, clienteId, descripcion, estado) {
+  function openEditProjectModal(id, nombre, clienteId, descripcion, estado, horas) {
     document.getElementById("projectName").value = nombre;
     document.getElementById("projectClient").value = clienteId;
     document.getElementById("projectDescription").value = descripcion;
     document.getElementById("projectStatus").value = estado;
-
+    document.getElementById("horasCotizadas").value = horas || 0;
     document.getElementById("projectForm").action = "/project/update/" + id;
 
     document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Editar Proyecto";
@@ -117,7 +117,7 @@ script.
     document.querySelector(".password-hint").style.display = "block";
     document.getElementById("employeeModalOverlay").classList.add("show");
   }
-  function openEditEmployeeModal(id, nombre, apellido, email, rol) {
+  function openEditEmployeeModal(id, nombre, apellido, email, rol, horas) {
     document.getElementById("employeeId").value = id;
     document.getElementById("employeeName").value = nombre;
     document.getElementById("employeeLastName").value = apellido;
