@@ -34,6 +34,7 @@
                     '${(t.descripcion || "").replace(/'/g,"\\'").replace(/"/g,'\\"')}',
                     '${t.project ? t.project._id : t.project}',
                     '${t.estado}',
+                    '${t.horasCotizadas}',
                     '${(t.empleados || []).map(e => e._id || e).join(",")}'
                   ); return false;`
                 ) ✏️
