@@ -27,7 +27,6 @@ export class AuthController {
       return HttpResponse.success(res, data);
 
     } catch (err) {
-      console.error("Error en login:", err.message);
 
       // Si es un formulario HTML → renderiza el login con mensaje de error
       if (req.headers.accept && req.headers.accept.includes("text/html")) {
