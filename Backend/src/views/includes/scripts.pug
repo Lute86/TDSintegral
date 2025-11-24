@@ -1,0 +1,230 @@
+//- SCRIPTS 
+script.
+  // Modal Proyecto
+  function openProjectModal() {
+    document.getElementById("projectForm").reset();
+    document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Nuevo Proyecto";
+    document.querySelector("#projectModalOverlay .btn-submit").textContent = "Crear Proyecto";
+    document.getElementById("projectForm").action = "/project/save";
+
+    document.getElementById("projectModalOverlay").classList.add("show");
+  }
+
+  function openEditProjectModal(id, nombre, clienteId, descripcion, estado) {
+    document.getElementById("projectName").value = nombre;
+    document.getElementById("projectClient").value = clienteId;
+    document.getElementById("projectDescription").value = descripcion;
+    document.getElementById("projectStatus").value = estado;
+
+    document.getElementById("projectForm").action = "/project/update/" + id;
+
+    document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Editar Proyecto";
+    document.querySelector("#projectModalOverlay .btn-submit").textContent = "Guardar Cambios";
+
+    document.getElementById("projectModalOverlay").classList.add("show");
+  }
+
+  async function deleteProject(projectId) {
+    try {
+      const response = await fetch(`/project/${projectId}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar el proyecto.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
+
+
+  function closeProjectModal() {
+    document.getElementById("projectModalOverlay").classList.remove("show");
+    document.getElementById("projectForm").reset();
+  }
+
+  // Modal Tarea
+  function openTaskModal() {
+    document.getElementById("taskForm").reset();
+    document.getElementById("taskId").value = "";
+    document.getElementById("taskModalTitle").textContent = "Nueva Tarea";
+    document.getElementById("taskSubmitBtn").textContent = "Crear Tarea";
+    document.getElementById("taskForm").action = "/tasks/save";
+    document.getElementById("taskModalOverlay").classList.add("show");
+  }
+  function openEditTaskModal(id, nombre, descripcion, projectId, estado, empleadosCSV) {
+    document.getElementById("taskId").value = id;
+    document.getElementById("taskName").value = nombre;
+    document.getElementById("taskDescription").value = descripcion;
+    document.getElementById("taskProject").value = projectId;
+    document.getElementById("taskStatus").value = estado;
+
+    // Selección múltiple de empleados
+    const empSelect = document.getElementById("taskEmployees");
+    const empIds = empleadosCSV ? empleadosCSV.split(",") : [];
+    [...empSelect.options].forEach(opt => {
+      opt.selected = empIds.includes(opt.value);
+    });
+
+    document.getElementById("taskModalTitle").textContent = "Editar Tarea";
+    document.getElementById("taskSubmitBtn").textContent = "Guardar Cambios";
+    document.getElementById("taskForm").action = "/tasks/update/" + id;
+
+    document.getElementById("taskModalOverlay").classList.add("show");
+  }
+
+  async function deleteTask(taskId) {
+    try {
+      const response = await fetch(`/tasks/${taskId}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar la tarea.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
+  function closeTaskModal() {
+    document.getElementById("taskModalOverlay").classList.remove("show");
+    document.getElementById("taskForm").reset();
+  }
+
+  // Modal Empleado
+  function openEmployeeModal() {
+    document.getElementById("employeeForm").reset();
+    document.getElementById("employeeId").value = "";
+    document.getElementById("employeeModalTitle").textContent = "Nuevo Empleado";
+    document.getElementById("employeeSubmitBtn").textContent = "Crear Empleado";
+    document.getElementById("employeeForm").action = "/employee/save";
+    document.getElementById("employeePassword").required = true;
+    document.querySelector(".password-hint").style.display = "block";
+    document.getElementById("employeeModalOverlay").classList.add("show");
+  }
+  function openEditEmployeeModal(id, nombre, apellido, email, rol) {
+    document.getElementById("employeeId").value = id;
+    document.getElementById("employeeName").value = nombre;
+    document.getElementById("employeeLastName").value = apellido;
+    document.getElementById("employeeEmail").value = email;
+    document.getElementById("employeeRole").value = rol;
+    document.getElementById("employeePassword").value = "";
+    document.getElementById("employeePassword").required = false;
+    document.querySelector(".password-hint").style.display = "none";
+    document.getElementById("employeeModalTitle").textContent = "Editar Empleado";
+    document.getElementById("employeeSubmitBtn").textContent = "Guardar Cambios";
+    document.getElementById("employeeForm").action = "/employee/update/" + id;
+    document.getElementById("employeeModalOverlay").classList.add("show");
+  }
+
+  async function deleteEmployee(id) {
+    try {
+      const response = await fetch(`/employee/${id}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar el empleado.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
+  function closeEmployeeModal() {
+    document.getElementById("employeeModalOverlay").classList.remove("show");
+    document.getElementById("employeeForm").reset();
+  }
+
+  // Cerrar modales con ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeProjectModal();
+      closeTaskModal();
+      closeEmployeeModal();
+    }
+  });
+
+  // Cerrar modales al hacer clic fuera
+  document.getElementById("projectModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeProjectModal();
+  });
+  document.getElementById("taskModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeTaskModal();
+  });
+  document.getElementById("employeeModalOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closeEmployeeModal();
+  });
+
+  // Calcular horas por servicios
+  document.querySelectorAll(".servicio-chip").forEach(function (chip) {
+    var checkbox = chip.querySelector('input[type="checkbox"]');
+    chip.addEventListener("click", function (e) {
+      if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+      chip.classList.toggle("selected", checkbox.checked);
+      calcularHorasTotales();
+    });
+  });
+  function calcularHorasTotales() {
+    var total = 0;
+    document.querySelectorAll('.servicio-chip input[type="checkbox"]:checked').forEach(function (cb) {
+      var chip = cb.closest(".servicio-chip");
+      total += parseInt(chip.getAttribute("data-horas")) || 0;
+    });
+    var input = document.getElementById("horasCotizadas");
+    if (input) input.value = total;
+  }
+
+  //filter
+  document.getElementById("globalSearch").addEventListener("input", function () {
+    const q = this.value.toLowerCase().trim();
+
+    // Obtener todas las cards del dashboard
+    const cards = document.querySelectorAll(".dash-card[data-search]");
+
+    cards.forEach(function(card) {
+      // Obtener todos los ítems de esa card
+      const items = card.querySelectorAll("[data-text]");
+
+      let visibleCount = 0;
+
+      items.forEach(function(item) {
+        const text = item.getAttribute("data-text").toLowerCase();
+
+        if (text.includes(q)) {
+          item.style.display = "";
+          visibleCount++;
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+      // Si la card queda sin ítems visibles → ocultarla
+      if (visibleCount === 0) {
+        card.style.display = "none";
+      } else {
+        card.style.display = "";
+      }
+    });
+  });

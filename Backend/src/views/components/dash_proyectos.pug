@@ -1,0 +1,37 @@
+//- PROYECTOS
+#projectsCard.dash-card(data-search="proyecto")
+  .dash-card-header
+    h3 Proyectos
+    if user && user.rol === "administrador"
+      a.btn-view-all(href="#", onclick="openProjectModal(); return false;") ➕ Nuevo
+  .dash-card-body
+    ul.project-list
+      if proyectos && proyectos.length > 0
+        each proyecto in proyectos
+          li.project-item(data-text=`${proyecto.nombre} ${proyecto.estado}`)
+            .left
+              strong.project-name= proyecto.nombre
+              if proyecto.metricas && proyecto.metricas.horasCotizadas
+                small.project-hours 💼 #{ proyecto.metricas.horasCotizadas } horas cotizadas
+            .right
+              span.item-status(class=proyecto.estado)= proyecto.estado
+              if user && user.rol === "administrador"
+                a.btn-edit(
+                  href="#",
+                  onclick=`openEditProjectModal(
+                    '${proyecto._id}',
+                    '${proyecto.nombre}',
+                    '${proyecto.clienteId._id || proyecto.clienteId}',
+                    '${(proyecto.descripcion || "").replace(/'/g, "\\'").replace(/"/g, '\\"')}',
+                    '${proyecto.estado}'
+                  ); return false;`
+                ) ✏️
+                button.btn-delete(
+                  type="button",
+                  onclick=`if(confirm('¿Eliminar proyecto?')) deleteProject('${proyecto._id}')`
+                ) 🗑️
+
+
+
+      else
+        li.text-muted No hay proyectos asignados.

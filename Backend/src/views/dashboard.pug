@@ -1,0 +1,36 @@
+include includes/head.pug
+
+body.dashboard-layout
+  include includes/header.pug
+
+  main.main-content
+    h2 Mi Dashboard
+
+    .dashboard-grid
+      //- PROYECTOS
+      include components/dash_proyectos.pug
+      //- TAREAS
+      include components/dash_tareas.pug
+
+    //- GESTIÓN DE EMPLEADOS (solo admin)
+    if user && user.rol === "administrador"
+      include components/dash_empleados.pug
+
+    //- MÉTRICAS
+    include components/dash_metricas.pug
+
+    //- CONSULTAS (solo admin)
+    if user && user.rol === "administrador"
+      include components/dash_consultas.pug
+
+  //- MODAL NUEVO PROYECTO
+  include components/modal_project.pug
+
+  //- MODAL NUEVA/EDITAR TAREA
+  include components/modal_task.pug
+
+  //- MODAL NUEVO/EDITAR EMPLEADO
+  include components/modal_employee.pug
+
+  //- SCRIPTS
+  include includes/scripts.pug

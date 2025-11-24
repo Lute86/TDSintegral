@@ -1,0 +1,110 @@
+button.btn.btn-primary#btnNewTask Nueva Tarea
+
+table.table
+  thead
+    tr
+      th Proyecto
+      th Nombre
+      th Estado
+      th Empleado
+      th Acciones
+  tbody
+    each task in tasks
+      tr
+        td #{task.project?.nombre || '—'}
+        td #{task.nombre}
+        td #{task.estado}
+        td #{task.empleados.map(e => e.nombre).join(', ')}
+        td
+          button.btn.btn-sm.btn-warning.editTask(data-id=task._id) Editar
+          button.btn.btn-sm.btn-danger.deleteTask(data-id=task._id) Eliminar
+
+
+// Modal para crear/editar tarea
+div.modal.fade#taskModal(tabindex='-1')
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        h5.modal-title#taskModalTitle Nueva Tarea
+        button.btn-close(type='button', data-bs-dismiss='modal')
+      div.modal-body
+        form#taskForm
+          input(type='hidden', name='_id')
+          .mb-3
+            label.form-label Nombre
+            input.form-control(type='text', name='nombre', required)
+          .mb-3
+            label.form-label Descripción
+            textarea.form-control(name='descripcion')
+          .mb-3
+            label.form-label Estado
+            select.form-select(name='estado')
+              option(value='pendiente') Pendiente
+              option(value='en_progreso') En progreso
+              option(value='finalizada') Finalizada
+      div.modal-footer
+        button.btn.btn-secondary(data-bs-dismiss='modal') Cancelar
+        button.btn.btn-primary#saveTask Guardar
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = new bootstrap.Modal(document.getElementById('taskModal'));
+  const form = document.getElementById('taskForm');
+  const title = document.getElementById('taskModalTitle');
+
+  // Nueva tarea
+  document.getElementById('btnNewTask').addEventListener('click', () => {
+    form.reset();
+    form._id.value = '';
+    title.textContent = 'Nueva Tarea';
+    modal.show();
+  });
+
+  // Editar tarea
+  document.querySelectorAll('.editTask').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const res = await fetch(`/tasks/${id}`);
+      const task = await res.json();
+
+      form._id.value = task.data._id;
+      form.nombre.value = task.data.nombre;
+      form.descripcion.value = task.data.descripcion || '';
+      form.estado.value = task.data.estado;
+      title.textContent = 'Editar Tarea';
+      modal.show();
+    });
+  });
+
+  // Guardar (nuevo o editar)
+  document.getElementById('saveTask').addEventListener('click', async () => {
+    const data = Object.fromEntries(new FormData(form));
+    const id = data._id;
+    delete data._id;
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/tasks/${id}` : '/tasks';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      location.reload();
+    } else {
+      alert('Error al guardar tarea');
+    }
+  });
+
+  // Eliminar tarea
+  document.querySelectorAll('.deleteTask').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (confirm('¿Eliminar esta tarea?')) {
+        const res = await fetch(`/tasks/${btn.dataset.id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
+      }
+    });
+  });
+});
+</script>

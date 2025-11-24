@@ -1,0 +1,52 @@
+//- TAREAS
+#tasksCard.dash-card(data-search="tarea")
+  .dash-card-header
+    h3 Tareas del Proyecto
+    if user && user.rol === "administrador"
+      a.btn-view-all(href="#", onclick="openTaskModal(); return false;") ➕ Nueva
+  .dash-card-body
+    if tareas && tareas.length > 0
+      ul.task-list
+        each t in tareas
+          li.task-item(data-text=`${t.nombre} ${t.descripcion} ${t.estado}`)
+            .task-info
+              .task-main
+                strong.task-name= t.nombre
+                p.task-desc= t.descripcion || "Sin descripción"
+              .task-meta
+                small.task-project 📁 #{ t.project ? t.project.nombre : 'N/A' }
+                if t.empleados && t.empleados.length > 0
+                  small.task-assigned 👤
+                    each emp, i in t.empleados
+                      span= emp.nombre + " " + (emp.apellido || "")
+                      if i < t.empleados.length - 1
+                        span ,
+                else
+                  small.task-assigned 👤 Sin asignar
+
+            .task-actions
+              if user && user.rol === "administrador"
+                a.btn-edit(
+                  href="#",
+                  onclick=`openEditTaskModal(
+                    '${t._id}',
+                    '${t.nombre || ""}',
+                    '${(t.descripcion || "").replace(/'/g,"\\'").replace(/"/g,'\\"')}',
+                    '${t.project ? t.project._id : t.project}',
+                    '${t.estado}',
+                    '${(t.empleados || []).map(e => e._id || e).join(",")}'
+                  ); return false;`
+                ) ✏️
+                button.btn-delete(
+                  type="button",
+                  onclick=`if(confirm('¿Eliminar tarea?')) deleteTask('${t._id}')`
+                ) 🗑️
+
+              else
+                form(action="/tasks/" + t._id + "/estado", method="POST")
+                  select(name="estado", onchange="this.form.submit()")
+                    option(value="pendiente", selected=t.estado === "pendiente") Pendiente
+                    option(value="en proceso", selected=t.estado === "en proceso") En proceso
+                    option(value="finalizada", selected=t.estado === "finalizada") Finalizada
+    else
+      p.text-muted No hay tareas disponibles.

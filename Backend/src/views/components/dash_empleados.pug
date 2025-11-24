@@ -1,0 +1,28 @@
+#employeesCard.dash-card(data-search="empleado")
+  .dash-card.admin-section
+    .dash-card-header
+      h3 Gestión de Empleados
+      a.btn-view-all(href="#", onclick="openEmployeeModal(); return false;") ➕ Nuevo Empleado
+    .dash-card-body
+      if empleados && empleados.length > 0
+        ul.employee-list
+          each e in empleados
+            li.employee-item(data-text=`${e.nombre} ${e.apellido} ${e.email} ${e.rol}`)
+              .employee-info
+                .employee-details
+                  span.emp-name= e.nombre + " " + (e.apellido || "")
+                  span.emp-email= e.email
+                span.emp-role(
+                  class=e.rol === "administrador" ? "role-admin" : "role-employee"
+                )= e.rol
+              .emp-actions
+                a.btn-edit(
+                  href="#",
+                  onclick="openEditEmployeeModal('" + e._id + "', '" + e.nombre + "', '" + (e.apellido || "") + "', '" + e.email + "', '" + e.rol + "'); return false;"
+                ) ✏️
+                button.btn-delete(
+                    type="button",
+                    onclick=`if(confirm('¿Eliminar tarea?')) deleteEmployee('${e._id}')`
+                  ) 🗑️
+      else
+        p.text-muted No hay empleados registrados.

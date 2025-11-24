@@ -1,0 +1,18 @@
+include includes/head_error.pug
+
+body.dashboard-layout
+  include includes/header_error.pug
+
+  main.main-content
+    h2 Mi Dashboard
+
+    .dashboard-grid
+    block content
+      .error-container
+        h1 Error
+        if message
+          p #{message}
+        else
+          p Ha ocurrido un error inesperado.
+
+        a.btn-back(href="/dashboard") ⬅ Volver al Dashboard

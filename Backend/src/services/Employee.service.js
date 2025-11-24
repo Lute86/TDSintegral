@@ -1,27 +1,44 @@
-import { Employee } from "../models/Employee.model.js"
+import { Employee } from "../models/Employee.model.js";
 
-export class EmployeeService{
+export class EmployeeService {
+  static async getAll() {
+    return await Employee.find();
+  }
 
-    static employees = [
-        new Employee(1, 'Ana'),
-        new Employee(2, 'Juan')
-    ];
+  static async getById(id) {
+    const employee = await Employee.findById(id);
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
 
-    static async getAll (){
-        try {
-            return EmployeeService.employees.map(e => e.toJSON())
-        } catch (error) {
-            throw new Error("Error del servidor");
-        }
-    }
+  static async create(data) {
+    // Validar email único
+      const exists = await Employee.findOne({ email: data.email });
+      if (exists) throw new Error("Email ya existe");
+      return await Employee.create(data);
+  }
 
-    static async getById(id){
-        try {
-            const employee = EmployeeService.employees.find(e => e.id == id);
-            if (!employee) throw new Error("No autorizado");
-            return employee.toJSON();
-        } catch (error) {
-            throw new Error("Error del servidor");
-        }
-    }
+  static async updatePut(id, data) {
+    const employee = await Employee.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
+
+  static async update(id, data) {
+    const employee = await Employee.findByIdAndUpdate(id, { $set: data }, {
+      new: true,
+      runValidators: true,
+    });
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
+
+  static async deleteById(id) {
+    const employee = await Employee.findByIdAndDelete(id);
+    if (!employee) throw new Error("Empleado no encontrado");
+    return employee;
+  }
 }

@@ -1,0 +1,140 @@
+doctype html
+html(lang="es", style="scroll-behavior: smooth;")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Clickwave | Marketing Digital Inteligente
+    
+    link(rel="icon", type="image/png", href="/favicon.png")
+    link(rel="stylesheet", href="css/landingpage.css")
+
+
+  body
+    header
+      .container
+        h1 Clickwave
+        nav
+          ul
+            li: a(href="#servicios") Servicios
+            li: a(href="#beneficios") Beneficios
+            li: a(href="#contacto") Contacto
+        button.admin-button(id="openLoginModal") Administración
+
+    section.hero
+      h1 Impulsamos tu <span>crecimiento</span> digital
+      p En Clickwave combinamos creatividad, datos y tecnología para maximizar tu retorno de inversión.
+      a.cta-button(href="#contacto") Solicita tu diagnóstico gratuito
+
+    section#servicios.section
+      h2 Nuestros Servicios
+      .services-grid
+        .service-card
+          .icon 📈
+          h3 SEO & Contenido
+          p Mejora tu visibilidad en buscadores con estrategias de contenido optimizadas.
+        .service-card
+          .icon 💻
+          h3 Publicidad Digital
+          p Campañas en Google Ads, Meta y más, con foco en conversión.
+        .service-card
+          .icon 🤖
+          h3 Automatización
+          p Flujos multicanal que mejoran la fidelización y cliente automáticamente.
+
+    section#beneficios.section
+      .container
+        h2 ¿Por qué elegir Clickwave?
+        ul
+          li Tecnología de inteligencia artificial
+          li Optimización basada en métricas y procesos
+          li Equipo de expertos dedicados
+          li Reportes transparentes en tiempo real
+
+    section#contacto.section
+      .container
+        h2 Contáctanos
+        p ¿Listo para escalar tu negocio? Completá el formulario y te contactamos.
+
+        form(action="/clientes" method="POST")
+          label(for="nombre") Nombre
+          input(type="text" name="nombre" id="nombre" required)
+
+          label(for="apellido") Apellido
+          input(type="text" name="apellido" id="apellido" required)
+
+          label(for="email") Email
+          input(type="email" name="email" id="email" required)
+
+          label(for="proyecto") Servicios
+          select(name="proyecto" id="proyecto")
+            option(value="diseño_web") Diseño Web
+            option(value="seo") Posicionamiento Web SEO
+            option(value="adwords") Posicionamiento Web AdWords
+            option(value="cm") Community Manager
+            option(value="email_marketing") Email Marketing
+            option(value="google_ads") Google Ads
+            option(value="rrss_ads") Publicidad Redes Sociales
+
+          label(for="consulta") Consulta
+          textarea(name="consulta" id="consulta" rows="5" placeholder="Contanos sobre tu proyecto...")
+
+          button.cta-button(type="submit") Enviar
+
+    footer
+      p &copy; 2025 Clickwave. Todos los derechos reservados.
+
+    // Login modal
+    .modal-overlay(id="modalOverlay")
+    .login-modal(id="loginModal")
+      .modal-close(id="closeLoginModal") &times;
+      h1 Acceso de Administración
+
+      if error
+        p.error-message(style="color: #ff4d4f; text-align:center; margin-bottom: 1rem;")= error
+
+      form(action="/auth/login" method="POST")
+        .form-group
+          label(for="email") Email
+          input(type="text" name="email" id="email" placeholder="ej: juan@example.com" required)
+        .form-group
+          label(for="password") Password
+          input(type="password" name="password" id="password" placeholder="••••••••" required)
+        .form-group
+          label(for="rol") Rol
+          select(name="rol" id="rol")
+            option(value="empleado") Empleado
+            option(value="administrador") Administrador
+        button.cta-button(type="submit") Ingresar
+      .login-options
+        a(href="/recuperar-password") ¿Olvidaste tu contraseña?
+
+    // script del modal
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const openModalBtn = document.getElementById('openLoginModal');
+        const closeModalBtn = document.getElementById('closeLoginModal');
+        const modal = document.getElementById('loginModal');
+        const overlay = document.getElementById('modalOverlay');
+        if (openModalBtn && closeModalBtn && modal && overlay) {
+          const openModal = () => {
+            modal.classList.add('show');
+            overlay.classList.add('show');
+          };
+          const closeModal = () => {
+            modal.classList.remove('show');
+            overlay.classList.remove('show');
+          };
+          openModalBtn.addEventListener('click', openModal);
+          closeModalBtn.addEventListener('click', closeModal);
+          overlay.addEventListener('click', closeModal);
+        }
+      });
+
+    if error
+      script.
+        document.addEventListener('DOMContentLoaded', () => {
+          const modal = document.getElementById('loginModal');
+          const overlay = document.getElementById('modalOverlay');
+          modal.classList.add('show');
+          overlay.classList.add('show');
+        });

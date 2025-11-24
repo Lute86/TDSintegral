@@ -1,0 +1,18 @@
+//- Cuando se edita proyecto desde dashboard
+extends ../layout.pug
+
+block content
+  h2= project ? 'Editar Proyecto' : 'Nuevo Proyecto'
+
+  form(action="/projects/save" method="POST")
+    if project
+      input(type="hidden" name="id" value=project.id)
+
+    label Nombre
+    input(type="text" name="name" required value=project ? project.nombre : '')
+
+    label Descripción
+    textarea(name="description")= "Proyecto a trabajar"
+
+    button(type="submit") Guardar
+    a(href="/projects") Cancelar

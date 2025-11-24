@@ -1,83 +1,129 @@
-Primera entrega proyecto backend para "Desarrollo web (back)"
+# Proyecto Node.js + Express + MongoDB
 
-## Descripcion 1ra entrega
+Documentación principal del proyecto, destinada para instalación, ejecución y entendimiento general del sistema.
 
-- Proyecto de Node.js y Express con una arquitectura simple de estilo MVC.
+---
 
-## Objetivos específicos:
+# 1. Descripción General
 
-Desarrollar una aplicación web utilizando Node.js y Express.
+Aplicación web desarrollada con **Node.js**, **Express** y **MongoDB**, siguiendo una arquitectura modular basada en MVC. El sistema gestiona clientes, empleados, proyectos y tareas, integrando lógica de negocio, autenticación y vistas renderizadas con el motor de plantillas **Pug**.
 
-Integrar una base de datos (solamente en JSON), eliminamos a mongo de este parcial, pero si quieren lo pueden usar. 
-Tutorial de instalacion de mongoDB https://www.youtube.com/watch?v=eKXIxSZrJfw&ab_channel=UskoKruM2010
+---
 
-Aplicar conceptos de asincronía y manejo de promesas. Módulos
+# 2. Requisitos Previos
 
-Implementar un sistema de rutas dinámicas y middleware. Motor de plantillas Pug 
+* Node.js (se recomienda instalación mediante **nvm**, versión LTS)
+* npm
+* MongoDB instalado localmente
+  Tutorial de instalación recomendado:
+  [https://www.youtube.com/watch?v=eKXIxSZrJfw&ab_channel=UskoKruM2010](https://www.youtube.com/watch?v=eKXIxSZrJfw&ab_channel=UskoKruM2010)
 
-Crear y probarla (Además capturar la pantalla de alguna pruebe hecha en ThunderClient)
+---
 
-Seguir buenas prácticas de desarrollo, incluyendo la utilización de POO.
+# 3. Instalación y Configuración
 
-## Requisitos 
+## 3.1 Clonar el repositorio
 
-- node (https://nodejs.org/en/download) Mejor instalar nvm y luego la version adecuada de nodejs, ultima lts. 
-- npm 
-
-## 1. Inicializar
-
-Clonar el repositorio:
-
+```bash
 git clone https://github.com/Lute86/TDSintegral.git
+```
 
-Instlar dependencias:
+## 3.2 Instalar dependencias
 
+```bash
 npm install
+```
 
-Crear environment:
+## 3.3 Configurar variables de entorno
 
-crear archivo .env basado en .env.example (Se puede copiar y pegar sin el .example)
+Crear archivo `.env` basado en el contenido de `.env.example`.
 
-Correr el servidor:
+## 3.4. Inicialización de Datos (Seed)
 
+### Ejecutar el seed
+
+```bash
+npm run seed 
+o
+node seed.js
+```
+
+### Usuarios generados
+
+**Administrador**
+
+* email: [admin@admin.com](mailto:admin@admin.com)
+* password: admin
+
+**Empleado**
+
+* email: [empleado@empleado.com](mailto:empleado@empleado.com)
+* password: admin
+---
+
+
+# 4 Iniciar el servidor
+
+```bash
 npm run dev
+```
+
+---
+
+# 5. Endpoints de Prueba
+
+### Obtener perfil por ID
+
+GET `http://localhost:3000/dashboard/myprofile/1`
+
+### Obtener listado de perfiles
+
+GET `http://localhost:3000/dashboard/profiles`
+
+### Eliminar empleado
+
+DELETE `http://localhost:3000/dashboard/employee/2`
+
+---
+
+# 6. Landing Page
+
+`http://localhost:3000/`
+
+---
+
+# 7. Estructura General del Proyecto
+
+```
+backend/
+│
+├── src/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middlewares/
+│   ├── services/
+│   ├── config/
+│   ├── utils/
+│   ├── views/
+│   ├── public/
+│   └── app.js
+│
+├── .env
+├── seed.js
+├── package.json
+└── README.md
+```
+
+---
+
+# 8. Tecnologías Utilizadas
+
+* Node.js / Express
+* MongoDB / Mongoose
+* Pug (motor de vistas)
+* Passport (autenticación)
+* CSS y JS estático
+* Arquitectura MVC + Servicios + Middlewares
 
 
-## Mejoras 2da entrega
-
-- Aplicar MongoDB
-- Agregar seguridad:
-  + encriptado passwords (bcrypt)
-  + Autenticacion y autorizacion (jwt)
-  + validacion de datos (express-validator) 
-- Desarrollar todas las entidades y sus respectivos CRUDs
-
-## Pruebas
-
-Api calls validas
-
-http://localhost:3000/dashboard/myprofile/1
-{
-  "status": 200,
-  "statusMsg": "Successful petition",
-  "data": {
-    "id": 1,
-    "nombre": "Ana"
-  }
-}
-
-http://localhost:3000/dashboard/profiles
-{
-  "status": 200,
-  "statusMsg": "Successful petition",
-  "data": [
-    {
-      "id": 1,
-      "nombre": "Ana"
-    },
-    {
-      "id": 2,
-      "nombre": "Juan"
-    }
-  ]
-}
