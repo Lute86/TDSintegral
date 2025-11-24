@@ -76,18 +76,21 @@ export class ProjectController {
       
     } catch (error) {
       console.error("Error al renderizar proyectos:", error);
-      res.status(500).send("Error al cargar proyectos");
+      res.status(500).render("error", {
+        message: "Error al cargar el dashboard"
+      });
     }
   }
 
-  //------------------------------------------------
   static async list(req, res) {
     try {
       const projects = await ProjectService.getAllWithTasks();
       res.render("projects/list", { projects });
     } catch (error) {
       console.error("Error al listar proyectos:", error);
-      res.status(500).send("Error al listar proyectos");
+      res.status(500).render("error", {
+        message: "Error al cargar el dashboard"
+      });
     }
   }
 
@@ -99,12 +102,10 @@ export class ProjectController {
     res.render("projects/form", { project });
   }
 
-  // ========== MÉTODO SAVE CON DEPURACIÓN ==========
   static async save(req, res) {
     try {
       const { id, nombre, name, descripcion, description, servicios, estado, horasCotizadas, clienteId } = req.body;
     
-      // Usar nombre/descripcion (español) o name/description (inglés)
       const projectName = nombre || name;
       const projectDescription = descripcion || description;
 
@@ -207,8 +208,9 @@ export class ProjectController {
       res.redirect("/dashboard");
 
     } catch (error) {
-      console.error("Error al actualizar proyecto:", error);
-      res.status(500).send("Error al actualizar proyecto: " + error.message);
+      res.status(500).render("error", {
+        message: `Error al actualizar el dashboard ${error.message}`
+      });
     }
   }
  
@@ -218,7 +220,9 @@ export class ProjectController {
       await ProjectService.deleteById(id);
       res.redirect("/dashboard");
     } catch (error) {
-      res.redirect("/dashboard?error=delete_failed");
+      res.status(500).render("error", {
+        message: `Error al borrar ${error.message}`
+      });
     }
   }
 }

@@ -10,12 +10,12 @@ script.
     document.getElementById("projectModalOverlay").classList.add("show");
   }
 
-  function openEditProjectModal(id, nombre, clienteId, descripcion, estado) {
+  function openEditProjectModal(id, nombre, clienteId, descripcion, estado, horas) {
     document.getElementById("projectName").value = nombre;
     document.getElementById("projectClient").value = clienteId;
     document.getElementById("projectDescription").value = descripcion;
     document.getElementById("projectStatus").value = estado;
-
+    document.getElementById("horasCotizadas").value = horas || 0;
     document.getElementById("projectForm").action = "/project/update/" + id;
 
     document.querySelector("#projectModalOverlay .modal-header h2").textContent = "Editar Proyecto";
@@ -117,7 +117,7 @@ script.
     document.querySelector(".password-hint").style.display = "block";
     document.getElementById("employeeModalOverlay").classList.add("show");
   }
-  function openEditEmployeeModal(id, nombre, apellido, email, rol) {
+  function openEditEmployeeModal(id, nombre, apellido, email, rol, horas) {
     document.getElementById("employeeId").value = id;
     document.getElementById("employeeName").value = nombre;
     document.getElementById("employeeLastName").value = apellido;
@@ -195,3 +195,36 @@ script.
     var input = document.getElementById("horasCotizadas");
     if (input) input.value = total;
   }
+
+  //filter
+  document.getElementById("globalSearch").addEventListener("input", function () {
+    const q = this.value.toLowerCase().trim();
+
+    // Obtener todas las cards del dashboard
+    const cards = document.querySelectorAll(".dash-card[data-search]");
+
+    cards.forEach(function(card) {
+      // Obtener todos los ítems de esa card
+      const items = card.querySelectorAll("[data-text]");
+
+      let visibleCount = 0;
+
+      items.forEach(function(item) {
+        const text = item.getAttribute("data-text").toLowerCase();
+
+        if (text.includes(q)) {
+          item.style.display = "";
+          visibleCount++;
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+      // Si la card queda sin ítems visibles → ocultarla
+      if (visibleCount === 0) {
+        card.style.display = "none";
+      } else {
+        card.style.display = "";
+      }
+    });
+  });

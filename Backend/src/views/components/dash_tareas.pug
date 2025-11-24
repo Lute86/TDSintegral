@@ -1,5 +1,5 @@
 //- TAREAS
-#tasksCard.dash-card
+#tasksCard.dash-card(data-search="tarea")
   .dash-card-header
     h3 Tareas del Proyecto
     if user && user.rol === "administrador"
@@ -8,7 +8,7 @@
     if tareas && tareas.length > 0
       ul.task-list
         each t in tareas
-          li.task-item
+          li.task-item(data-text=`${t.nombre} ${t.descripcion} ${t.estado}`)
             .task-info
               .task-main
                 strong.task-name= t.nombre
@@ -34,6 +34,7 @@
                     '${(t.descripcion || "").replace(/'/g,"\\'").replace(/"/g,'\\"')}',
                     '${t.project ? t.project._id : t.project}',
                     '${t.estado}',
+                    '${t.horasCotizadas}',
                     '${(t.empleados || []).map(e => e._id || e).join(",")}'
                   ); return false;`
                 ) ✏️

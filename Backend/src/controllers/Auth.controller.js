@@ -13,9 +13,9 @@ export class AuthController {
       // Guardar token JWT en cookie segura
       res.cookie("token", data.token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // true si está en producción
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 8 * 60 * 60 * 1000, // 8 horas
+        maxAge: 8 * 60 * 60 * 1000,
       });
 
       // Si la request viene desde un navegador → redirigir al dashboard
@@ -27,7 +27,6 @@ export class AuthController {
       return HttpResponse.success(res, data);
 
     } catch (err) {
-      console.error("Error en login:", err.message);
 
       // Si es un formulario HTML → renderiza el login con mensaje de error
       if (req.headers.accept && req.headers.accept.includes("text/html")) {
@@ -41,7 +40,7 @@ export class AuthController {
 
   static logout(req, res) {
     res.clearCookie("token");
-    return res.redirect("/"); // redirige a landing page
+    return res.redirect("/");
   }
 
 }

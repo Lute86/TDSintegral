@@ -4,7 +4,7 @@ import { EmployeeService } from "../services/Employee.service.js";
 import HttpResponse from "../utils/HttpResponse.utils.js";
 
 export class TaskController {
-  // API: Obtener todas las tareas
+  // API
   static async getAll(req, res) {
     try {
       const tasks = await TaskService.getAll();
@@ -14,7 +14,6 @@ export class TaskController {
     }
   }
 
-  // API: Obtener tarea por ID
   static async getById(req, res) {
     try {
       const task = await TaskService.getById(req.params.id);
@@ -27,7 +26,6 @@ export class TaskController {
     }
   }
 
-  // API: Obtener tareas por proyecto
   static async getByProject(req, res) {
     try {
       const tasks = await TaskService.getByProject(req.params.projectId);
@@ -37,7 +35,6 @@ export class TaskController {
     }
   }
 
-  // API: Crear tarea
   static async create(req, res) {
     try {
       const task = await TaskService.create(req.body);
@@ -47,7 +44,31 @@ export class TaskController {
     }
   }
 
-  // Dashboard: Guardar tarea desde modal
+  static async update(req, res) {
+    try {
+      const task = await TaskService.update(req.params.id, req.body);
+      HttpResponse.success(res, task);
+    } catch (error) {
+      if (error.message === "Tarea no encontrada") {
+        return HttpResponse.notFound(res, error.message);
+      }
+      HttpResponse.badRequest(res, error.message);
+    }
+  }
+  
+  static async deleteById(req, res) {
+    try {
+      await TaskService.deleteById(req.params.id);
+      HttpResponse.success(res, { message: 'Tarea eliminada correctamente' });
+    } catch (error) {
+      if (error.message === "Tarea no encontrada") {
+        return HttpResponse.notFound(res, error.message);
+      }
+      HttpResponse.serverError(res, error.message);
+    }
+  }
+  
+  // Vistas
   static async save(req, res) {
     try {
       const { nombre, descripcion, estado, prioridad, fechaInicio, fechaFin, horasEstimadas, project, empleados } = req.body;
@@ -71,28 +92,14 @@ export class TaskController {
         horas: 0
       });
 
-      console.log('✅ Tarea creada correctamente');
       res.redirect('/dashboard');
     } catch (error) {
-      console.error('❌ Error al guardar tarea:', error.message);
-      res.status(500).send('Error al crear la tarea: ' + error.message);
+      res.status(500).render("error", {
+        message: `Error al crear el registro ${error.message}`
+      });
     }
   }
-
-  // API: Actualizar tarea
-  static async update(req, res) {
-    try {
-      const task = await TaskService.update(req.params.id, req.body);
-      HttpResponse.success(res, task);
-    } catch (error) {
-      if (error.message === "Tarea no encontrada") {
-        return HttpResponse.notFound(res, error.message);
-      }
-      HttpResponse.badRequest(res, error.message);
-    }
-  }
-
-  // Dashboard: Actualizar tarea desde modal
+  
   static async updateTask(req, res) {
     try {
       const { id } = req.params;
@@ -111,56 +118,43 @@ export class TaskController {
         empleados: empleadosArray
       });
 
-      console.log('✅ Tarea actualizada correctamente');
       res.redirect('/dashboard');
     } catch (error) {
-      console.error('❌ Error al actualizar tarea:', error.message);
-      res.status(500).send('Error al actualizar la tarea');
+      res.status(500).render("error", {
+        message: `Error al actualizar el dashboard ${error.message}`
+      });
     }
   }
 
-  // Dashboard: Actualizar solo estado
   static async updateEstado(req, res) {
     try {
       const { id } = req.params;
       const { estado } = req.body;
 
       await TaskService.update(id, { estado });
-      res.redirect('back');
+      res.redirect('/dashboard');
     } catch (error) {
-      console.error('❌ Error al actualizar estado:', error.message);
-      res.status(500).send('Error al actualizar estado');
+      res.status(500).render("error", {
+        message: `Error al actualizar el estado ${error.message}`
+      });
     }
   }
 
-  // Dashboard: Registrar horas
   static async updateHoras(req, res) {
     try {
       const { id } = req.params;
       const { horas } = req.body;
 
       await TaskService.update(id, { horas });
-      res.redirect('back');
+      res.redirect('/dashboard');
     } catch (error) {
-      console.error('❌ Error al registrar horas:', error.message);
-      res.status(500).send('Error al registrar horas');
+      res.status(500).render("error", {
+        message: `Error al actualizar el registro ${error.message}`
+      });
     }
   }
 
-  // API: Eliminar tarea
-  static async deleteById(req, res) {
-    try {
-      await TaskService.deleteById(req.params.id);
-      HttpResponse.success(res, { message: 'Tarea eliminada correctamente' });
-    } catch (error) {
-      if (error.message === "Tarea no encontrada") {
-        return HttpResponse.notFound(res, error.message);
-      }
-      HttpResponse.serverError(res, error.message);
-    }
-  }
 
-  // Vista: Renderizar lista de tareas
   static async renderList(req, res) {
     try {
       const tasks = await TaskService.getAll();
@@ -174,8 +168,9 @@ export class TaskController {
         user: req.user
       });
     } catch (error) {
-      console.error('❌ Error al cargar tareas:', error.message);
-      res.status(500).send('Error al cargar las tareas');
+      res.status(500).render("error", {
+        message: `Error al actualizar el registro ${error.message}`
+      });
     }
   }
 }
