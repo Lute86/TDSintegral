@@ -92,7 +92,6 @@ export class TaskController {
         horas: 0
       });
 
-      console.log('✅ Tarea creada correctamente');
       res.redirect('/dashboard');
     } catch (error) {
       res.status(500).render("error", {
@@ -119,7 +118,6 @@ export class TaskController {
         empleados: empleadosArray
       });
 
-      console.log('✅ Tarea actualizada correctamente');
       res.redirect('/dashboard');
     } catch (error) {
       res.status(500).render("error", {

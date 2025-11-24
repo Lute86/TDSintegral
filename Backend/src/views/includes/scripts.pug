@@ -195,3 +195,36 @@ script.
     var input = document.getElementById("horasCotizadas");
     if (input) input.value = total;
   }
+
+  //filter
+  document.getElementById("globalSearch").addEventListener("input", function () {
+    const q = this.value.toLowerCase().trim();
+
+    // Obtener todas las cards del dashboard
+    const cards = document.querySelectorAll(".dash-card[data-search]");
+
+    cards.forEach(function(card) {
+      // Obtener todos los ítems de esa card
+      const items = card.querySelectorAll("[data-text]");
+
+      let visibleCount = 0;
+
+      items.forEach(function(item) {
+        const text = item.getAttribute("data-text").toLowerCase();
+
+        if (text.includes(q)) {
+          item.style.display = "";
+          visibleCount++;
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+      // Si la card queda sin ítems visibles → ocultarla
+      if (visibleCount === 0) {
+        card.style.display = "none";
+      } else {
+        card.style.display = "";
+      }
+    });
+  });
