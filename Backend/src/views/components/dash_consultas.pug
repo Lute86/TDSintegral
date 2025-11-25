@@ -36,6 +36,16 @@
                 )
                   input(type="hidden", name="estado", value="cerrado")
                   button.btn-cerrar(type="submit") ✅
+              button.btn-add(
+                type="button",
+                onclick=`addClientFromConsulta(
+                  '${c._id}',
+                  '${c.nombre}',
+                  '${c.apellido}',
+                  '${c.email}',
+                  '${(c.consulta || "").replace(/'/g,"\\'")}'
+                )`
+              ) +  
               button.btn-delete(
                     type="button",
                     onclick=`if(confirm('¿Eliminar tarea?')) deleteClient('${c._id}')`
