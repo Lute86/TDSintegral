@@ -197,6 +197,40 @@ script.
   }
 
   //cliente
+  async function addClientFromConsulta(id, nombre, apellido, email, consulta) {
+    if (!confirm("¿Agregar este contacto como cliente?")) return;
+
+    try {
+      const response = await fetch("/client/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          apellido,
+          email,
+          telefono: "",     // no requerido
+          consulta
+        })
+      });
+
+      const data = await response.json();
+      console.log(data)
+      if (data.status !== 201) {
+        alert("Hubo un error. Este contacto ya está registrado como cliente(?).");
+        return;
+      }
+
+      if (response.ok && data.status == 201) {
+        alert("Cliente agregado correctamente.");
+        window.location.reload();
+      } else {
+        alert(data.message || "No se pudo crear el cliente.");
+      }
+    } catch (err) {
+      alert("Error al conectar con el servidor.");
+    }
+  }
+
   async function deleteClient(id) {
     try {
       const response = await fetch(`/clientes/${id}`, { 
@@ -229,9 +263,9 @@ script.
           item.style.display = "";
         });
       });
-      return; // salir del filtro para evitar lógica extra
+      return; 
     }
-    
+
     // Obtener todas las cards del dashboard
     const cards = document.querySelectorAll(".dash-card[data-search]");
 

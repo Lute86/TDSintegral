@@ -22,11 +22,14 @@ export class ClientController {
   }
 
   static async create(req, res) {
-    
+    console.log("creado");
     try {
       const newClient = await ClientService.create(req.body);
+          console.log(newClient);
+
       HttpResponse.created(res, newClient);
     } catch (error) {
+      console.error(error.message)
       HttpResponse.serverError(res, error.message);
     }
   }
