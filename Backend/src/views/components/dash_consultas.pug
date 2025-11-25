@@ -1,4 +1,4 @@
-.dash-card.consultas-section
+.dash-card.consultas-section(data-search="cliente")
   .dash-card-header
     h3 📩 Consultas de Clientes
     if consultas && consultas.length > 0
@@ -9,7 +9,7 @@
     if consultas && consultas.length > 0
       ul.consultas-list
         each c in consultas
-          li.consulta-item(class=c.estado)
+          li.consulta-item(class=c.estado, data-text=`${c.nombre} ${c.apellido} ${c.email} ${c.servicio} ${c.estado} ${c.consulta || ""}`)
             .consulta-main
               .consulta-header
                 strong.consulta-nombre= c.nombre + " " + c.apellido
@@ -36,14 +36,9 @@
                 )
                   input(type="hidden", name="estado", value="cerrado")
                   button.btn-cerrar(type="submit") ✅
-              form(
-                action="/clientes/" + c._id + "?_method=DELETE",
-                method="POST",
-                style="display: inline"
-              )
-                button.btn-delete(
-                  type="submit",
-                  onclick="return confirm('¿Eliminar consulta?')"
-                ) 🗑️
+              button.btn-delete(
+                    type="button",
+                    onclick=`if(confirm('¿Eliminar tarea?')) deleteClient('${c._id}')`
+                  ) 🗑️
     else
       p.text-muted No hay consultas registradas.

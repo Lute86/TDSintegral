@@ -196,10 +196,42 @@ script.
     if (input) input.value = total;
   }
 
+  //cliente
+  async function deleteClient(id) {
+    try {
+      const response = await fetch(`/clientes/${id}`, { 
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true || data.status === 200) {
+        window.location.href = "/dashboard";
+        console.log("check")
+      } else {
+        alert(data.message || "Error al eliminar la consulta.");
+      }
+
+    } catch (error) {
+      alert("Error de conexión.");
+    }
+  }
+
   //filter
   document.getElementById("globalSearch").addEventListener("input", function () {
     const q = this.value.toLowerCase().trim();
 
+    // Si está vacío → restaurar todo inmediatamente
+    if (q === "") {
+      document.querySelectorAll(".dash-card[data-search]").forEach(card => {
+        card.style.display = "";
+        card.querySelectorAll("[data-text]").forEach(item => {
+          item.style.display = "";
+        });
+      });
+      return; // salir del filtro para evitar lógica extra
+    }
+    
     // Obtener todas las cards del dashboard
     const cards = document.querySelectorAll(".dash-card[data-search]");
 

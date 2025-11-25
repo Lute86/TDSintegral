@@ -94,6 +94,7 @@ h2 {
   background: var(--bg-dark-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  margin-top: 1rem;
   overflow: hidden;
   transition: transform 0.15s ease, background 0.2s ease;
 }
