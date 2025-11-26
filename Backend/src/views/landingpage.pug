@@ -76,7 +76,7 @@ html(lang="es", style="scroll-behavior: smooth;")
             option(value="rrss_ads") Publicidad Redes Sociales
 
           label(for="consulta") Consulta
-          textarea(name="consulta" id="consulta" rows="5" placeholder="Contanos sobre tu proyecto...")
+          textarea(name="consulta" id="consulta" rows="5" placeholder="Contanos sobre tu proyecto..." required)
 
           button.cta-button(type="submit") Enviar
 
@@ -106,10 +106,27 @@ html(lang="es", style="scroll-behavior: smooth;")
             option(value="administrador") Administrador
         button.cta-button(type="submit") Ingresar
       .login-options
-        a(href="/recuperar-password") ¿Olvidaste tu contraseña?
+        a.disabled-link ¿Olvidaste tu contraseña?
 
     // script del modal
     script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('authError') === 'true') {
+        
+          alert('Error de autenticación: Verifica tus credenciales e intenta de nuevo.');
+          
+          history.replaceState({}, document.title, window.location.pathname);
+          
+          const modal = document.getElementById('loginModal');
+          const overlay = document.getElementById('modalOverlay');
+          if (modal && overlay) {
+            modal.classList.add('show');
+            overlay.classList.add('show');
+          }
+        }
+      });
+
       document.addEventListener('DOMContentLoaded', () => {
         const openModalBtn = document.getElementById('openLoginModal');
         const closeModalBtn = document.getElementById('closeLoginModal');
